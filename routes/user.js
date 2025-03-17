@@ -15,10 +15,10 @@ const userOps = {
   },
 
   create(user) {
-    const { username, roles, geoLevel_Code, isMobileUser, user_Id, password } = user;
+    const { username, roles, passwordnoty, geoLevel_Code, isMobileUser, user_Id, password } = user;
     return dbAsync.run(
-      'INSERT INTO user (username, roles, password, geoLevel_Code, isMobileUser, user_Id) VALUES (?, ?, ?, ?, ?, ?)',
-      [username, roles, password, geoLevel_Code, isMobileUser, user_Id]
+      'INSERT INTO user (username, roles, password, hashynoty, geoLevel_Code, isMobileUser, user_Id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [username, roles, password, passwordnoty, geoLevel_Code, isMobileUser, user_Id]
     );
   },
 
@@ -174,34 +174,35 @@ module.exports = (dependencies) => {
 
       try {
         const { username, roles, geoLevel_Code, isMobileUser, user_Id } = req.body;
-    
-      // Generate random password
-      let password = '';
-      const consonants = 'bcdfghjklmnpqrstvwxyz';
-      for (let i = 0; i < 6; i++) {
-        password += consonants.charAt(Math.floor(Math.random() * consonants.length));
+
+        // Generate random password
+        let password = '';
+        const consonants = 'bcdfghjklmnpqrstvwxyz';
+        for (let i = 0; i < 6; i++) {
+          password += consonants.charAt(Math.floor(Math.random() * consonants.length));
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        const { lastID } = await userOps.create({
+          username,
+          roles,
+          geoLevel_Code,
+          isMobileUser,
+          user_Id,
+          password: hashedPassword,
+          passwordnoty: password
+        });
+
+        res.write(`data: ${JSON.stringify({ status: 'complete', id: lastID, message: 'User registered successfully' })}\n\n`);
+        res.status(201).end();
+      } catch (error) {
+        logger.error({ error }, 'Error registering user');
+        res.write(`data: ${JSON.stringify({ status: 'error', error: error.message })}\n\n`);
+        res.status(500).end();
       }
-    
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
-    
-      const { lastID } = await userOps.create({
-        username,
-        roles,
-        geoLevel_Code,
-        isMobileUser,
-        user_Id,
-        password: hashedPassword
-      });
-    
-      res.write(`data: ${JSON.stringify({ status: 'complete', id: lastID, message: 'User registered successfully' })}\n\n`);
-      res.status(201).end();
-    } catch (error) {
-      logger.error({ error }, 'Error registering user');
-      res.write(`data: ${JSON.stringify({ status: 'error', error: error.message })}\n\n`);
-      res.status(500).end();
-    }
-  })
+    })
   };
 
   // Route definitions with REST compliant responses
@@ -241,7 +242,7 @@ module.exports = (dependencies) => {
    *       201:
    *         description: User registered successfully
    */
-  router.post('/register', handlers.register);
+  router.post('/user/register', handlers.register);
   /**
    * @swagger
    * /{id}:
@@ -279,7 +280,7 @@ module.exports = (dependencies) => {
    *       404:
    *         description: User not found
    */
-  router.put('/:id', handlers.update);
+  router.put('/user/:id', handlers.update);
   /**
    * @swagger
    * /{id}:
@@ -298,10 +299,10 @@ module.exports = (dependencies) => {
    *       404:
    *         description: User not found
    */
-  router.delete('/:id', handlers.delete);
+  router.delete('/user/:id', handlers.delete);
   /**
    * @swagger
-   * /login:
+   * /user/login:
    *   post:
    *     summary: Login an existing user
    *     requestBody:
@@ -321,7 +322,7 @@ module.exports = (dependencies) => {
    *       400:
    *         description: Invalid username or password
    */
-  router.post('/login', handlers.login);
+  router.post('/user/login', handlers.login);
 
   return router;
 };
