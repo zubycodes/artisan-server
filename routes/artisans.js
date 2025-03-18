@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const fs = require('fs');
 const router = express.Router();
@@ -348,7 +349,7 @@ module.exports = (dependencies) => {
     create: [
       upload.fields([
         { name: 'profile_picture', maxCount: 1 },
-        /*    { name: 'product_images', maxCount: 5 } // Adjust maxCount as needed */
+           { name: 'product_images', maxCount: 5 } // Adjust maxCount as needed
       ]),
       validateArtisanData,
       async (req, res) => {
@@ -391,13 +392,13 @@ module.exports = (dependencies) => {
           routeLogger.info('Machines created successfully');
 
 
-          /*  res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating product images...' })}\n\n`);
+           res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating product images...' })}\n\n`);
            routeLogger.info('Creating product images...');
            const productImages = req.files ? req.files['product_images'] : [];
            const imagePaths = await entityOps.createProductImages(artisanId, productImages);
-           routeLogger.info('Product images created successfully'); */
+           routeLogger.info('Product images created successfully');
 
-          res.write(`data: ${JSON.stringify({ status: 'complete', statusCode: 201, id: artisanId, message: 'Artisan and related data created successfully'/* , imagePaths */ })}\n\n`);
+          res.write(`data: ${JSON.stringify({ status: 'complete', statusCode: 201, id: artisanId, message: 'Artisan and related data created successfully', imagePaths })}\n\n`);
           res.status(201).end();
         } catch (err) {
           const routeLogger = logger.child({ route: 'artisans', handler: 'create' });
