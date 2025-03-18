@@ -348,7 +348,7 @@ module.exports = (dependencies) => {
     create: [
       upload.fields([
         { name: 'artisan[profile_picture]', maxCount: 1 },
-        { name: 'product_images', maxCount: 5 } // Adjust maxCount as needed
+     /*    { name: 'product_images', maxCount: 5 } // Adjust maxCount as needed */
       ]),
       validateArtisanData,
       async (req, res) => {
@@ -389,11 +389,11 @@ module.exports = (dependencies) => {
           routeLogger.info('Machines created successfully');
 
 
-          res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating product images...' })}\n\n`);
+         /*  res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating product images...' })}\n\n`);
           routeLogger.info('Creating product images...');
           const productImages = req.files ? req.files['product_images'] : [];
           const imagePaths = await entityOps.createProductImages(artisanId, productImages);
-          routeLogger.info('Product images created successfully');
+          routeLogger.info('Product images created successfully'); */
 
           res.write(`data: ${JSON.stringify({ status: 'complete', statusCode: 201, id: artisanId, message: 'Artisan and related data created successfully', imagePaths })}\n\n`);
           res.status(200).end();
@@ -560,33 +560,117 @@ module.exports = (dependencies) => {
    *             properties:
    *               artisan[name]:
    *                 type: string
+   *                 description: Artisan's name
+   *                 example: John Doe
    *               artisan[father_name]:
    *                 type: string
+   *                 description: Artisan's father's name
+   *                 example: James Doe
    *               artisan[cnic]:
    *                 type: string
+   *                 description: Artisan's CNIC number
+   *                 example: "1124262292216"
    *               artisan[gender]:
    *                 type: string
+   *                 description: Artisan's gender
+   *                 example: Male
    *               artisan[date_of_birth]:
    *                 type: string
+   *                 description: Artisan's date of birth
+   *                 example: "1990-01-01"
    *               artisan[contact_no]:
    *                 type: string
+   *                 description: Artisan's contact number
+   *                 example: "12345678901"
+   *               artisan[email]:
+   *                 type: string
+   *                 description: Artisan's email
+   *                 example: john@example.com
+   *               artisan[address]:
+   *                 type: string
+   *                 description: Artisan's address
+   *                 example: "123 Street"
+   *               artisan[tehsil_id]:
+   *                 type: integer
+   *                 description: Artisan's tehsil ID
+   *                 example: 134
+   *               artisan[education_level_id]:
+   *                 type: integer
+   *                 description: Artisan's education level ID
+   *                 example: 1
    *               artisan[dependents_count]:
    *                 type: integer
+   *                 description: Number of dependents
+   *                 example: 2
    *               artisan[has_training]:
    *                 type: boolean
+   *                 description: Whether the artisan has had training
+   *                 example: true
    *               artisan[profile_picture]:
    *                 type: string
    *                 format: binary
-   *               business[employment_type]:
+   *                 description: Artisan's profile picture
+   *                 example: "pic.jpg"
+   *               artisan[ntn]:
    *                 type: string
-   *               business[has_machinery]:
+   *                 description: Artisan's NTN
+   *                 example: "NTN123"
+   *               artisan[skill_id]:
+   *                 type: integer
+   *                 description: Artisan's skill ID
+   *                 example: 1
+   *               artisan[major_product]:
+   *                 type: integer
+   *                 description: Artisan's major product
+   *                 example: 1
+   *               artisan[experience]:
+   *                 type: integer
+   *                 description: Artisan's experience
+   *                 example: 2
+   *               artisan[avg_monthly_income]:
+   *                 type: integer
+   *                 description: Artisan's average monthly income
+   *                 example: 111
+   *               artisan[employment_type_id]:
+   *                 type: integer
+   *                 description: Artisan's employment type ID
+   *                 example: 1
+   *               artisan[raw_material]:
+   *                 type: string
+   *                 description: Artisan's raw material
+   *                 example: "Local"
+   *               artisan[loan_status]:
    *                 type: boolean
-   *               craft[craft_type]:
+   *                 description: Artisan's loan status
+   *                 example: true
+   *               artisan[has_machinery]:
+   *                 type: boolean
+   *                 description: Whether the artisan has machinery
+   *                 example: true
+   *               artisan[inherited_skills]:
+   *                 type: boolean
+   *                 description: Whether the artisan has inherited skills
+   *                 example: true
+   *               artisan[financial_assistance]:
+   *                 type: boolean
+   *                 description: Whether the artisan has financial assistance
+   *                 example: true
+   *               artisan[technical_assistance]:
+   *                 type: boolean
+   *                 description: Whether the artisan has technical assistance
+   *                 example: true
+   *               artisan[comments]:
    *                 type: string
-   *               craft[category]:
-   *                 type: string
-   *               craft[major_product]:
-   *                 type: string
+   *                 description: Artisan's comments
+   *                 example: "ASD"
+   *               artisan[latitude]:
+   *                 type: number
+   *                 description: Artisan's latitude
+   *                 example: 33.22
+   *               artisan[longitude]:
+   *                 type: number
+   *                 description: Artisan's longitude
+   *                 example: 33.21
    *               trainings:
    *                 type: array
    *                 items:
@@ -594,10 +678,20 @@ module.exports = (dependencies) => {
    *                   properties:
    *                     title:
    *                       type: string
+   *                       description: Training title
+   *                       example: "Advanced Metalworking"
    *                     duration:
    *                       type: string
+   *                       description: Training duration
+   *                       example: "3 months"
    *                     organization:
    *                       type: string
+   *                       description: Training organization
+   *                       example: "Craft Institute"
+   *                     user_Id:
+   *                       type: integer
+   *                       description: Training user ID
+   *                       example: 1
    *               loans:
    *                 type: array
    *                 items:
@@ -605,12 +699,24 @@ module.exports = (dependencies) => {
    *                   properties:
    *                     amount:
    *                       type: number
+   *                       description: Loan amount
+   *                       example: 10000
    *                     date:
    *                       type: string
-   *                     donor:
+   *                       description: Loan date
+   *                       example: "2023-01-01"
+   *                     loan_type:
    *                       type: string
-   *                     bank:
+   *                       description: Loan type
+   *                       example: "Bank"
+   *                     name:
    *                       type: string
+   *                       description: Loan name
+   *                       example: "Bank Name"
+   *                     user_Id:
+   *                       type: integer
+   *                       description: Loan user ID
+   *                       example: 1
    *               machines:
    *                 type: array
    *                 items:
@@ -618,22 +724,40 @@ module.exports = (dependencies) => {
    *                   properties:
    *                     title:
    *                       type: string
+   *                       description: Machine title
+   *                       example: "Lathe"
    *                     size:
    *                       type: string
+   *                       description: Machine size
+   *                       example: "5x10 ft"
    *                     number_of_machines:
    *                       type: integer
-   *               assistance[financial_assistance]:
-   *                 type: string
-   *               assistance[technical_assistance]:
-   *                 type: string
-   *               assistance[comments]:
-   *                 type: string
-   *               productImages:
+   *                       description: Number of machines
+   *                       example: 2
+   *                     user_Id:
+   *                       type: integer
+   *                       description: Machine user ID
+   *                       example: 1
+   *               product_images:
    *                 type: array
    *                 items:
-   *                   type: string
+   *                   type: binary
    *                   format: binary
-   *                   description: Product images
+   *                   properties:
+   *                     image_path:
+   *                       type: string
+   *                       format: binary
+   *                       description: Product image path
+   *                       example: "pic.jpg"
+   *               assistance[financial_assistance]:
+   *                 type: string
+   *                 description: Financial assistance details
+   *               assistance[technical_assistance]:
+   *                 type: string
+   *                 description: Technical assistance details
+   *               assistance[comments]:
+   *                 type: string
+   *                 description: Assistance comments
    *     responses:
    *       201:
    *         description: Artisan created successfully
