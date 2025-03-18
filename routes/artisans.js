@@ -370,6 +370,8 @@ module.exports = (dependencies) => {
 
           res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating artisan...' })}\n\n`);
           routeLogger.info('Creating artisan...');
+          routeLogger.info({ artisan, trainings, loans, machines }, 'artisan');
+          routeLogger.info({ profilePicturePath: profilePicturePath }, 'profilePicturePath');
           const artisanId = await entityOps.createArtisan(artisan, profilePicturePath ?? artisan.profile_picture);
           routeLogger.info({ artisanId }, 'Artisan created successfully');
 
