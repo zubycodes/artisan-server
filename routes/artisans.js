@@ -197,13 +197,97 @@ const entityOps = {
     );
   },
 
-  getAllArtisans() {
-    return dbAsync.all('SELECT * FROM artisans WHERE isActive = 1');
+  getAllArtisans(user_Id) {
+    if (user_Id) {
+      return dbAsync.all('SELECT * FROM artisans WHERE (user_Id = ? or user_Id = 1) AND isActive = 1', [user_Id]);
+
+    } else {
+      return dbAsync.all('SELECT * FROM artisans WHERE isActive = 1');
+
+    }
   },
 
-  getArtisanById(id) {
-    return dbAsync.get('SELECT * FROM artisans WHERE id = ? AND isActive = 1', [id]);
-  },
+async getArtisanById(id) {
+  const sql = `
+    SELECT
+      artisans.*,
+      trainings.title AS training_title,
+      trainings.duration AS training_duration,
+      trainings.organization AS training_organization,
+      loans.amount AS loan_amount,
+      loans.date AS loan_date,
+      loans.loan_type AS loan_type,
+      loans.name AS loan_name,
+      machines.title AS machine_title,
+      machines.size AS machine_size,
+      machines.number_of_machines AS machine_number_of_machines,
+      product_images.image_path AS product_image_path
+    FROM artisans
+    LEFT JOIN trainings ON artisans.id = trainings.artisan_id
+    LEFT JOIN loans ON artisans.id = loans.artisan_id
+    LEFT JOIN machines ON artisans.id = machines.artisan_id
+    LEFT JOIN product_images ON artisans.id = product_images.artisan_id
+    WHERE artisans.id = ? AND artisans.isActive = 1
+  `;
+
+  const rows = await dbAsync.all(sql, [id]);
+
+  if (!rows || rows.length === 0) {
+    return null;
+  }
+
+  const artisan = {
+    ...rows[0],
+    trainings: [],
+    loans: [],
+    machines: [],
+    product_images: []
+  };
+
+  rows.forEach(row => {
+    if (row.training_title) {
+      artisan.trainings.push({
+        title: row.training_title,
+        duration: row.training_duration,
+        organization: row.training_organization
+      });
+    }
+    if (row.loan_amount) {
+      artisan.loans.push({
+        amount: row.loan_amount,
+        date: row.loan_date,
+        loan_type: row.loan_type,
+        name: row.loan_name
+      });
+    }
+    if (row.machine_title) {
+      artisan.machines.push({
+        title: row.machine_title,
+        size: row.machine_size,
+        number_of_machines: row.machine_number_of_machines
+      });
+    }
+    if (row.product_image_path) {
+      artisan.product_images.push(row.product_image_path);
+    }
+  });
+
+  // Remove null values if no data exists
+  if (artisan.trainings.length === 0) {
+    delete artisan.trainings;
+  }
+  if (artisan.loans.length === 0) {
+    delete artisan.loans;
+  }
+  if (artisan.machines.length === 0) {
+    delete artisan.machines;
+  }
+  if (artisan.product_images.length === 0) {
+    delete artisan.product_images;
+  }
+
+  return artisan;
+},
 
   // New methods for updating related data
   updateBusiness(artisanId, business) {
@@ -327,7 +411,8 @@ module.exports = (dependencies) => {
       const routeLogger = logger.child({ route: 'artisans', handler: 'getAll' });
       routeLogger.info('Received get all artisans request');
       try {
-        const artisans = await entityOps.getAllArtisans();
+        const user_Id = req.query.user_Id;
+        const artisans = await entityOps.getAllArtisans(user_Id);
         res.json(artisans);
       } catch (err) {
         routeLogger.error({ error: err }, 'Error fetching artisans');
