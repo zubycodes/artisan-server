@@ -395,7 +395,7 @@ module.exports = (dependencies) => {
            const imagePaths = await entityOps.createProductImages(artisanId, productImages);
            routeLogger.info('Product images created successfully'); */
 
-          res.write(`data: ${JSON.stringify({ status: 'complete', statusCode: 201, id: artisanId, message: 'Artisan and related data created successfully', imagePaths })}\n\n`);
+          res.write(`data: ${JSON.stringify({ status: 'complete', statusCode: 201, id: artisanId, message: 'Artisan and related data created successfully'/* , imagePaths */ })}\n\n`);
           res.status(200).end();
         } catch (err) {
           const routeLogger = logger.child({ route: 'artisans', handler: 'create' });
