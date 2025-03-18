@@ -450,7 +450,7 @@ module.exports = (dependencies) => {
         } catch (err) {
           const routeLogger = logger.child({ route: 'artisans', handler: 'create' });
           routeLogger.error({ error: err }, 'Error creating artisan');
-          res.write(`data: ${JSON.stringify({ status: 'error', statusCode: 500, error: err.message })}\n\n`);
+          res.write(`data: ${JSON.stringify({ status: 'error', statusCode: 500, message: err.message, error: err })}\n\n`);
           res.status(500).end();
         }
       }
