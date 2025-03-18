@@ -153,7 +153,7 @@ module.exports = (dependencies) => {
 
       try {
         if (await bcrypt.compare(password, user.password)) {
-          res.send('Success');
+          res.json(user);
         } else {
           logger.warn({ username }, 'Incorrect password');
           res.send('Not Allowed');
