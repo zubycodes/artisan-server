@@ -347,7 +347,7 @@ module.exports = (dependencies) => {
     // Create a new artisan with related data
     create: [
       upload.fields([
-        { name: 'artisan[profile_picture]', maxCount: 1 },
+        { name: 'profile_picture', maxCount: 1 },
         /*    { name: 'product_images', maxCount: 5 } // Adjust maxCount as needed */
       ]),
       validateArtisanData,
