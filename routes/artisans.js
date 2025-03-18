@@ -347,7 +347,7 @@ module.exports = (dependencies) => {
     // Create a new artisan with related data
     create: [
       upload.fields([
-       /*  { name: 'profile_picture', maxCount: 1 }, */
+        { name: 'profile_picture', maxCount: 1 },
         /*    { name: 'product_images', maxCount: 5 } // Adjust maxCount as needed */
       ]),
       validateArtisanData,
@@ -366,12 +366,12 @@ module.exports = (dependencies) => {
         }
         try {
           const { artisan, trainings, loans, machines } = req.body;
-         /*  const profilePicturePath = req.files ? req.files['artisan[profile_picture]'] ? req.files['artisan[profile_picture]'].path : null : null;
- */
+          const profilePicturePath = req.files ? req.files['profile_picture'] ? req.files['profile_picture'][0].path : null : null;
+
           res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating artisan...' })}\n\n`);
           routeLogger.info('Creating artisan...');
           routeLogger.info({ artisan, trainings, loans, machines }, 'artisan');
-          /* routeLogger.info({ profilePicturePath: profilePicturePath }, 'profilePicturePath'); */
+          routeLogger.info({ profilePicturePath: profilePicturePath }, 'profilePicturePath');
           const artisanId = await entityOps.createArtisan(artisan, '123');
           routeLogger.info({ artisanId }, 'Artisan created successfully');
 
