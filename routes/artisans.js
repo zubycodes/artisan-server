@@ -14,10 +14,10 @@ const validateArtisanData = [
   // Artisan validations
   body('artisan.name').notEmpty().withMessage('Name is required'),
   body('artisan.father_name').notEmpty().withMessage('Father\'s name is required'),
-  body('artisan.cnic').isLength({ min: 15, max: 15 }).withMessage('CNIC must be 13 digits with dashes'),
+  body('artisan.cnic').isLength({ min: 15, max: 15 }).withMessage('CNIC must be 15 digits with dashes'),
   body('artisan.gender').isIn(['Male', 'Female', 'Trangender']).withMessage('Invalid gender'),
   body('artisan.date_of_birth').isISO8601().withMessage('Invalid date of birth'),
-  body('artisan.contact_no').isLength({ min: 12, max: 12 }).withMessage('Invalid phone number! Must be 11 digits with dashes'),
+  body('artisan.contact_no').isLength({ min: 12, max: 12 }).withMessage('Invalid phone number! Must be 12 digits with dashes'),
   /* body('artisan.skill_id').notEmpty().withMessage('Skill ID is required'),
   body('artisan.major_product').notEmpty().withMessage('Major product is required'),
   body('artisan.experience').optional().isInt({ min: 0 }).withMessage('Experience must be a non-negative integer'),
@@ -348,7 +348,7 @@ module.exports = (dependencies) => {
     create: [
       upload.fields([
         { name: 'artisan[profile_picture]', maxCount: 1 },
-     /*    { name: 'product_images', maxCount: 5 } // Adjust maxCount as needed */
+        /*    { name: 'product_images', maxCount: 5 } // Adjust maxCount as needed */
       ]),
       validateArtisanData,
       async (req, res) => {
@@ -389,11 +389,11 @@ module.exports = (dependencies) => {
           routeLogger.info('Machines created successfully');
 
 
-         /*  res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating product images...' })}\n\n`);
-          routeLogger.info('Creating product images...');
-          const productImages = req.files ? req.files['product_images'] : [];
-          const imagePaths = await entityOps.createProductImages(artisanId, productImages);
-          routeLogger.info('Product images created successfully'); */
+          /*  res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating product images...' })}\n\n`);
+           routeLogger.info('Creating product images...');
+           const productImages = req.files ? req.files['product_images'] : [];
+           const imagePaths = await entityOps.createProductImages(artisanId, productImages);
+           routeLogger.info('Product images created successfully'); */
 
           res.write(`data: ${JSON.stringify({ status: 'complete', statusCode: 201, id: artisanId, message: 'Artisan and related data created successfully', imagePaths })}\n\n`);
           res.status(200).end();
