@@ -366,7 +366,7 @@ module.exports = (dependencies) => {
         }
         try {
           const { artisan, trainings, loans, machines } = req.body;
-          const profilePicturePath = req.files ? req.files['artisan[profile_picture]'] ? req.files['artisan[profile_picture]'][0].path : null : null;
+          const profilePicturePath = req.files ? req.files['artisan[profile_picture]'] ? req.files['artisan[profile_picture]'].path : null : null;
 
           res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating artisan...' })}\n\n`);
           routeLogger.info('Creating artisan...');
