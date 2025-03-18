@@ -117,6 +117,37 @@ const entityOps = {
 
     return Promise.all(ops).then(() => imagePaths);
   },
+  createShopImages(artisanId, files) {
+    if (!files || files.length === 0) {
+      return Promise.resolve([]);
+    }
+
+    const shopImagesDir = 'uploads/shop_images';
+    // Ensure the directory exists
+    if (!fs.existsSync(shopImagesDir)) {
+      fs.mkdirSync(shopImagesDir, { recursive: true });
+    }
+
+    const imagePaths = files.map(file => {
+      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+      const filename = `shop_image-${uniqueSuffix}${path.extname(file.originalname)}`;
+      const filePath = path.join(shopImagesDir, filename);
+
+      // Move the file to the destination directory
+      fs.renameSync(file.path, filePath);
+      return filePath;
+    });
+
+    const ops = imagePaths.map(imagePath => {
+      const sql = `
+        INSERT INTO shop_images (artisan_id, image_path)
+        VALUES (?, ?)
+      `;
+      return dbAsync.run(sql, [artisanId, imagePath]);
+    });
+
+    return Promise.all(ops).then(() => imagePaths);
+  },
 
   createTrainings(artisanId, trainings = []) {
     if (!trainings.length) return Promise.resolve();
@@ -223,11 +254,13 @@ const entityOps = {
       machines.size AS machine_size,
       machines.number_of_machines AS machine_number_of_machines,
       product_images.image_path AS product_image_path
+      shop_images.image_path AS shop_image_path
     FROM artisans
     LEFT JOIN trainings ON artisans.id = trainings.artisan_id
     LEFT JOIN loans ON artisans.id = loans.artisan_id
     LEFT JOIN machines ON artisans.id = machines.artisan_id
     LEFT JOIN product_images ON artisans.id = product_images.artisan_id
+    LEFT JOIN shop_images ON artisans.id = shop_images.artisan_id
     WHERE artisans.id = ? AND artisans.isActive = 1
   `;
 
@@ -242,7 +275,8 @@ const entityOps = {
       trainings: [],
       loans: [],
       machines: [],
-      product_images: []
+      product_images: [],
+      shop_images: []
     };
 
     rows.forEach(row => {
@@ -271,6 +305,9 @@ const entityOps = {
       if (row.product_image_path) {
         artisan.product_images.push(row.product_image_path);
       }
+      if (row.shop_image_path) {
+        artisan.shop_images.push(row.shop_image_path);
+      }
     });
 
     // Remove null values if no data exists
@@ -285,6 +322,9 @@ const entityOps = {
     }
     if (artisan.product_images.length === 0) {
       delete artisan.product_images;
+    }
+    if (artisan.shop_images.length === 0) {
+      delete artisan.shop_images;
     }
 
     return artisan;
@@ -349,7 +389,8 @@ module.exports = (dependencies) => {
     create: [
       upload.fields([
         { name: 'profile_picture', maxCount: 1 },
-           { name: 'product_images', maxCount: 5 } // Adjust maxCount as needed
+        { name: 'product_images', maxCount: 5 }, // Adjust maxCount as needed
+        { name: 'shop_images', maxCount: 5 } // Adjust maxCount as needed
       ]),
       validateArtisanData,
       async (req, res) => {
@@ -392,13 +433,19 @@ module.exports = (dependencies) => {
           routeLogger.info('Machines created successfully');
 
 
-           res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating product images...' })}\n\n`);
-           routeLogger.info('Creating product images...');
-           const productImages = req.files ? req.files['product_images'] : [];
-           const imagePaths = await entityOps.createProductImages(artisanId, productImages);
-           routeLogger.info('Product images created successfully');
+          res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating product images...' })}\n\n`);
+          routeLogger.info('Creating product images...');
+          const productImages = req.files ? req.files['product_images'] : [];
+          const productImagesPaths = await entityOps.createProductImages(artisanId, productImages);
+          routeLogger.info('Product images created successfully');
 
-          res.write(`data: ${JSON.stringify({ status: 'complete', statusCode: 201, id: artisanId, message: 'Artisan and related data created successfully', imagePaths })}\n\n`);
+          res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating shop images...' })}\n\n`);
+          routeLogger.info('Creating shop images...');
+          const shopImages = req.files ? req.files['shop_images'] : [];
+          const shopImagesPaths = await entityOps.createShopImages(artisanId, shopImages);
+          routeLogger.info('Shop images created successfully');
+
+          res.write(`data: ${JSON.stringify({ status: 'complete', statusCode: 201, id: artisanId, message: 'Artisan and related data created successfully', profilePicturePath, productImagesPaths, shopImagesPaths })}\n\n`);
           res.status(201).end();
         } catch (err) {
           const routeLogger = logger.child({ route: 'artisans', handler: 'create' });
