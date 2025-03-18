@@ -398,7 +398,7 @@ module.exports = (dependencies) => {
            routeLogger.info('Product images created successfully'); */
 
           res.write(`data: ${JSON.stringify({ status: 'complete', statusCode: 201, id: artisanId, message: 'Artisan and related data created successfully'/* , imagePaths */ })}\n\n`);
-          res.status(200).end();
+          res.status(201).end();
         } catch (err) {
           const routeLogger = logger.child({ route: 'artisans', handler: 'create' });
           routeLogger.error({ error: err }, 'Error creating artisan');
