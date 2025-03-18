@@ -403,55 +403,55 @@ module.exports = (dependencies) => {
 
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-          res.write(`data: ${JSON.stringify({ status: 'error', statusCode: 400, errors: errors.array() })}\n\n`);
-          return res.end();
+          res.write(`data: ${JSON.stringify({ status: 'error', statusCode: 400, message: errors.array().map(error => error.msg).join(', '), errors: errors.array() })}\n\n`);
+          return res.status(500).end();
         }
         try {
           const { artisan, trainings, loans, machines } = req.body;
           const profilePicturePath = req.files ? req.files['profile_picture'] ? req.files['profile_picture'][0].path : null : null;
 
-          res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating artisan...' })}\n\n`);
+          //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating artisan...' })}\n\n`);
           routeLogger.info('Creating artisan...');
           routeLogger.info({ artisan, trainings, loans, machines }, 'artisan');
           routeLogger.info({ profilePicturePath: profilePicturePath }, 'profilePicturePath');
           const artisanId = await entityOps.createArtisan(artisan, '123');
           routeLogger.info({ artisanId }, 'Artisan created successfully');
 
-          res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating trainings...' })}\n\n`);
+          //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating trainings...' })}\n\n`);
           routeLogger.info('Creating trainings...');
           await entityOps.createTrainings(artisanId, trainings);
           routeLogger.info('Trainings created successfully');
 
-          res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating loans...' })}\n\n`);
+          //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating loans...' })}\n\n`);
           routeLogger.info('Creating loans...');
           await entityOps.createLoans(artisanId, loans);
           routeLogger.info('Loans created successfully');
 
-          res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating machines...' })}\n\n`);
+          //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating machines...' })}\n\n`);
           routeLogger.info('Creating machines...');
           await entityOps.createMachines(artisanId, machines);
           routeLogger.info('Machines created successfully');
 
 
-          res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating product images...' })}\n\n`);
+          //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating product images...' })}\n\n`);
           routeLogger.info('Creating product images...');
           const productImages = req.files ? req.files['product_images'] : [];
           const productImagesPaths = await entityOps.createProductImages(artisanId, productImages);
           routeLogger.info('Product images created successfully');
 
-          res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating shop images...' })}\n\n`);
+          //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating shop images...' })}\n\n`);
           routeLogger.info('Creating shop images...');
           const shopImages = req.files ? req.files['shop_images'] : [];
           const shopImagesPaths = await entityOps.createShopImages(artisanId, shopImages);
           routeLogger.info('Shop images created successfully');
 
           res.write(`data: ${JSON.stringify({ status: 'complete', statusCode: 201, id: artisanId, message: 'Artisan and related data created successfully', profilePicturePath, productImagesPaths, shopImagesPaths })}\n\n`);
-          res.status(201).end();
+          return res.status(201).end();
         } catch (err) {
           const routeLogger = logger.child({ route: 'artisans', handler: 'create' });
           routeLogger.error({ error: err }, 'Error creating artisan');
           res.write(`data: ${JSON.stringify({ status: 'error', statusCode: 500, message: err.message, error: err })}\n\n`);
-          res.status(500).end();
+          return res.status(500).end();
         }
       }
     ],
