@@ -14,10 +14,10 @@ const validateArtisanData = [
   // Artisan validations
   body('artisan.name').notEmpty().withMessage('Name is required'),
   body('artisan.father_name').notEmpty().withMessage('Father\'s name is required'),
-  body('artisan.cnic').isLength({ min: 13, max: 13 }).withMessage('CNIC must be 13 digits'),
+  body('artisan.cnic').isLength({ min: 15, max: 15 }).withMessage('CNIC must be 13 digits with dashes'),
   body('artisan.gender').isIn(['Male', 'Female', 'Trangender']).withMessage('Invalid gender'),
   body('artisan.date_of_birth').isISO8601().withMessage('Invalid date of birth'),
-  body('artisan.contact_no').isLength({ min: 11, max: 11 }).withMessage('Invalid phone number! Must be 11 digits'),
+  body('artisan.contact_no').isLength({ min: 12, max: 12 }).withMessage('Invalid phone number! Must be 11 digits with dashes'),
   /* body('artisan.skill_id').notEmpty().withMessage('Skill ID is required'),
   body('artisan.major_product').notEmpty().withMessage('Major product is required'),
   body('artisan.experience').optional().isInt({ min: 0 }).withMessage('Experience must be a non-negative integer'),
@@ -38,10 +38,10 @@ const validateUpdateArtisanData = [
   // Artisan validations (optional fields)
   body('artisan.name').optional().notEmpty().withMessage('Name cannot be empty'),
   body('artisan.father_name').optional().notEmpty().withMessage('Father\'s name cannot be empty'),
-  body('artisan.cnic').optional().isLength({ min: 13, max: 13 }).withMessage('CNIC must be 13 digits'),
+  body('artisan.cnic').isLength({ min: 15, max: 15 }).withMessage('CNIC must be 13 digits with dashes'),
   body('artisan.gender').optional().isIn(['Male', 'Female', 'Other']).withMessage('Invalid gender'),
   body('artisan.date_of_birth').optional().isISO8601().withMessage('Invalid date of birth'),
-  body('artisan.contact_no').optional().isMobilePhone().withMessage('Invalid phone number'),
+  body('artisan.contact_no').isLength({ min: 12, max: 12 }).withMessage('Invalid phone number! Must be 11 digits with dashes'),
   body('artisan.dependents_count').optional().isInt({ min: 0 }).withMessage('Dependents count must be a non-negative integer'),
   body('artisan.skill_id').optional().notEmpty().withMessage('Skill ID is required'),
   body('artisan.major_product').optional().notEmpty().withMessage('Major product is required'),
@@ -207,8 +207,8 @@ const entityOps = {
     }
   },
 
-async getArtisanById(id) {
-  const sql = `
+  async getArtisanById(id) {
+    const sql = `
     SELECT
       artisans.*,
       trainings.title AS training_title,
@@ -230,64 +230,64 @@ async getArtisanById(id) {
     WHERE artisans.id = ? AND artisans.isActive = 1
   `;
 
-  const rows = await dbAsync.all(sql, [id]);
+    const rows = await dbAsync.all(sql, [id]);
 
-  if (!rows || rows.length === 0) {
-    return null;
-  }
-
-  const artisan = {
-    ...rows[0],
-    trainings: [],
-    loans: [],
-    machines: [],
-    product_images: []
-  };
-
-  rows.forEach(row => {
-    if (row.training_title) {
-      artisan.trainings.push({
-        title: row.training_title,
-        duration: row.training_duration,
-        organization: row.training_organization
-      });
+    if (!rows || rows.length === 0) {
+      return null;
     }
-    if (row.loan_amount) {
-      artisan.loans.push({
-        amount: row.loan_amount,
-        date: row.loan_date,
-        loan_type: row.loan_type,
-        name: row.loan_name
-      });
-    }
-    if (row.machine_title) {
-      artisan.machines.push({
-        title: row.machine_title,
-        size: row.machine_size,
-        number_of_machines: row.machine_number_of_machines
-      });
-    }
-    if (row.product_image_path) {
-      artisan.product_images.push(row.product_image_path);
-    }
-  });
 
-  // Remove null values if no data exists
-  if (artisan.trainings.length === 0) {
-    delete artisan.trainings;
-  }
-  if (artisan.loans.length === 0) {
-    delete artisan.loans;
-  }
-  if (artisan.machines.length === 0) {
-    delete artisan.machines;
-  }
-  if (artisan.product_images.length === 0) {
-    delete artisan.product_images;
-  }
+    const artisan = {
+      ...rows[0],
+      trainings: [],
+      loans: [],
+      machines: [],
+      product_images: []
+    };
 
-  return artisan;
-},
+    rows.forEach(row => {
+      if (row.training_title) {
+        artisan.trainings.push({
+          title: row.training_title,
+          duration: row.training_duration,
+          organization: row.training_organization
+        });
+      }
+      if (row.loan_amount) {
+        artisan.loans.push({
+          amount: row.loan_amount,
+          date: row.loan_date,
+          loan_type: row.loan_type,
+          name: row.loan_name
+        });
+      }
+      if (row.machine_title) {
+        artisan.machines.push({
+          title: row.machine_title,
+          size: row.machine_size,
+          number_of_machines: row.machine_number_of_machines
+        });
+      }
+      if (row.product_image_path) {
+        artisan.product_images.push(row.product_image_path);
+      }
+    });
+
+    // Remove null values if no data exists
+    if (artisan.trainings.length === 0) {
+      delete artisan.trainings;
+    }
+    if (artisan.loans.length === 0) {
+      delete artisan.loans;
+    }
+    if (artisan.machines.length === 0) {
+      delete artisan.machines;
+    }
+    if (artisan.product_images.length === 0) {
+      delete artisan.product_images;
+    }
+
+    return artisan;
+  },
 
   // New methods for updating related data
   updateBusiness(artisanId, business) {
