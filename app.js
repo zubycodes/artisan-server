@@ -76,6 +76,9 @@ const createApp = async (dbInstance, routeRegistry) => {
     exposedHeaders: ['X-Total-Count', 'X-Rate-Limit-Remaining']
   }));
 
+  // Serve static files from the "uploads" directory
+  app.use('/uploads', express.static('uploads'));
+
   // API rate limiting
   app.use(rateLimit({
     windowMs: CONFIG.RATE_LIMIT.windowMs,
