@@ -76,8 +76,8 @@ const createApp = async (dbInstance, routeRegistry) => {
     exposedHeaders: ['X-Total-Count', 'X-Rate-Limit-Remaining']
   }));
 
-  // Serve static files from the "uploads" directory
-  app.use('/uploads', express.static('uploads'));
+  // Serve static files from the "uploads" directory recursively
+  app.use('/uploads', express.static('uploads', { extensions: ['jpeg', 'jpg', 'png', 'gif'] }));
 
   // API rate limiting
   app.use(rateLimit({
