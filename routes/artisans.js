@@ -241,27 +241,59 @@ const entityOps = {
 
   async getArtisanById(id) {
     const sql = `
-    SELECT
-      artisans.*,
-      trainings.title AS training_title,
-      trainings.duration AS training_duration,
-      trainings.organization AS training_organization,
-      loans.amount AS loan_amount,
-      loans.date AS loan_date,
-      loans.loan_type AS loan_type,
-      loans.name AS loan_name,
-      machines.title AS machine_title,
-      machines.size AS machine_size,
-      machines.number_of_machines AS machine_number_of_machines,
-      product_images.image_path AS product_image_path,
-      shop_images.image_path AS shop_image_path
-    FROM artisans
-    LEFT JOIN trainings ON artisans.id = trainings.artisan_id
-    LEFT JOIN loans ON artisans.id = loans.artisan_id
-    LEFT JOIN machines ON artisans.id = machines.artisan_id
-    LEFT JOIN product_images ON artisans.id = product_images.artisan_id
-    LEFT JOIN shop_images ON artisans.id = shop_images.artisan_id
-    WHERE artisans.id = ? AND artisans.isActive = 1
+      SELECT
+        artisans.id,
+        artisans.name,
+        artisans.father_name,
+        artisans.cnic,
+        artisans.gender,
+        artisans.date_of_birth,
+        artisans.contact_no,
+        artisans.email,
+        artisans.address,
+        artisans.tehsil_id,
+        artisans.education_level_id,
+        artisans.dependents_count,
+        'http://13.239.184.38:6500/' || REPLACE(artisans.profile_picture, '\', '/') AS profile_picture,
+        artisans.ntn,
+        artisans.skill_id,
+        artisans.major_product,
+        artisans.experience,
+        artisans.avg_monthly_income,
+        artisans.employment_type_id,
+        artisans.raw_material,
+        artisans.loan_status,
+        artisans.has_machinery,
+        artisans.has_training,
+        artisans.inherited_skills,
+        artisans.financial_assistance,
+        artisans.technical_assistance,
+        artisans.comments,
+        artisans.latitude,
+        artisans.longitude,
+        artisans.created_at,
+        artisans.updated_at,
+        artisans.isActive,
+        artisans.user_Id,
+        trainings.title AS training_title,
+        trainings.duration AS training_duration,
+        trainings.organization AS training_organization,
+        loans.amount AS loan_amount,
+        loans.date AS loan_date,
+        loans.loan_type AS loan_type,
+        loans.name AS loan_name,
+        machines.title AS machine_title,
+        machines.size AS machine_size,
+        machines.number_of_machines AS machine_number_of_machines,
+        'http://13.239.184.38:6500/' || REPLACE(product_images.image_path, '\', '/') AS product_image_path,
+        'http://13.239.184.38:6500/' || REPLACE(shop_images.image_path, '\', '/')  AS shop_image_path
+      FROM artisans
+      LEFT JOIN trainings ON artisans.id = trainings.artisan_id
+      LEFT JOIN loans ON artisans.id = loans.artisan_id
+      LEFT JOIN machines ON artisans.id = machines.artisan_id
+      LEFT JOIN product_images ON artisans.id = product_images.artisan_id
+      LEFT JOIN shop_images ON artisans.id = shop_images.artisan_id
+      WHERE artisans.id = ? AND artisans.isActive = 1
   `;
 
     const rows = await dbAsync.all(sql, [id]);
