@@ -254,7 +254,7 @@ const entityOps = {
         artisans.tehsil_id,
         artisans.education_level_id,
         artisans.dependents_count,
-        'http://13.239.184.38:6500/' || REPLACE(artisans.profile_picture, '\', '/') AS profile_picture,
+        'http://13.239.184.38:6500/' || REPLACE(artisans.profile_picture, '\\', '/') AS profile_picture,
         artisans.ntn,
         artisans.skill_id,
         artisans.major_product,
@@ -285,8 +285,8 @@ const entityOps = {
         machines.title AS machine_title,
         machines.size AS machine_size,
         machines.number_of_machines AS machine_number_of_machines,
-        'http://13.239.184.38:6500/' || REPLACE(product_images.image_path, '\', '/') AS product_image_path,
-        'http://13.239.184.38:6500/' || REPLACE(shop_images.image_path, '\', '/')  AS shop_image_path
+        'http://13.239.184.38:6500/' || REPLACE(product_images.image_path, '\\', '/') AS product_image_path,
+        'http://13.239.184.38:6500/' || REPLACE(shop_images.image_path, '\\', '/')  AS shop_image_path
       FROM artisans
       LEFT JOIN trainings ON artisans.id = trainings.artisan_id
       LEFT JOIN loans ON artisans.id = loans.artisan_id
