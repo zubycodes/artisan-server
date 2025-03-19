@@ -73,11 +73,8 @@ const createApp = async (dbInstance, routeRegistry) => {
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    exposedHeaders: ['X-Total-Count', 'X-Rate-Limit-Remaining']
+    exposedHeaders: ['X-Total-Count,X-Rate-Limit-Remaining']
   }));
-
-  // Serve static files from the "uploads" directory recursively
-  app.use('/uploads', express.static('uploads', { extensions: ['jpeg', 'jpg', 'png', 'gif'] }));
 
   // API rate limiting
   app.use(rateLimit({
@@ -113,6 +110,9 @@ const createApp = async (dbInstance, routeRegistry) => {
       logger.error({ error, routePath: config.path }, 'Failed to load route module');
     }
   }));
+
+  // Serve static files from the "uploads" directory
+  app.use('/uploads', express.static('uploads'));
 
   // Health and monitoring endpoints
   app.get('/', (_, res) => res.status(200).json({
