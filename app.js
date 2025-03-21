@@ -114,6 +114,12 @@ const createApp = async (dbInstance, routeRegistry) => {
   // Serve static files from the "uploads" directory
   app.use('/uploads', express.static('uploads'));
 
+  // Catch-all to serve your Angular app for all other routes
+  app.use(express.static(require('path').join(__dirname, 'public')));
+  app.get('*', (req, res) => {
+    res.sendFile(require('path').join(__dirname, 'public/index.html'));
+  });
+
   // Health and monitoring endpoints
   app.get('/', (_, res) => res.status(200).json({
     status: 'operational',
@@ -136,6 +142,7 @@ const createApp = async (dbInstance, routeRegistry) => {
       res.status(503).json({ status: 'unhealthy' });
     }
   });
+
 
   // Comprehensive error handling - This section is crucial for handling errors and preventing the application from crashing.
   app.use((req, res, next) => {
