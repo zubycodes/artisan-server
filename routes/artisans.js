@@ -241,7 +241,7 @@ const entityOps = {
 
   async getArtisanById(id) {
     const sql = `
-     SELECT
+      SELECT
         artisans.id,
         artisans.name,
         artisans.father_name,
@@ -252,6 +252,9 @@ const entityOps = {
         artisans.email,
         artisans.address,
         artisans.tehsil_id,
+        division.name as divsion_name,
+        district.name as district_name,
+        tehsil.name as tehsil_name,
         artisans.education_level_id,
         artisans.dependents_count,
         'http://13.239.184.38:6500/' || REPLACE(artisans.profile_picture, '\\', '/') AS profile_picture,
@@ -279,6 +282,7 @@ const entityOps = {
         artisans.updated_at,
         artisans.isActive,
         artisans.user_Id,
+        user.username,
         trainings.title AS training_title,
         trainings.duration AS training_duration,
         trainings.organization AS training_organization,
@@ -296,6 +300,10 @@ const entityOps = {
       LEFT JOIN categories ON categories.id = techniques.category_Id
       LEFT JOIN crafts ON crafts.id = categories.craft_Id
       LEFT JOIN education ON artisans.education_level_id = education.id
+      LEFT JOIN geo_level as tehsil ON artisans.tehsil_id = tehsil.id
+      LEFT JOIN geo_level as district ON substr( tehsil.code, 1, 6 ) = district.code
+      LEFT JOIN geo_level as division ON substr( district.code, 1, 3 ) = division.code
+      LEFT JOIN user ON artisans.user_Id = user.id
       LEFT JOIN trainings ON artisans.id = trainings.artisan_id
       LEFT JOIN loans ON artisans.id = loans.artisan_id
       LEFT JOIN machines ON artisans.id = machines.artisan_id
