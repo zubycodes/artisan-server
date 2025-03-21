@@ -241,7 +241,7 @@ const entityOps = {
 
   async getArtisanById(id) {
     const sql = `
-      SELECT
+       SELECT
         artisans.id,
         artisans.name,
         artisans.father_name,
@@ -261,8 +261,11 @@ const entityOps = {
         artisans.ntn,
         artisans.skill_id,
         crafts.name as craft_name,
+        crafts.color as craft_color,
         categories.name as category_name,
+        categories.color as category_color,
         techniques.name as skill_name,
+        techniques.color as skill_color,
         education.name as education_name,
         artisans.major_product,
         artisans.experience,
