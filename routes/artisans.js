@@ -241,7 +241,7 @@ const entityOps = {
 
   async getArtisanById(id) {
     const sql = `
-      SELECT
+     SELECT
         artisans.id,
         artisans.name,
         artisans.father_name,
@@ -257,6 +257,10 @@ const entityOps = {
         'http://13.239.184.38:6500/' || REPLACE(artisans.profile_picture, '\\', '/') AS profile_picture,
         artisans.ntn,
         artisans.skill_id,
+        crafts.name as craft_name,
+        categories.name as category_name,
+        techniques.name as skill_name,
+        education.name as education_name,
         artisans.major_product,
         artisans.experience,
         artisans.avg_monthly_income,
@@ -288,6 +292,10 @@ const entityOps = {
         'http://13.239.184.38:6500/' || REPLACE(product_images.image_path, '\\', '/') AS product_image_path,
         'http://13.239.184.38:6500/' || REPLACE(shop_images.image_path, '\\', '/')  AS shop_image_path
       FROM artisans
+      LEFT JOIN techniques ON artisans.skill_id = techniques.id
+      LEFT JOIN categories ON categories.id = techniques.category_Id
+      LEFT JOIN crafts ON crafts.id = categories.craft_Id
+      LEFT JOIN education ON artisans.education_level_id = education.id
       LEFT JOIN trainings ON artisans.id = trainings.artisan_id
       LEFT JOIN loans ON artisans.id = loans.artisan_id
       LEFT JOIN machines ON artisans.id = machines.artisan_id
