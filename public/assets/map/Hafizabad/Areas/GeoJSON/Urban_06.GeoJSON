@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "Urban_06",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "UC_Name": "Urban-06", "UC_NO": "H-06", "Type": "Urban", "Vaccinator": "Muhammad Latif", "SORT_NAME_": "Bahawal Pura Sharki", "Vacc_CelNo": "3027758071", "Province": "Punjab", "Division": "Gujranwala", "Grey": "No", "Tehsil": "Hafizabad", "District": "Hafizabad", "ID": "169H-0610", "Vacc_code": "169H-06", "Lat": "32.061859259428", "Long": "73.6916628005746", "Area": "Mubark Butt, Bahawal Pura Sharki" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 73.691947253962667, 32.061539137221473, 0.0 ], [ 73.690974077791509, 32.061300613632454, 0.0 ], [ 73.690595420042655, 32.062093464042164, 0.0 ], [ 73.69147058180198, 32.062232031583051, 0.0 ], [ 73.692459043749921, 32.062388537900745, 0.0 ], [ 73.69273513292012, 32.061732245047097, 0.0 ], [ 73.691947253962667, 32.061539137221473, 0.0 ] ] ] ] } }
+]
+}

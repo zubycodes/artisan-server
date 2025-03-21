@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[71.78014365860304,30.684602749417422],[71.76984407124695,30.685346611057298],[71.77016585407097,30.67921736169194],[71.77981099668023,30.683250248200466],[71.78014365860304,30.684602749417422]]]},"properties":{"UC_Name":"Ahmadpur Sial Urban","UC_NO":"Ahmadpur Sial Urban","Type":"Urban","Vaccinator":"M.Azhar","SORT_NAME_":"Ameer Town","Vacc_CelNo":"03004479085","Province":null,"Division":"Faisalabad","Grey":"No","Tehsil":"Ahmadpur Sial","District":"Jhang","ID":"159Ahmadpur Sial Urban6","Vacc_code":"159128","Lat":"30.6826139609698","Long":"71.7744498283568","Area":"Bethak Mahr Qaiser Gill,Ameer Town"}}
+]}
