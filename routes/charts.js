@@ -19,6 +19,30 @@ const chartOps = {
       });
   },
 
+  // DashboardData
+  getDashboardData() {
+    return dbAsync.all(`
+      SELECT
+        (SELECT COUNT(*) FROM artisans WHERE isActive = 1) AS total_active_artisans,
+        (SELECT COUNT(DISTINCT crafts.id) FROM artisans 
+          JOIN techniques ON artisans.skill_id = techniques.id
+          JOIN categories ON categories.id = techniques.category_Id
+          JOIN crafts ON crafts.id = categories.craft_Id WHERE artisans.isActive = 1) AS crafts,
+        (SELECT COUNT(DISTINCT categories.id) FROM artisans 
+          JOIN techniques ON artisans.skill_id = techniques.id
+          JOIN categories ON categories.id = techniques.category_Id WHERE artisans.isActive = 1) AS categories,
+        (SELECT COUNT(DISTINCT artisans.skill_id) FROM artisans WHERE artisans.isActive = 1) AS skills,
+        (SELECT COUNT(DISTINCT tehsil_id) FROM artisans WHERE isActive = 1) AS regions_covered,
+        (SELECT COUNT(*) FROM artisans WHERE created_at >= date('now', '-1 month')) AS new_registrations_this_month,
+        (SELECT COUNT(*) FROM artisans WHERE created_at >= date('now', '-2 month') AND created_at < date('now', '-1 month')) AS new_registrations_last_month,
+        (SELECT ROUND(AVG(avg_monthly_income)) FROM artisans WHERE isActive = 1) AS average_monthly_income,
+        (SELECT COUNT(*) FROM artisans WHERE isActive = 1 AND gender = 'Female') AS female_artisans,
+        (SELECT ROUND(AVG(experience)) FROM artisans WHERE isActive = 1) AS average_experience_years
+      `)
+      .then(results => {
+        return results;
+      });
+  },
   // Education level distribution
   getEducationDistribution() {
     return dbAsync.all(`
@@ -293,6 +317,18 @@ const chartOps = {
 module.exports = (dependencies) => {
   const { logger } = dependencies;
   const handlers = {
+    // Get gender distribution
+    getDashboardData: createHandler(async (req, res) => {
+      const routeLogger = logger.child({ route: 'charts', handler: 'getDashboardData' });
+      routeLogger.info('Fetching gender distribution data');
+      try {
+        const data = await chartOps.getDashboardData();
+        res.json(data);
+      } catch (error) {
+        routeLogger.error({ error }, 'Error fetching gender distribution data');
+        res.status(500).json({ error: error.message });
+      }
+    }),
     // Get gender distribution
     getGenderDistribution: createHandler(async (req, res) => {
       const routeLogger = logger.child({ route: 'charts', handler: 'getGenderDistribution' });
@@ -613,6 +649,18 @@ module.exports = (dependencies) => {
       }
     })
   };
+
+  /**
+   * @swagger
+   * /charts/artisans:
+   *   get:
+   *     summary: Get artisans distribution
+   *     responses:
+   *       200:
+   *         description: Artisans distribution data
+   */
+  router.get('/charts/dashboard', handlers.getDashboardData);
+
 
   /**
    * @swagger
