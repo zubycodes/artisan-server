@@ -26,7 +26,7 @@ const CONFIG = Object.freeze({
   ENV: process.env.NODE_ENV || 'development',
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:8080',
   WORKER_COUNT: process.env.WORKER_COUNT || os.cpus().length,
-  RATE_LIMIT: { windowMs: 15 * 60 * 1000, max: 1000 }
+  RATE_LIMIT: { windowMs: 15 * 60 * 10000, max: 10000 }
 });
 
 // Logger setup with context
