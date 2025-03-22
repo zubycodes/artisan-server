@@ -135,12 +135,20 @@ const chartOps = {
     return dbAsync.all(`
     SELECT 
       CASE 
-        WHEN (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) < 18 THEN '0-17'
-        WHEN (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) >= 18 AND 
-             (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) < 30 THEN '18-29'
-        WHEN (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) >= 30 AND 
-             (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) < 45 THEN '30-44'
-        ELSE '45+'
+        WHEN (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) < 13 THEN '0-12'
+        WHEN (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) >= 13 AND 
+             (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) < 19 THEN '13-18'
+        WHEN (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) >= 19 AND 
+             (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) < 25 THEN '19-24'
+        WHEN (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) >= 25 AND 
+             (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) < 31 THEN '25-30'
+        WHEN (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) >= 31 AND 
+             (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) < 41 THEN '31-40'
+        WHEN (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) >= 41 AND 
+             (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) < 51 THEN '41-50'
+        WHEN (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) >= 51 AND 
+             (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) < 61 THEN '51-60'
+        ELSE '60+'
       END as name, 
       COUNT(*) as value 
     FROM artisans
