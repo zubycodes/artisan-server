@@ -208,7 +208,7 @@ const chartOps = {
     return dbAsync.all(`
     SELECT strftime('%Y-%m', created_at) as name, COUNT(*) as value 
     FROM artisans 
-    GROUP BY name 
+    GROUP BY 1 
     ORDER BY 1
   `);
   },
