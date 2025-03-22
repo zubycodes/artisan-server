@@ -68,7 +68,7 @@ const chartOps = {
   getDivisionDistribution() {
     return dbAsync.all(`
     SELECT division.name, COUNT(*) as value 
-    FROM artisans a 
+    FROM artisans a limit 5 
     JOIN geo_level as tehsil ON a.tehsil_id = tehsil.id
     JOIN geo_level as district ON substr( tehsil.code, 1, 6 ) = district.code
     JOIN geo_level as division ON substr( district.code, 1, 3 ) = division.code
