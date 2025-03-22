@@ -114,7 +114,7 @@ const chartOps = {
       END as name, 
       COUNT(*) as value 
     FROM artisans
-    GROUP BY name
+    GROUP BY 1
   `);
   },
 
