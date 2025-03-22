@@ -129,7 +129,7 @@ const chartOps = {
       END as name, 
       COUNT(*) as value 
     FROM artisans 
-    GROUP BY name
+    GROUP BY 1
   `);
   },
 
@@ -144,7 +144,7 @@ const chartOps = {
       END as name, 
       COUNT(*) as value 
     FROM artisans 
-    GROUP BY name
+    GROUP BY 1
   `);
   },
 
@@ -159,7 +159,7 @@ const chartOps = {
       END as name, 
       COUNT(*) as value 
     FROM artisans 
-    GROUP BY name
+    GROUP BY 1
   `);
   },
 
@@ -210,7 +210,7 @@ const chartOps = {
     SELECT strftime('%Y-%m', created_at) as name, COUNT(*) as value 
     FROM artisans 
     GROUP BY name 
-    ORDER BY name
+    ORDER BY 1
   `);
   },
 
