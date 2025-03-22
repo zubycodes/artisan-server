@@ -17,7 +17,7 @@ const chartOps = {
     return dbAsync.all(`
       SELECT el.name, COUNT(*) as count 
       FROM artisans a 
-      JOIN education_levels el ON a.education_level_id = el.id 
+      JOIN education el ON a.education_level_id = el.id 
       GROUP BY el.name
     `);
   },
@@ -27,7 +27,7 @@ const chartOps = {
     return dbAsync.all(`
       SELECT s.name, COUNT(*) as count 
       FROM artisans a 
-      JOIN skills s ON a.skill_id = s.id 
+      JOIN techniques s ON a.skill_id = s.id 
       GROUP BY s.name
     `);
   },
@@ -47,7 +47,7 @@ const chartOps = {
     return dbAsync.all(`
       SELECT t.name, COUNT(*) as count 
       FROM artisans a 
-      JOIN tehsils t ON a.tehsil_id = t.id 
+      JOIN geo_level t ON a.tehsil_id = t.id 
       GROUP BY t.name
     `);
   },
@@ -69,7 +69,7 @@ const chartOps = {
     return dbAsync.all(`
       SELECT s.name, ROUND(AVG(a.avg_monthly_income), 2) as avg_income 
       FROM artisans a 
-      JOIN skills s ON a.skill_id = s.id 
+      JOIN techniques s ON a.skill_id = s.id 
       GROUP BY s.name
     `);
   },
@@ -142,7 +142,7 @@ const chartOps = {
     return dbAsync.all(`
       SELECT t.name as tehsil, a.gender, COUNT(*) as count 
       FROM artisans a 
-      JOIN tehsils t ON a.tehsil_id = t.id 
+      JOIN geo_level t ON a.tehsil_id = t.id 
       GROUP BY t.name, a.gender
     `).then(rows => {
       // Transform the data for stacked bar chart
@@ -163,7 +163,7 @@ const chartOps = {
     return dbAsync.all(`
       SELECT s.name as skill, et.name as employment_type, COUNT(*) as count 
       FROM artisans a 
-      JOIN skills s ON a.skill_id = s.id 
+      JOIN techniques s ON a.skill_id = s.id 
       JOIN employment_types et ON a.employment_type_id = et.id 
       GROUP BY s.name, et.name
     `).then(rows => {
