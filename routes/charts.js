@@ -206,7 +206,7 @@ const chartOps = {
   // Registrations over time
   getRegistrationsOverTime() {
     return dbAsync.all(`
-    SELECT strftime('%Y-%m', created_at) as name, COUNT(*) as value 
+    SELECT strftime('%Y-%m-%d', created_at) as name, COUNT(*) as value 
     FROM artisans 
     GROUP BY 1 
     ORDER BY 1
