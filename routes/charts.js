@@ -137,6 +137,16 @@ const chartOps = {
       });
   },
 
+  // Skill Distribution
+  getTopSkillDistribution() {
+    return dbAsync.all(`
+    SELECT skill.name, COUNT(*) as value 
+    FROM artisans a 
+    JOIN techniques as skill ON a.skill_id = skill.id
+    GROUP BY skill.name
+    LIMIT 5
+  `)
+  },
   // Yes/No fields distribution (loan status, machinery, training, etc.)
   getYesNoDistribution(field) {
     const validFields = ['loan_status', 'has_machinery', 'has_training',
@@ -419,6 +429,18 @@ module.exports = (dependencies) => {
         res.json(data);
       } catch (error) {
         routeLogger.error({ error }, 'Error fetching tehsil distribution data');
+        res.status(500).json({ error: error.message });
+      }
+    }),
+    // Get top skill
+    getTopSkillDistribution: createHandler(async (req, res) => {
+      const routeLogger = logger.child({ route: 'charts', handler: 'getTopSkillDistribution' });
+      routeLogger.info('Fetching top skill data');
+      try {
+        const data = await chartOps.getTopSkillDistribution();
+        res.json(data);
+      } catch (error) {
+        routeLogger.error({ error }, 'Error fetching top skill data');
         res.status(500).json({ error: error.message });
       }
     }),
@@ -743,6 +765,17 @@ module.exports = (dependencies) => {
    *         description: Tehsil distribution data
    */
   router.get('/charts/tehsil', handlers.getTehsilDistribution);
+
+  /**
+   * @swagger
+   * /charts/topSkill:
+   *   get:
+   *     summary: Get topSkill distribution
+   *     responses:
+   *       200:
+   *         description: topSkill distribution data
+   */
+  router.get('/charts/topSkill', handlers.getTopSkillDistribution);
 
   /**
    * @swagger
