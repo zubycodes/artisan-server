@@ -168,7 +168,7 @@ const chartOps = {
   // Gender by tehsil (stacked)
   getGenderByTehsil() {
     return dbAsync.all(`
-    SELECT t.name as tehsil, a.gender, COUNT(*) as value 
+    SELECT t.name, a.gender, COUNT(*) as value 
     FROM artisans a 
     JOIN geo_level t ON a.tehsil_id = t.id 
     GROUP BY t.name, a.gender
