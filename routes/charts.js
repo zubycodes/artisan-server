@@ -24,14 +24,19 @@ const chartOps = {
     return dbAsync.all(`
       SELECT
         (SELECT COUNT(*) FROM artisans WHERE isActive = 1) AS total_active_artisans,
-        (SELECT COUNT(DISTINCT crafts.id) FROM artisans 
+        (SELECT COUNT(*) FROM artisans 
           JOIN techniques ON artisans.skill_id = techniques.id
           JOIN categories ON categories.id = techniques.category_Id
-          JOIN crafts ON crafts.id = categories.craft_Id WHERE artisans.isActive = 1) AS crafts,
-        (SELECT COUNT(DISTINCT categories.id) FROM artisans 
+          JOIN crafts ON crafts.id = categories.craft_Id WHERE artisans.isActive = 1
+          group by crafts.id) AS crafts,
+        (SELECT COUNT(*) FROM artisans 
           JOIN techniques ON artisans.skill_id = techniques.id
-          JOIN categories ON categories.id = techniques.category_Id WHERE artisans.isActive = 1) AS categories,
-        (SELECT COUNT(DISTINCT artisans.skill_id) FROM artisans WHERE artisans.isActive = 1) AS skills,
+          JOIN categories ON categories.id = techniques.category_Id WHERE artisans.isActive = 1
+          group by categories.id) AS categories,
+        (SELECT COUNT(*) FROM artisans
+          JOIN techniques ON artisans.skill_id = techniques.id
+         WHERE artisans.isActive = 1
+          group by techniques.id) AS skills,
         (SELECT COUNT(DISTINCT tehsil_id) FROM artisans WHERE isActive = 1) AS regions_covered,
         (SELECT COUNT(*) FROM artisans WHERE created_at >= date('now', '-1 month')) AS new_registrations_this_month,
         (SELECT COUNT(*) FROM artisans WHERE created_at >= date('now', '-2 month') AND created_at < date('now', '-1 month')) AS new_registrations_last_month,
