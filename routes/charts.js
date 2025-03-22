@@ -64,6 +64,35 @@ const chartOps = {
       });
   },
 
+  // Division distribution
+  getDivisionDistribution() {
+    return dbAsync.all(`
+    SELECT division.name, COUNT(*) as value 
+    FROM artisans a 
+    JOIN geo_level as tehsil ON a.tehsil_id = tehsil.id
+    JOIN geo_level as district ON substr( tehsil.code, 1, 6 ) = district.code
+    JOIN geo_level as division ON substr( district.code, 1, 3 ) = division.code
+    GROUP BY division.name
+  `)
+      .then(results => {
+        // Already in the right format with name and value
+        return results;
+      });
+  },
+  // District distribution
+  getDistrictDistribution() {
+    return dbAsync.all(`
+    SELECT district.name, COUNT(*) as value 
+    FROM artisans a 
+    JOIN geo_level as tehsil ON a.tehsil_id = tehsil.id
+    JOIN geo_level as district ON substr( tehsil.code, 1, 6 ) = district.code
+    GROUP BY district.name
+  `)
+      .then(results => {
+        // Already in the right format with name and value
+        return results;
+      });
+  },
   // Tehsil distribution
   getTehsilDistribution() {
     return dbAsync.all(`
@@ -307,6 +336,30 @@ module.exports = (dependencies) => {
       }
     }),
 
+    // Get division distribution
+    getDivisionDistribution: createHandler(async (req, res) => {
+      const routeLogger = logger.child({ route: 'charts', handler: 'getDivisionDistribution' });
+      routeLogger.info('Fetching division distribution data');
+      try {
+        const data = await chartOps.getDivisionDistribution();
+        res.json(data);
+      } catch (error) {
+        routeLogger.error({ error }, 'Error fetching division distribution data');
+        res.status(500).json({ error: error.message });
+      }
+    }),
+    // Get district distribution
+    getDistrictDistribution: createHandler(async (req, res) => {
+      const routeLogger = logger.child({ route: 'charts', handler: 'getDistrictDistribution' });
+      routeLogger.info('Fetching district distribution data');
+      try {
+        const data = await chartOps.getDistrictDistribution();
+        res.json(data);
+      } catch (error) {
+        routeLogger.error({ error }, 'Error fetching district distribution data');
+        res.status(500).json({ error: error.message });
+      }
+    }),
     // Get tehsil distribution
     getTehsilDistribution: createHandler(async (req, res) => {
       const routeLogger = logger.child({ route: 'charts', handler: 'getTehsilDistribution' });
@@ -595,6 +648,28 @@ module.exports = (dependencies) => {
    *         description: Employment type distribution data
    */
   router.get('/charts/employment-type', handlers.getEmploymentTypeDistribution);
+
+  /**
+   * @swagger
+   * /charts/division:
+   *   get:
+   *     summary: Get division distribution
+   *     responses:
+   *       200:
+   *         description: Division distribution data
+   */
+  router.get('/charts/division', handlers.getDivisionDistribution);
+
+  /**
+   * @swagger
+   * /charts/district:
+   *   get:
+   *     summary: Get district distribution
+   *     responses:
+   *       200:
+   *         description: District distribution data
+   */
+  router.get('/charts/district', handlers.getDistrictDistribution);
 
   /**
    * @swagger
