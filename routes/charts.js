@@ -168,16 +168,13 @@ const chartOps = {
   // Gender by tehsil (stacked)
   getGenderByTehsil() {
     return dbAsync.all(`
-    SELECT t.name, a.gender, COUNT(*) as value 
-    FROM artisans a 
-    JOIN geo_level t ON a.tehsil_id = t.id 
-    GROUP BY t.name, a.gender
+    SELECT t.name, a.gender, COUNT(*) as value FROM artisans a JOIN geo_level t ON a.tehsil_id = t.id GROUP BY t.name, a.gender
   `).then(rows => {
       // Transform the data for stacked bar chart
-      const tehsils = [...new Set(rows.map(r => r.tehsil))];
+      const tehsils = [...new Set(rows.map(r => r.name))];
       return tehsils.map(tehsil => {
         const tehsilData = { tehsil };
-        rows.filter(r => r.tehsil === tehsil).forEach(r => {
+        rows.filter(r => r.name === tehsil).forEach(r => {
           tehsilData[r.gender] = r.value;
         });
         return tehsilData;
