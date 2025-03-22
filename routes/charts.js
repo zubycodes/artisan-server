@@ -136,31 +136,33 @@ const chartOps = {
   // Income distribution
   getIncomeDistribution() {
     return dbAsync.all(`
-    SELECT 
-      CASE 
-        WHEN avg_monthly_income <= 1000 THEN '0-1000'
-        WHEN avg_monthly_income > 1000 AND avg_monthly_income <= 2000 THEN '1001-2000'
-        ELSE '2001+' 
-      END as name, 
-      COUNT(*) as value 
-    FROM artisans 
-    GROUP BY 1
-  `);
+      SELECT 
+        CASE 
+          WHEN avg_monthly_income < 10000 THEN '0-10k'
+          WHEN avg_monthly_income >= 10000 AND avg_monthly_income < 25000 THEN '10k-25k'
+          WHEN avg_monthly_income >= 25000 AND avg_monthly_income < 50000 THEN '25k-50k'
+          WHEN avg_monthly_income >= 50000 AND avg_monthly_income < 100000 THEN '50k-100k'
+          ELSE '100k+' 
+        END as name, 
+        COUNT(*) as value 
+      FROM artisans 
+      GROUP BY 1
+    `);
   },
 
-  // Dependents count distribution
   getDependentsDistribution() {
     return dbAsync.all(`
     SELECT 
       CASE 
-        WHEN dependents_count <= 2 THEN '0-2'
-        WHEN dependents_count > 2 AND dependents_count <= 5 THEN '3-5'
+        WHEN dependents_count = 0 THEN '0'
+        WHEN dependents_count >= 1 AND dependents_count <= 2 THEN '1-2'
+        WHEN dependents_count >= 3 AND dependents_count <= 5 THEN '3-5'
         ELSE '6+' 
       END as name, 
       COUNT(*) as value 
     FROM artisans 
     GROUP BY 1
-  `);
+    `);
   },
 
   // Gender by tehsil (stacked)
