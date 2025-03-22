@@ -9,47 +9,73 @@ const { dbAsync, createHandler } = require('./base_route.js');
 const chartOps = {
   // Gender distribution
   getGenderDistribution() {
-    return dbAsync.all('SELECT gender, COUNT(*) as count FROM artisans GROUP BY gender');
+    return dbAsync.all('SELECT gender, COUNT(*) as value FROM artisans GROUP BY gender')
+      .then(results => {
+        // Return data already in the format Recharts expects
+        return results.map(item => ({
+          name: item.gender,
+          value: item.value // Using value directly as it's already named correctly
+        }));
+      });
   },
 
   // Education level distribution
   getEducationDistribution() {
     return dbAsync.all(`
-      SELECT el.name, COUNT(*) as count 
+      SELECT el.name, COUNT(*) as value 
       FROM artisans a 
       JOIN education el ON a.education_level_id = el.id 
       GROUP BY el.name
-    `);
+    `)
+      .then(results => {
+        // Return data already in the format Recharts expects
+        return results.map(item => ({
+          name: item.name,
+          value: item.value // Using value directly as it's already named correctly
+        }));
+      });
   },
 
   // Skill distribution
   getSkillDistribution() {
     return dbAsync.all(`
-      SELECT s.name, COUNT(*) as count 
-      FROM artisans a 
-      JOIN techniques s ON a.skill_id = s.id 
-      GROUP BY s.name
-    `);
+    SELECT s.name, COUNT(*) as value 
+    FROM artisans a 
+    JOIN techniques s ON a.skill_id = s.id 
+    GROUP BY s.name
+  `)
+      .then(results => {
+        // Already in the right format with name and value
+        return results;
+      });
   },
 
   // Employment type distribution
   getEmploymentTypeDistribution() {
     return dbAsync.all(`
-      SELECT et.name, COUNT(*) as count 
-      FROM artisans a 
-      JOIN employment_types et ON a.employment_type_id = et.id 
-      GROUP BY et.name
-    `);
+    SELECT et.name, COUNT(*) as value 
+    FROM artisans a 
+    JOIN employment_types et ON a.employment_type_id = et.id 
+    GROUP BY et.name
+  `)
+      .then(results => {
+        // Already in the right format with name and value
+        return results;
+      });
   },
 
   // Tehsil distribution
   getTehsilDistribution() {
     return dbAsync.all(`
-      SELECT t.name, COUNT(*) as count 
-      FROM artisans a 
-      JOIN geo_level t ON a.tehsil_id = t.id 
-      GROUP BY t.name
-    `);
+    SELECT t.name, COUNT(*) as value 
+    FROM artisans a 
+    JOIN geo_level t ON a.tehsil_id = t.id 
+    GROUP BY t.name
+  `)
+      .then(results => {
+        // Already in the right format with name and value
+        return results;
+      });
   },
 
   // Yes/No fields distribution (loan status, machinery, training, etc.)
@@ -61,149 +87,147 @@ const chartOps = {
       throw new Error('Invalid field name');
     }
 
-    return dbAsync.all(`SELECT ${field}, COUNT(*) as count FROM artisans GROUP BY ${field}`);
+    return dbAsync.all(`SELECT ${field} as name, COUNT(*) as value FROM artisans GROUP BY ${field}`);
   },
 
   // Average income by skill
   getAverageIncomeBySkill() {
     return dbAsync.all(`
-      SELECT s.name, ROUND(AVG(a.avg_monthly_income), 2) as avg_income 
-      FROM artisans a 
-      JOIN techniques s ON a.skill_id = s.id 
-      GROUP BY s.name
-    `);
+    SELECT s.name as skill, ROUND(AVG(a.avg_monthly_income), 2) as avgIncome 
+    FROM artisans a 
+    JOIN techniques s ON a.skill_id = s.id 
+    GROUP BY s.name
+  `);
   },
 
   // Age distribution
   getAgeDistribution() {
     return dbAsync.all(`
-      SELECT 
-        CASE 
-          WHEN (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) < 18 THEN '0-17'
-          WHEN (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) >= 18 AND 
-               (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) < 30 THEN '18-29'
-          WHEN (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) >= 30 AND 
-               (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) < 45 THEN '30-44'
-          ELSE '45+'
-        END as age_group, 
-        COUNT(*) as count 
-      FROM artisans
-      GROUP BY age_group
-    `);
+    SELECT 
+      CASE 
+        WHEN (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) < 18 THEN '0-17'
+        WHEN (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) >= 18 AND 
+             (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) < 30 THEN '18-29'
+        WHEN (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) >= 30 AND 
+             (strftime('%Y', 'now') - strftime('%Y', date_of_birth)) < 45 THEN '30-44'
+        ELSE '45+'
+      END as name, 
+      COUNT(*) as value 
+    FROM artisans
+    GROUP BY name
+  `);
   },
 
   // Experience distribution
   getExperienceDistribution() {
     return dbAsync.all(`
-      SELECT 
-        CASE 
-          WHEN experience <= 5 THEN '0-5'
-          WHEN experience > 5 AND experience <= 10 THEN '6-10'
-          ELSE '11+' 
-        END as exp_range, 
-        COUNT(*) as count 
-      FROM artisans 
-      GROUP BY exp_range
-    `);
+    SELECT 
+      CASE 
+        WHEN experience <= 5 THEN '0-5'
+        WHEN experience > 5 AND experience <= 10 THEN '6-10'
+        ELSE '11+' 
+      END as name, 
+      COUNT(*) as value 
+    FROM artisans 
+    GROUP BY name
+  `);
   },
 
   // Income distribution
   getIncomeDistribution() {
     return dbAsync.all(`
-      SELECT 
-        CASE 
-          WHEN avg_monthly_income <= 1000 THEN '0-1000'
-          WHEN avg_monthly_income > 1000 AND avg_monthly_income <= 2000 THEN '1001-2000'
-          ELSE '2001+' 
-        END as income_range, 
-        COUNT(*) as count 
-      FROM artisans 
-      GROUP BY income_range
-    `);
+    SELECT 
+      CASE 
+        WHEN avg_monthly_income <= 1000 THEN '0-1000'
+        WHEN avg_monthly_income > 1000 AND avg_monthly_income <= 2000 THEN '1001-2000'
+        ELSE '2001+' 
+      END as name, 
+      COUNT(*) as value 
+    FROM artisans 
+    GROUP BY name
+  `);
   },
 
   // Dependents count distribution
   getDependentsDistribution() {
     return dbAsync.all(`
-      SELECT 
-        CASE 
-          WHEN dependents_count <= 2 THEN '0-2'
-          WHEN dependents_count > 2 AND dependents_count <= 5 THEN '3-5'
-          ELSE '6+' 
-        END as dep_range, 
-        COUNT(*) as count 
-      FROM artisans 
-      GROUP BY dep_range
-    `);
+    SELECT 
+      CASE 
+        WHEN dependents_count <= 2 THEN '0-2'
+        WHEN dependents_count > 2 AND dependents_count <= 5 THEN '3-5'
+        ELSE '6+' 
+      END as name, 
+      COUNT(*) as value 
+    FROM artisans 
+    GROUP BY name
+  `);
   },
 
   // Gender by tehsil (stacked)
   getGenderByTehsil() {
     return dbAsync.all(`
-      SELECT t.name as tehsil, a.gender, COUNT(*) as count 
-      FROM artisans a 
-      JOIN geo_level t ON a.tehsil_id = t.id 
-      GROUP BY t.name, a.gender
-    `).then(rows => {
+    SELECT t.name as tehsil, a.gender, COUNT(*) as value 
+    FROM artisans a 
+    JOIN geo_level t ON a.tehsil_id = t.id 
+    GROUP BY t.name, a.gender
+  `).then(rows => {
       // Transform the data for stacked bar chart
       const tehsils = [...new Set(rows.map(r => r.tehsil))];
-      const result = tehsils.map(tehsil => {
+      return tehsils.map(tehsil => {
         const tehsilData = { tehsil };
         rows.filter(r => r.tehsil === tehsil).forEach(r => {
-          tehsilData[r.gender] = r.count;
+          tehsilData[r.gender] = r.value;
         });
         return tehsilData;
       });
-      return result;
     });
   },
 
   // Skill by employment type (stacked)
   getSkillByEmploymentType() {
     return dbAsync.all(`
-      SELECT s.name as skill, et.name as employment_type, COUNT(*) as count 
-      FROM artisans a 
-      JOIN techniques s ON a.skill_id = s.id 
-      JOIN employment_types et ON a.employment_type_id = et.id 
-      GROUP BY s.name, et.name
-    `).then(rows => {
+    SELECT s.name as skill, et.name as employment_type, COUNT(*) as value 
+    FROM artisans a 
+    JOIN techniques s ON a.skill_id = s.id 
+    JOIN employment_types et ON a.employment_type_id = et.id 
+    GROUP BY s.name, et.name
+  `).then(rows => {
       // Transform the data for stacked bar chart
       const skills = [...new Set(rows.map(r => r.skill))];
-      const result = skills.map(skill => {
+      return skills.map(skill => {
         const skillData = { skill };
         rows.filter(r => r.skill === skill).forEach(r => {
-          skillData[r.employment_type] = r.count;
+          skillData[r.employment_type] = r.value;
         });
         return skillData;
       });
-      return result;
     });
   },
 
   // Registrations over time
   getRegistrationsOverTime() {
     return dbAsync.all(`
-      SELECT strftime('%Y-%m', created_at) as month, COUNT(*) as count 
-      FROM artisans 
-      GROUP BY month 
-      ORDER BY month
-    `);
+    SELECT strftime('%Y-%m', created_at) as name, COUNT(*) as value 
+    FROM artisans 
+    GROUP BY name 
+    ORDER BY name
+  `);
   },
 
   // Cumulative registrations over time
   getCumulativeRegistrations() {
     return dbAsync.all(`
-      SELECT strftime('%Y-%m', created_at) as month, COUNT(*) as monthly_count 
-      FROM artisans 
-      GROUP BY month 
-      ORDER BY month
-    `).then(rows => {
+    SELECT strftime('%Y-%m', created_at) as month, COUNT(*) as monthly_count 
+    FROM artisans 
+    GROUP BY month 
+    ORDER BY month
+  `).then(rows => {
       let runningTotal = 0;
       return rows.map(row => {
         runningTotal += row.monthly_count;
         return {
-          month: row.month,
-          count: runningTotal
+          name: row.month,
+          value: runningTotal
         };
       });
     });
@@ -212,15 +236,17 @@ const chartOps = {
   // Experience vs income (scatter plot)
   getExperienceVsIncome() {
     return dbAsync.all(`
-      SELECT experience, avg_monthly_income as income FROM artisans
-    `);
+    SELECT experience, avg_monthly_income as income FROM artisans
+  `);
+    // This is already in a good format for scatter plot
   },
 
   // Geographical distribution (for scatter plot/map)
   getGeographicalDistribution() {
     return dbAsync.all(`
-      SELECT latitude, longitude, name, father_name FROM artisans
-    `);
+    SELECT latitude, longitude, name, father_name FROM artisans
+  `);
+    // This is already in a good format for geographical visualization
   }
 };
 
