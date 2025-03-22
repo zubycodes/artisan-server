@@ -7,7 +7,16 @@ const { dbAsync, createHandler } = require('./base_route.js');
  */
 const categoryOps = {
   getAll() {
-    return dbAsync.all('SELECT * FROM categoriesView');
+    return dbAsync.all(`
+      SELECT 
+    c.*,
+    COUNT(DISTINCT t.id) AS numberOfTechniques,
+    COUNT(DISTINCT a.id) AS numberOfArtisans
+FROM categoriesView c
+LEFT JOIN techniquesView t ON t.craft_Id = c.id
+LEFT JOIN artisans a ON a.skill_id = t.id
+GROUP BY c.id, c.name
+      `);
   },
 
   create(category) {

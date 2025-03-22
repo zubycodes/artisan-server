@@ -8,7 +8,19 @@ const { dbAsync, createHandler } = require('./base_route.js');
  */
 const craftOps = {
   getAll() {
-    return dbAsync.all('SELECT * FROM crafts');
+    return dbAsync.all(`
+      SELECT 
+        c.id,
+        c.name AS craftName,
+        COUNT(DISTINCT cat.id) AS numberOfCategories,
+        COUNT(DISTINCT t.id) AS numberOfTechniques,
+        COUNT(DISTINCT a.id) AS numberOfArtisans
+      FROM crafts c
+      LEFT JOIN categories cat ON cat.craft_Id = c.id
+      LEFT JOIN techniquesView t ON t.craft_Id = c.id
+      LEFT JOIN artisans a ON a.skill_id = t.id
+      GROUP BY c.id, c.name
+      `);
   },
 
   create(craft) {

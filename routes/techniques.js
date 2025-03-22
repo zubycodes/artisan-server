@@ -7,7 +7,14 @@ const { dbAsync, createHandler } = require('./base_route.js');
  */
 const techniqueOps = {
   getAll() {
-    return dbAsync.all('SELECT * FROM techniquesView');
+    return dbAsync.all(`
+      SELECT 
+    c.*,
+    COUNT(DISTINCT a.id) AS numberOfArtisans
+FROM techniquesView c
+LEFT JOIN artisans a ON a.skill_id = c.id
+GROUP BY c.id, c.name
+      `);
   },
 
   create(technique) {

@@ -11,7 +11,14 @@ const saltRounds = 10;
  */
 const userOps = {
   getAll() {
-    return dbAsync.all('SELECT * FROM user');
+    return dbAsync.all(`
+      SELECT 
+    c.*,
+    COUNT(DISTINCT a.id) AS numberOfArtisans
+      FROM user c
+      LEFT JOIN artisans a ON a.user_Id = c.id
+      GROUP BY c.id, c.username
+      `);
   },
 
   create(user) {
