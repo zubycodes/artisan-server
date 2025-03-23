@@ -12,14 +12,11 @@ const saltRounds = 10;
 const userOps = {
   getAll() {
     return dbAsync.all(`
-      SELECT 
-    c.*,
-    g.name as region,
-    COUNT(DISTINCT a.id) AS numberOfArtisans
+      SELECT  c.*, g.name as region, COUNT(DISTINCT a.id) AS numberOfArtisans
       FROM user c
       LEFT JOIN artisans a ON a.user_Id = c.id
       LEFT JOIN geo_level g ON g.code = c.geoLevel_Code
-      GROUP BY c.id, c.username
+      GROUP BY c.id, c.username;
       `);
   },
 

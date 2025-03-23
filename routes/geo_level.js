@@ -8,7 +8,7 @@ const { dbAsync, createHandler } = require('./base_route');
  */
 const geoLevelOps = {
   getAll() {
-    return dbAsync.all('SELECT * FROM geo_level');
+    return dbAsync.all('SELECT * FROM geo_level order by name');
   },
 
   create({ code, name }) {
