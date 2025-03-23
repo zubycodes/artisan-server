@@ -22,8 +22,8 @@ GROUP BY c.id, c.name
   create(category) {
     const { name, craft_Id, isActive } = category;
     return dbAsync.run(
-      'INSERT INTO categories (name, craft_Id, isActive) VALUES (?, ?, ?)',
-      [name, craft_Id, isActive]
+      'INSERT INTO categories (name, craft_Id, color, isActive) VALUES (?, ?, ?, ?)',
+      [name, craft_Id, color, isActive]
     );
   },
 

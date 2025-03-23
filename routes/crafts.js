@@ -23,10 +23,10 @@ const craftOps = {
   },
 
   create(craft) {
-    const { name, isActive } = craft;
+    const { name, isActive, color } = craft;
     return dbAsync.run(
-      'INSERT INTO crafts (name, isActive) VALUES (?, ?)',
-      [name, isActive ?? 1] // Default to active if not specified
+      'INSERT INTO crafts (name, color, isActive) VALUES (?, ?, ?)',
+      [name, color, isActive ?? 1] // Default to active if not specified
     );
   },
 

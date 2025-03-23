@@ -20,8 +20,8 @@ GROUP BY c.id, c.name
   create(technique) {
     const { name, category_Id, isActive } = technique;
     return dbAsync.run(
-      'INSERT INTO techniques (name, category_Id, isActive) VALUES (?, ?, ?)',
-      [name, category_Id, isActive]
+      'INSERT INTO techniques (name, category_Id, color, isActive) VALUES (?, ?, ?, ?)',
+      [name, category_Id, color, isActive]
     );
   },
 
