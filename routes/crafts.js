@@ -10,8 +10,7 @@ const craftOps = {
   getAll() {
     return dbAsync.all(`
       SELECT 
-        c.id,
-        c.name AS craftName,
+        c.*,
         COUNT(DISTINCT cat.id) AS numberOfCategories,
         COUNT(DISTINCT t.id) AS numberOfTechniques,
         COUNT(DISTINCT a.id) AS numberOfArtisans
