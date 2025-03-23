@@ -17,7 +17,7 @@ const craftOps = {
         COUNT(DISTINCT a.id) AS numberOfArtisans
       FROM crafts c
       LEFT JOIN categories cat ON cat.craft_Id = c.id
-      LEFT JOIN techniquesView t ON t.craft_Id = c.id
+      LEFT JOIN techniquesView t ON t.category_Id = cat.id
       LEFT JOIN artisans a ON a.skill_id = t.id
       GROUP BY c.id, c.name
       `);
