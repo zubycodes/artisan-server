@@ -1,8 +1,0 @@
-{
-"type": "FeatureCollection",
-"name": "Khan_Pur_Nabi_Pur",
-"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
-"features": [
-{ "type": "Feature", "properties": { "UC_Name": "Khan Pur Nabi Pur", "UC_NO": "36", "Type": "Urban", "Vaccinator": "Jamil Ahmad", "SORT_NAME_": "Abbas Park", "Vacc_CelNo": "3214293554", "Province": "Punjab", "Division": "Lahore", "Grey": "No", "Tehsil": "Ferozewala", "District": "Sheikhupura", "ID": "1983621", "Vacc_code": "198F 41", "Lat": "31.6692889922866", "Long": "74.1375660620618", "Area": "Abbas Park,Iqbal House" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 74.145153471000071, 31.674546121000049, 0.0 ], [ 74.13675474300004, 31.662103561000038, 0.0 ], [ 74.136717489000034, 31.662116903000026, 0.0 ], [ 74.132820355000035, 31.663512627000046, 0.0 ], [ 74.131643626000084, 31.66391950700006, 0.0 ], [ 74.131695240000056, 31.674964906000071, 0.0 ], [ 74.131674842000052, 31.675441707000061, 0.0 ], [ 74.145153471000071, 31.674546121000049, 0.0 ] ] ] ] } }
-]
-}

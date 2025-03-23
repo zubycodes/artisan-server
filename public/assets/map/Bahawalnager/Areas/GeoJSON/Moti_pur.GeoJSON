@@ -1,3 +1,0 @@
-{"type":"FeatureCollection", "features": [
-{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[73.57086504800003,30.165219265000076],[73.57058595800004,30.16612630700007],[73.56855656200008,30.16568451200004],[73.56874202800003,30.164702636000072],[73.57086504800003,30.165219265000076]]]},"properties":{"OBJECTID":3564,"UC_Name":"Moti pur","UC_NO":"15","Type":"Urban","Vaccinator":"Ali Hasnain","SORT_NAME_":"Health House, Usman Pur","Vacc_CelNo":"3039224358","Province":"Punjab","Division":"Bahawalpur","Grey":"No","Tehsil":"Minchinabad","District":"Bahawalnagar","ID":"245159","Vacc_code":"24515","Lat":"30.1654207514987","Long":"73.5696949829594","Area":"Health House, Usman Pur","Shape_Leng":0.00621015098,"Shape_Area":0.0000020722}}
-]}
