@@ -45,6 +45,7 @@ const validateUpdateArtisanData = [
   body('artisan.contact_no').isLength({ min: 12, max: 12 }).withMessage('Invalid phone number! Must be 11 digits with dashes'),
   body('artisan.dependents_count').optional().isInt({ min: 0 }).withMessage('Dependents count must be a non-negative integer'),
   body('artisan.skill_id').optional().notEmpty().withMessage('Skill ID is required'),
+  body('artisan.uc').optional(),
   body('artisan.major_product').optional().notEmpty().withMessage('Major product is required'),
   body('artisan.experience').optional().isInt({ min: 0 }).withMessage('Experience must be a non-negative integer'),
   body('artisan.avg_monthly_income').optional().isInt({ min: 0 }).withMessage('Average monthly income must be a non-negative integer'),
@@ -257,7 +258,6 @@ const entityOps = {
         tehsil.name as tehsil_name,
         artisans.education_level_id,
         artisans.dependents_count,
-        'http://13.239.184.38:6500/' || REPLACE(artisans.profile_picture, '\\', '/') AS profile_picture,
         artisans.ntn,
         artisans.uc,
         artisans.skill_id,
@@ -296,9 +296,7 @@ const entityOps = {
         loans.name AS loan_name,
         machines.title AS machine_title,
         machines.size AS machine_size,
-        machines.number_of_machines AS machine_number_of_machines,
-        'http://13.239.184.38:6500/' || REPLACE(product_images.image_path, '\\', '/') AS product_image_path,
-        'http://13.239.184.38:6500/' || REPLACE(shop_images.image_path, '\\', '/')  AS shop_image_path
+        machines.number_of_machines AS machine_number_of_machines
       FROM artisans
       LEFT JOIN techniques ON artisans.skill_id = techniques.id
       LEFT JOIN categories ON categories.id = techniques.category_Id
