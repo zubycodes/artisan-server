@@ -259,6 +259,7 @@ const entityOps = {
         artisans.dependents_count,
         'http://13.239.184.38:6500/' || REPLACE(artisans.profile_picture, '\\', '/') AS profile_picture,
         artisans.ntn,
+        artisans.uc,
         artisans.skill_id,
         crafts.name as craft_name,
         crafts.color as craft_color,
