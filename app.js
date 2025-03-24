@@ -56,7 +56,7 @@ const createRouteRegistry = (dbInstance) => ({
   geo_level: { path: './routes/geo_level', dependencies: { db: dbInstance, logger: logger.child({ module: 'geo_level' }) } },
   artisans: { path: './routes/artisans', dependencies: { db: dbInstance, logger: logger.child({ module: 'artisans' }) } },
   education: { path: './routes/education', dependencies: { db: dbInstance, logger: logger.child({ module: 'education' }) } },
-  education: { path: './routes/charts', dependencies: { db: dbInstance, logger: logger.child({ module: 'charts' }) } }
+  charts: { path: './routes/charts', dependencies: { db: dbInstance, logger: logger.child({ module: 'charts' }) } }
 });
 
 // Main application factory
