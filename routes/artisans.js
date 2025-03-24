@@ -252,7 +252,7 @@ const entityOps = {
         artisans.email,
         artisans.address,
         artisans.tehsil_id,
-        division.name as divsion_name,
+        division.name as division_name,
         district.name as district_name,
         tehsil.name as tehsil_name,
         artisans.education_level_id,
