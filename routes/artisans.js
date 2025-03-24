@@ -65,18 +65,18 @@ const entityOps = {
     const sql = `
       INSERT INTO artisans (
         name, father_name, cnic, gender, date_of_birth, contact_no, email, address,
-        tehsil_id, education_level_id, dependents_count, profile_picture, ntn, skill_id,
+        tehsil_id, education_level_id, dependents_count, profile_picture, ntn, skill_id, uc,
         major_product, experience, avg_monthly_income, employment_type_id, raw_material,
         loan_status, has_machinery, has_training, inherited_skills, financial_assistance, technical_assistance, comments, latitude,
         longitude, user_Id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const params = [
       artisan.name, artisan.father_name, artisan.cnic, artisan.gender, artisan.date_of_birth,
       artisan.contact_no, artisan.email || null, artisan.address || null, artisan.tehsil_id || null,
       artisan.education_level_id || null, artisan.dependents_count, profilePicturePath, artisan.ntn || null,
-      artisan.skill_id, artisan.major_product, artisan.experience || null, artisan.avg_monthly_income || null,
+      artisan.skill_id, artisan.uc, artisan.major_product, artisan.experience || null, artisan.avg_monthly_income || null,
       artisan.employment_type_id, artisan.raw_material || null, artisan.loan_status || null,
       artisan.has_machinery || null, artisan.has_training || null, artisan.inherited_skills || null,
       artisan.financial_assistance || null, artisan.technical_assistance || null, artisan.comments || null, artisan.latitude || null, artisan.longitude || null, artisan.user_Id || null
