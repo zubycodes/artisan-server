@@ -232,10 +232,10 @@ const entityOps = {
 
   getAllArtisans(user_Id) {
     if (user_Id) {
-      return dbAsync.all('SELECT * FROM artisans WHERE user_Id = ? AND isActive = 1', [user_Id]);
+      return dbAsync.all('SELECT * FROM artisansView WHERE user_Id = ? AND isActive = 1', [user_Id]);
 
     } else {
-      return dbAsync.all('SELECT * FROM artisans WHERE isActive = 1');
+      return dbAsync.all('SELECT * FROM artisansView WHERE isActive = 1');
 
     }
   },

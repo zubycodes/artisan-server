@@ -131,3 +131,4 @@ dist
 artisan_db.db
 artisan_db.db
 artisan_db.db
+*.db
