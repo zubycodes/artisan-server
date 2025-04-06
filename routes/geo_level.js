@@ -10,7 +10,7 @@ const geoLevelOps = {
   getAll(code_length) {
     if (code_length) {
       return dbAsync.all(
-        "SELECT * FROM geo_level WHERE LEN(code) = ? order by name",
+        "SELECT * FROM geo_level WHERE length(code) = ? order by name",
         [code_length]
       );
     } else {
