@@ -323,7 +323,7 @@ module.exports = (dependencies) => {
    *               password:
    *                 type: string
    *     responses:
-   *       200:
+   *       200: 
    *         description: Successful login
    *       400:
    *         description: Invalid username or password
