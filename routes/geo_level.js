@@ -9,9 +9,10 @@ const { dbAsync, createHandler } = require("./base_route");
 const geoLevelOps = {
   getAll(code_length) {
     if (code_length) {
+      const codeLengthInt = parseInt(code_length, 10);
       return dbAsync.all(
         "SELECT * FROM geo_level WHERE length(code) = ? order by name",
-        [code_length]
+        [codeLengthInt]
       );
     } else {
       return dbAsync.all("SELECT * FROM geo_level order by name");
