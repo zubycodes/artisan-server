@@ -236,7 +236,6 @@ const entityOps = {
 
     } else {
       return dbAsync.all('SELECT * FROM artisansView WHERE isActive = 1');
-
     }
   },
 
