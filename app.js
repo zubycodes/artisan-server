@@ -24,7 +24,7 @@ const swaggerSpecs = require('./config/swagger');
 const CONFIG = Object.freeze({
   PORT: process.env.PORT || 6500,
   ENV: process.env.NODE_ENV || 'development',
-  CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:8080',
+  CLIENT_URL: process.env.CLIENT_URL || 'http://13.239.184.38:8080',
   WORKER_COUNT: process.env.WORKER_COUNT || os.cpus().length,
   RATE_LIMIT: { windowMs: 15 * 60 * 10000, max: 10000 }
 });
