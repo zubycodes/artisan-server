@@ -27,6 +27,7 @@ const CONFIG = Object.freeze({
   CLIENT_URL: process.env.CLIENT_URL || [
     "http://13.239.184.38:8080",
     "http://localhost:8080",
+    "http://localhost:8082",
     "http://13.239.184.38",
   ],
   WORKER_COUNT: process.env.WORKER_COUNT || os.cpus().length,
