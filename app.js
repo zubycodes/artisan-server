@@ -109,6 +109,13 @@ const createRouteRegistry = (dbInstance) => ({
       logger: logger.child({ module: "charts" }),
     },
   },
+  inq: {
+    path: "./routes/inq",
+    dependencies: {
+      db: dbInstance,
+      logger: logger.child({ module: "inq" }),
+    },
+  },
 });
 
 // Main application factory
