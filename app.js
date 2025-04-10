@@ -125,6 +125,20 @@ const createRouteRegistry = (dbInstance) => ({
       logger: logger.child({ module: "subscriptions" }),
     },
   },
+  conversations: {
+    path: "./routes/conversations",
+    dependencies: {
+      db: dbInstance,
+      logger: logger.child({ module: "conversations" }),
+    },
+  },
+  sessions: {
+    path: "./routes/sessions",
+    dependencies: {
+      db: dbInstance,
+      logger: logger.child({ module: "sessions" }),
+    },
+  }
 });
 
 // Main application factory
