@@ -40,7 +40,7 @@ const craftOps = {
   },
 
   delete(id) {
-    return dbAsync.run("UPDATE crafts isActive = 0 WHERE id = ?", [id]);
+    return dbAsync.run("UPDATE crafts SET isActive = 0 WHERE id = ?", [id]);
   },
 };
 
