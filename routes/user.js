@@ -1,8 +1,8 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { db } = require('../db');
-const bcrypt = require('bcrypt');
-const { dbAsync, createHandler } = require('./base_route');
+const { db } = require("../db");
+const bcrypt = require("bcrypt");
+const { dbAsync, createHandler } = require("./base_route");
 
 const saltRounds = 10;
 
@@ -16,33 +16,51 @@ const userOps = {
       FROM user c
       LEFT JOIN artisans a ON a.user_Id = c.id
       LEFT JOIN geo_level g ON g.code = c.geoLevel_Code
+      WHERE c.isActive = 1
       GROUP BY c.id, c.username;
       `);
   },
 
   create(user) {
-    const { username, roles, passwordnoty, geoLevel_Code, isMobileUser, user_Id, password } = user;
+    const {
+      username,
+      roles,
+      passwordnoty,
+      geoLevel_Code,
+      isMobileUser,
+      user_Id,
+      password,
+    } = user;
     return dbAsync.run(
-      'INSERT INTO user (username, roles, password, hashynoty, geoLevel_Code, isMobileUser, user_Id) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [username, roles, password, passwordnoty, geoLevel_Code, isMobileUser, user_Id]
+      "INSERT INTO user (username, roles, password, hashynoty, geoLevel_Code, isMobileUser, user_Id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [
+        username,
+        roles,
+        password,
+        passwordnoty,
+        geoLevel_Code,
+        isMobileUser,
+        user_Id,
+      ]
     );
   },
 
   update(id, user) {
-    const { username, roles, geoLevel_Code, isMobileUser, isActive, user_Id } = user;
+    const { username, roles, geoLevel_Code, isMobileUser, isActive, user_Id } =
+      user;
     return dbAsync.run(
-      'UPDATE user SET username = ?, roles = ?, geoLevel_Code = ?, isMobileUser = ?, isActive = ?, user_Id = ? WHERE id = ?',
+      "UPDATE user SET username = ?, roles = ?, geoLevel_Code = ?, isMobileUser = ?, isActive = ?, user_Id = ? WHERE id = ?",
       [username, roles, geoLevel_Code, isMobileUser, isActive, user_Id, id]
     );
   },
 
   delete(id) {
-    return dbAsync.run('DELETE FROM user WHERE id = ?', [id]);
+    return dbAsync.run("UPDATE user SET isActive = 0 WHERE id = ?", [id]);
   },
 
   getByUsername(username) {
-    return dbAsync.get('SELECT * FROM user WHERE username = ?', [username]);
-  }
+    return dbAsync.get("SELECT * FROM user WHERE username = ?", [username]);
+  },
 };
 
 /**
@@ -52,27 +70,30 @@ module.exports = (dependencies) => {
   const { logger } = dependencies;
   const handlers = {
     getAll: createHandler(async (req, res) => {
-      const routeLogger = logger.child({ route: 'user', handler: 'getAll' });
-      routeLogger.info('Received get all users request');
+      const routeLogger = logger.child({ route: "user", handler: "getAll" });
+      routeLogger.info("Received get all users request");
       try {
         const users = await userOps.getAll();
         res.json(users);
       } catch (error) {
-        routeLogger.error({ error }, 'Error fetching users');
+        routeLogger.error({ error }, "Error fetching users");
         res.status(500).json({ error: error.message });
       }
     }),
 
     register: createHandler(async (req, res) => {
-      const routeLogger = logger.child({ route: 'user', handler: 'register' });
-      routeLogger.info({ body: req.body }, 'Received register user request');
-      const { username, roles, geoLevel_Code, isMobileUser, user_Id } = req.body;
+      const routeLogger = logger.child({ route: "user", handler: "register" });
+      routeLogger.info({ body: req.body }, "Received register user request");
+      const { username, roles, geoLevel_Code, isMobileUser, user_Id } =
+        req.body;
 
       // Generate random password
-      let password = '';
-      const consonants = 'bcdfghjklmnpqrstvwxyz';
+      let password = "";
+      const consonants = "bcdfghjklmnpqrstvwxyz";
       for (let i = 0; i < 6; i++) {
-        password += consonants.charAt(Math.floor(Math.random() * consonants.length));
+        password += consonants.charAt(
+          Math.floor(Math.random() * consonants.length)
+        );
       }
 
       // Hash the password
@@ -84,108 +105,145 @@ module.exports = (dependencies) => {
         geoLevel_Code,
         isMobileUser,
         user_Id,
-        password: hashedPassword
+        password: hashedPassword,
       });
 
       res.status(201).json({
         id: lastID,
-        message: 'User registered successfully'
+        message: "User registered successfully",
       });
     }),
 
     update: createHandler(async (req, res) => {
-      const routeLogger = logger.child({ route: 'user', handler: 'update' });
-      routeLogger.info({ id: req.params.id, body: req.body }, 'Received update user request');
-      res.setHeader('Content-Type', 'text/event-stream');
-      res.setHeader('Cache-Control', 'no-cache');
-      res.setHeader('Connection', 'keep-alive');
+      const routeLogger = logger.child({ route: "user", handler: "update" });
+      routeLogger.info(
+        { id: req.params.id, body: req.body },
+        "Received update user request"
+      );
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
       res.flushHeaders();
 
       try {
         const { changes } = await userOps.update(req.params.id, req.body);
 
         if (changes === 0) {
-          logger.warn({ id: req.params.id }, 'User not found');
-          res.write(`data: ${JSON.stringify({ status: 'error', message: 'User not found' })}\n\n`);
+          logger.warn({ id: req.params.id }, "User not found");
+          res.write(
+            `data: ${JSON.stringify({
+              status: "error",
+              message: "User not found",
+            })}\n\n`
+          );
           return res.status(404).end();
         }
 
-        res.write(`data: ${JSON.stringify({ status: 'complete', id: parseInt(req.params.id), message: 'User updated successfully' })}\n\n`);
+        res.write(
+          `data: ${JSON.stringify({
+            status: "complete",
+            id: parseInt(req.params.id),
+            message: "User updated successfully",
+          })}\n\n`
+        );
         res.status(200).end();
       } catch (error) {
-        logger.error({ error, id: req.params.id }, 'Error updating user');
-        res.write(`data: ${JSON.stringify({ status: 'error', error: error.message })}\n\n`);
+        logger.error({ error, id: req.params.id }, "Error updating user");
+        res.write(
+          `data: ${JSON.stringify({
+            status: "error",
+            error: error.message,
+          })}\n\n`
+        );
         res.status(500).end();
       }
     }),
 
     delete: createHandler(async (req, res) => {
-      const routeLogger = logger.child({ route: 'user', handler: 'delete' });
-      routeLogger.info({ id: req.params.id }, 'Received delete user request');
-      res.setHeader('Content-Type', 'text/event-stream');
-      res.setHeader('Cache-Control', 'no-cache');
-      res.setHeader('Connection', 'keep-alive');
+      const routeLogger = logger.child({ route: "user", handler: "delete" });
+      routeLogger.info({ id: req.params.id }, "Received delete user request");
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
       res.flushHeaders();
 
       try {
         const { changes } = await userOps.delete(req.params.id);
 
         if (changes === 0) {
-          logger.warn({ id: req.params.id }, 'User not found');
-          res.write(`data: ${JSON.stringify({ status: 'error', message: 'User not found' })}\n\n`);
+          logger.warn({ id: req.params.id }, "User not found");
+          res.write(
+            `data: ${JSON.stringify({
+              status: "error",
+              message: "User not found",
+            })}\n\n`
+          );
           return res.status(404).end();
         }
 
-        res.write(`data: ${JSON.stringify({ status: 'complete', message: 'User deleted successfully' })}\n\n`);
+        res.write(
+          `data: ${JSON.stringify({
+            status: "complete",
+            message: "User deleted successfully",
+          })}\n\n`
+        );
         res.status(200).end();
       } catch (error) {
-        logger.error({ error, id: req.params.id }, 'Error deleting user');
-        res.write(`data: ${JSON.stringify({ status: 'error', error: error.message })}\n\n`);
+        logger.error({ error, id: req.params.id }, "Error deleting user");
+        res.write(
+          `data: ${JSON.stringify({
+            status: "error",
+            error: error.message,
+          })}\n\n`
+        );
         res.status(500).end();
       }
     }),
 
     login: createHandler(async (req, res) => {
-      const routeLogger = logger.child({ route: 'user', handler: 'login' });
-      routeLogger.info({ body: req.body }, 'Received login user request');
+      const routeLogger = logger.child({ route: "user", handler: "login" });
+      routeLogger.info({ body: req.body }, "Received login user request");
       const { username, password } = req.body;
 
       const user = await userOps.getByUsername(username);
 
       if (!user) {
-        logger.warn({ username }, 'User not found');
-        return res.status(400).send('Cannot find user');
+        logger.warn({ username }, "User not found");
+        return res.status(400).send("Cannot find user");
       }
 
       try {
         if (await bcrypt.compare(password, user.password)) {
           res.json(user);
         } else {
-          logger.warn({ username }, 'Incorrect password');
-          res.send('Not Allowed');
+          logger.warn({ username }, "Incorrect password");
+          res.send("Not Allowed");
         }
       } catch (error) {
-        logger.error({ error, username }, 'Error during login');
+        logger.error({ error, username }, "Error during login");
         res.status(500).send();
       }
     }),
 
     register: createHandler(async (req, res) => {
-      const routeLogger = logger.child({ route: 'user', handler: 'register' });
-      routeLogger.info({ body: req.body }, 'Received register user request');
-      res.setHeader('Content-Type', 'text/event-stream');
-      res.setHeader('Cache-Control', 'no-cache');
-      res.setHeader('Connection', 'keep-alive');
+      const routeLogger = logger.child({ route: "user", handler: "register" });
+      routeLogger.info({ body: req.body }, "Received register user request");
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
       res.flushHeaders();
 
       try {
-        const { username, roles, geoLevel_Code, isMobileUser, user_Id } = req.body;
+        const { username, roles, geoLevel_Code, isMobileUser, user_Id } =
+          req.body;
 
         // Generate random password
-        let password = '';
-        const consonants = 'bcdfghjklmnpqrstvwxyz';
+        let password = "";
+        const consonants = "bcdfghjklmnpqrstvwxyz";
         for (let i = 0; i < 6; i++) {
-          password += consonants.charAt(Math.floor(Math.random() * consonants.length));
+          password += consonants.charAt(
+            Math.floor(Math.random() * consonants.length)
+          );
         }
 
         // Hash the password
@@ -198,17 +256,28 @@ module.exports = (dependencies) => {
           isMobileUser,
           user_Id,
           password: hashedPassword,
-          passwordnoty: password
+          passwordnoty: password,
         });
 
-        res.write(`data: ${JSON.stringify({ status: 'complete', id: lastID, message: 'User registered successfully' })}\n\n`);
+        res.write(
+          `data: ${JSON.stringify({
+            status: "complete",
+            id: lastID,
+            message: "User registered successfully",
+          })}\n\n`
+        );
         res.status(201).end();
       } catch (error) {
-        logger.error({ error }, 'Error registering user');
-        res.write(`data: ${JSON.stringify({ status: 'error', error: error.message })}\n\n`);
+        logger.error({ error }, "Error registering user");
+        res.write(
+          `data: ${JSON.stringify({
+            status: "error",
+            error: error.message,
+          })}\n\n`
+        );
         res.status(500).end();
       }
-    })
+    }),
   };
 
   // Route definitions with REST compliant responses
@@ -221,7 +290,7 @@ module.exports = (dependencies) => {
    *       200:
    *         description: Successful operation
    */
-  router.get('/users', handlers.getAll);
+  router.get("/users", handlers.getAll);
   /**
    * @swagger
    * /register:
@@ -248,7 +317,7 @@ module.exports = (dependencies) => {
    *       201:
    *         description: User registered successfully
    */
-  router.post('/user/register', handlers.register);
+  router.post("/user/register", handlers.register);
   /**
    * @swagger
    * /{id}:
@@ -286,7 +355,7 @@ module.exports = (dependencies) => {
    *       404:
    *         description: User not found
    */
-  router.put('/user/:id', handlers.update);
+  router.put("/user/:id", handlers.update);
   /**
    * @swagger
    * /{id}:
@@ -305,7 +374,7 @@ module.exports = (dependencies) => {
    *       404:
    *         description: User not found
    */
-  router.delete('/user/:id', handlers.delete);
+  router.delete("/user/:id", handlers.delete);
   /**
    * @swagger
    * /user/login:
@@ -323,12 +392,12 @@ module.exports = (dependencies) => {
    *               password:
    *                 type: string
    *     responses:
-   *       200: 
+   *       200:
    *         description: Successful login
    *       400:
    *         description: Invalid username or password
    */
-  router.post('/user/login', handlers.login);
+  router.post("/user/login", handlers.login);
 
   return router;
 };

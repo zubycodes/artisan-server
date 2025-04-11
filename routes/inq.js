@@ -175,7 +175,7 @@ module.exports = (dependencies) => {
           const consultantName = "Aleem";
           const consultantTitle = "Education Consultant";
           const consultantBio = "Software Enginner - Male, 25";
-          const consultationDate = "15 April, 2025";
+          const consultationDate = "Tuesday, 15 April, 2025";
           const consultationTime = "10:00 AM";
           const meetingLink = "https://zoom.us/j/1234567890";
           await transporter.sendMail({
