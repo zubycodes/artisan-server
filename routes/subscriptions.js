@@ -536,7 +536,7 @@ module.exports = (dependencies) => {
   <div class="container">
     <div class="header">
       <div class="logo">
-        <img src="/api/placeholder/150/150" alt="Study Abroad Logo">
+        <img src="https://tierceledconsulting.com/wp-content/uploads/img/logo-tiercel.jpg" alt="Study Abroad Logo">
       </div>
       <h1>THANK YOU FOR JOINING US!</h1>
       <p>Your global adventure begins now</p>
@@ -561,12 +561,6 @@ module.exports = (dependencies) => {
           <li><strong>Cultural Immersion Kit</strong> - Language resources and local customs guide</li>
           <li><strong>Health & Safety Handbook</strong> - Insurance tips and emergency contacts</li>
         </ul>
-      </div>
-      
-      <div class="social-proof">
-        <img src="/api/placeholder/100/100" alt="Student Photo">
-        <p>"This checklist completely transformed my study abroad preparation! It helped me stay organized and confident when I was feeling overwhelmed about my semester in Barcelona."</p>
-        <strong>Emma Lawrence, Spain Exchange Program 2024</strong>
       </div>
       
       <div class="next-steps">
@@ -600,9 +594,9 @@ module.exports = (dependencies) => {
     
     <div class="footer">
       <div class="social-links">
-        <a href="#">f</a>
+        <a href="https://www.facebook.com/tierceled">f</a>
         <a href="#">in</a>
-        <a href="#">ig</a>
+        <a href="https://www.instagram.com/tierceled">ig</a>
         <a href="#">tw</a>
       </div>
       <div class="contact">

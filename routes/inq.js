@@ -166,7 +166,15 @@ module.exports = (dependencies) => {
           // Send the email
           const firstName = req.body.full_name || "there";
           const userEmail = req.body.email_address; // Use this for the 'to' field
+          const timezone = "PST (GMT+5)";
+          const duration = "30";
+          const platform = "Zoom";
+          const meetingId = "123456";
+          const passcode = "456789";
+          const phoneNumber = "+92 321 052 8888";
           const consultantName = "Aleem";
+          const consultantTitle = "Education Consultant";
+          const consultantBio = "Software Enginner - Male, 25";
           const consultationDate = "15 April, 2025";
           const consultationTime = "10:00 AM";
           const meetingLink = "https://zoom.us/j/1234567890";
@@ -552,7 +560,7 @@ module.exports = (dependencies) => {
   <div class="container">
     <div class="header">
       <div class="logo">
-        <img src="/api/placeholder/150/150" alt="Tiercel Education Logo">
+        <img src="https://tierceledconsulting.com/wp-content/uploads/img/logo-tiercel.jpg" alt="Tiercel Education Logo">
       </div>
       <h1>YOUR CONSULTATION IS CONFIRMED!</h1>
       <p>We're excited to help plan your study abroad journey</p>
@@ -573,7 +581,7 @@ module.exports = (dependencies) => {
           <div class="details-icon">📆</div>
           <div class="details-text">
             <strong>Date</strong>
-            {{consultationDate}} ({{timezone}})
+            ${consultationDate} (${timezone})
           </div>
         </div>
         
@@ -581,7 +589,7 @@ module.exports = (dependencies) => {
           <div class="details-icon">⏰</div>
           <div class="details-text">
             <strong>Time</strong>
-            {{consultationTime}} ({{duration}} minutes)
+            ${consultationTime} (${duration} minutes)
           </div>
         </div>
         
@@ -589,7 +597,7 @@ module.exports = (dependencies) => {
           <div class="details-icon">👤</div>
           <div class="details-text">
             <strong>Your Consultant</strong>
-            {{consultantName}}, {{consultantTitle}}
+            ${consultantName}, ${consultantTitle}
           </div>
         </div>
         
@@ -597,7 +605,7 @@ module.exports = (dependencies) => {
           <div class="details-icon">💻</div>
           <div class="details-text">
             <strong>Virtual Meeting Platform</strong>
-            {{platform}} (Zoom/Teams/Google Meet)
+            ${platform} (Zoom/Teams/Google Meet)
           </div>
         </div>
       </div>
@@ -606,16 +614,16 @@ module.exports = (dependencies) => {
       
       <div class="meeting-link-container">
         <h3>Join Your Virtual Consultation Here</h3>
-        <a href="{{meetingLink}}" class="meeting-link">Click to Join Meeting</a>
-        <p>Meeting ID: {{meetingId}}</p>
-        <p>Passcode: {{passcode}}</p>
+        <a href="${meetingLink}" class="meeting-link">Click to Join Meeting</a>
+        <p>Meeting ID: ${meetingId}</p>
+        <p>Passcode: ${passcode}</p>
       </div>
       
       <div class="consultant-profile">
-        <img src="/api/placeholder/150/150" alt="Consultant Photo" class="consultant-img">
+        <img src="https://tierceledconsulting.com/wp-content/uploads/img/cc.png" alt="Consultant Photo" class="consultant-img">
         <div class="consultant-info">
-          <h4>Your Consultant: {{consultantName}}</h4>
-          <p>{{consultantBio}}</p>
+          <h4>Your Consultant: ${consultantName}</h4>
+          <p>${consultantBio}</p>
         </div>
       </div>
       
@@ -630,7 +638,7 @@ module.exports = (dependencies) => {
         </ul>
       </div>
       
-      <p>If you need to reschedule your consultation, please contact us at least 24 hours before your scheduled time by replying to this email or calling us at {{phoneNumber}}.</p>
+      <p>If you need to reschedule your consultation, please contact us at least 24 hours before your scheduled time by replying to this email or calling us at ${phoneNumber}.</p>
       
       <p>We look forward to speaking with you and helping you take the first steps toward your international education adventure!</p>
       
@@ -640,9 +648,9 @@ module.exports = (dependencies) => {
     
     <div class="footer">
       <div class="social-links">
-        <a href="#">f</a>
+        <a href="https://www.facebook.com/tierceled">f</a>
         <a href="#">in</a>
-        <a href="#">ig</a>
+        <a href="https://www.instagram.com/tierceled">ig</a>
         <a href="#">tw</a>
       </div>
       <div class="contact">
