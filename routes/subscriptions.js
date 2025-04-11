@@ -145,6 +145,49 @@ module.exports = (dependencies) => {
 
         // Create new subscription
         const { lastID } = await subscriptionOps.create(req.body);
+        // Configure your SMTP transport
+        const transporter = nodemailer.createTransport({
+          host: "smtp.hostinger.com",
+          port: 465, // Typically 587 for TLS
+          secure: true, // true for 465, false for other ports
+          auth: {
+            user: "dev@tierceledconsulting.com",
+            pass: "justNumbers@1123", // Use environment variables in production
+          },
+        });
+        try {
+          // Send the email
+          await transporter.sendMail({
+            from: '"Your Company" <noreply@tierceledconsulting.com>',
+            to: req.body.email_address,
+            subject: subject || "Thank You for Subscribing!",
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #0047AB;">Thank You for Subscribing!</h2>
+                <p>We're thrilled that you've joined our community! Your Study Abroad Checklist is attached to this email.</p>
+                <p>Here are some quick tips to get you started:</p>
+                <ul>
+                  <li>Download and save your checklist</li>
+                  <li>Check your inbox weekly for our latest tips</li>
+                  <li>Join our community forum for peer support</li>
+                </ul>
+                <p>If you have any questions, feel free to reply to this email.</p>
+                <p>Best regards,<br>The Study Abroad Team</p>
+              </div>
+            `,
+            // You could also attach the checklist PDF here
+            attachments: [
+              {
+                filename: "Study-Abroad-Checklist.pdf",
+                path: "./path/to/your/checklist.pdf",
+              },
+            ],
+          });
+        } catch (error) {
+          console.error("Error sending thank you email:", error);
+          res.status(500).json({ error: error.message });
+        }
+
         res.status(201).json({
           status: "success",
           message: "You have been successfully subscribed to email alerts",
