@@ -170,217 +170,450 @@ module.exports = (dependencies) => {
             text: `Hi ${firstName}, thanks for joining Tiercel Education! Your essential Study Abroad Checklist and first steps are here.`,
             html: `
           <!DOCTYPE html>
-          <html lang="en">
-          <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <meta http-equiv="X-UA-Compatible" content="ie=edge">
-              <title>Welcome to Tiercel Education!</title>
-              <style>
-                  /* Basic Reset */
-                  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-                  table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
-                  img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
-                  table { border-collapse: collapse !important; }
-                  body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f4f4f4; }
-          
-                  /* Main Styles */
-                  .container {
-                      max-width: 600px;
-                      margin: 0 auto;
-                      background-color: #ffffff;
-                      border-radius: 8px;
-                      overflow: hidden; /* Ensures border-radius clips content */
-                      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                  }
-                  .content {
-                      padding: 30px 40px;
-                      font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif;
-                      font-size: 16px;
-                      line-height: 1.6;
-                      color: #333333;
-                  }
-                  .header {
-                      padding: 20px 40px;
-                      background-color: #ffffff; /* Or a subtle brand color */
-                      text-align: center; /* Center logo */
-                  }
-                  .logo {
-                      max-width: 180px; /* Adjust as needed */
-                      height: auto;
-                  }
-                  .hero-image img {
-                      width: 100%;
-                      max-width: 600px;
-                      height: auto;
-                      display: block;
-                  }
-                  h1 {
-                      font-size: 28px;
-                      font-weight: bold;
-                      color: #0047AB; /* Brand primary color */
-                      margin-top: 20px;
-                      margin-bottom: 15px;
-                      line-height: 1.3;
-                  }
-                   h2 {
-                      font-size: 22px;
-                      font-weight: bold;
-                      color: #00337C; /* Slightly darker shade */
-                      margin-top: 30px;
-                      margin-bottom: 10px;
-                  }
-                  p {
-                      margin-bottom: 15px;
-                  }
-                  ul {
-                      list-style: none;
-                      padding: 0;
-                      margin: 20px 0;
-                  }
-                  li {
-                      margin-bottom: 15px;
-                      padding-left: 30px; /* Space for icon */
-                      position: relative; /* For icon positioning */
-                      line-height: 1.5;
-                  }
-                  li::before { /* Using pseudo-elements for icons - better than images for simple shapes */
-                      content: '✓'; /* Checkmark icon */
-                      position: absolute;
-                      left: 0;
-                      top: 0;
-                      color: #0047AB; /* Brand color */
-                      font-weight: bold;
-                      font-size: 18px;
-                  }
-                  .cta-button {
-                      display: inline-block;
-                      background-color: #0047AB; /* Brand primary color */
-                      color: #ffffff !important; /* Ensure text is white */
-                      padding: 15px 30px;
-                      text-align: center;
-                      text-decoration: none;
-                      font-size: 18px;
-                      font-weight: bold;
-                      border-radius: 5px;
-                      margin: 25px 0;
-                      transition: background-color 0.3s ease;
-                  }
-                  .cta-button:hover {
-                      background-color: #00337C; /* Darker shade on hover */
-                  }
-                  .footer {
-                      padding: 20px 40px;
-                      background-color: #eeeeee;
-                      text-align: center;
-                      font-size: 12px;
-                      color: #777777;
-                      border-top: 1px solid #dddddd;
-                  }
-                  .footer a {
-                      color: #0047AB; /* Brand color */
-                      text-decoration: none;
-                  }
-                  .footer a:hover {
-                      text-decoration: underline;
-                  }
-                  .social-icons img {
-                       width: 24px; /* Adjust icon size */
-                       margin: 0 5px;
-                  }
-          
-                  /* Mobile Specific Styles */
-                  @media screen and (max-width: 600px) {
-                      .container {
-                          width: 100% !important;
-                          border-radius: 0 !important;
-                           box-shadow: none;
-                      }
-                      .content {
-                          padding: 20px !important;
-                      }
-                       .header {
-                          padding: 15px 20px !important;
-                      }
-                      h1 {
-                          font-size: 24px !important;
-                      }
-                       h2 {
-                          font-size: 20px !important;
-                      }
-                      .cta-button {
-                           padding: 12px 25px !important;
-                           font-size: 16px !important;
-                      }
-                       .footer {
-                          padding: 15px 20px !important;
-                      }
-                  }
-              </style>
-          </head>
-          <body style="margin: 0; padding: 0; background-color: #f4f4f4;">
-              <div style="display: none; max-height: 0; overflow: hidden; font-size: 1px; line-height: 1px; color: #f4f4f4;">
-                  Hi ${firstName}, thanks for joining Tiercel Education! Your essential Study Abroad Checklist and first steps are here.
-              </div>
-          
-              <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                  <tr>
-                      <td align="center" style="background-color: #f4f4f4; padding: 20px 0;">
-                          <div class="container">
-                              <div class="header">
-                                  <img src="https://your-domain.com/path/to/tiercel-logo.png" alt="Tiercel Education Consultant Logo" class="logo">
-                                  </div>
-          
-                              <div class="hero-image">
-                                   <img src="https://your-domain.com/path/to/study-abroad-hero.jpg" alt="Students studying abroad happily" style="width: 100%; max-width: 600px; height: auto; display: block;">
-                                   </div>
-          
-                              <div class="content">
-                                  <h1>Welcome Aboard, ${firstName}!</h1>
-                                  <p>We're absolutely thrilled to have you join the Tiercel Education community! Your journey towards studying abroad just got a whole lot easier.</p>
-                                  <p>As promised, your exclusive <strong>Study Abroad Checklist</strong> is ready for you. Grab it now to start planning your adventure:</p>
-          
-                                  <table border="0" cellspacing="0" cellpadding="0" style="margin: 25px 0;">
-                                      <tr>
-                                          <td align="center">
-                                              <a href="#" target="_blank" class="cta-button" style="display: inline-block; background-color: #0047AB; color: #ffffff; padding: 15px 30px; text-align: center; text-decoration: none; font-size: 18px; font-weight: bold; border-radius: 5px; mso-hide:all;">Download Your Checklist</a>
-                                               </td>
-                                      </tr>
-                                  </table>
-                                  <p style="font-size: 14px; color: #555555; text-align: center;">(Your checklist is also attached to this email for easy access!)</p>
-          
-          
-                                  <h2>Getting Started: Your Next Steps</h2>
-                                  <ul>
-                                      <li><strong>Save Your Checklist:</strong> Download the PDF and keep it handy throughout your planning process.</li>
-                                      <li><strong>Watch Your Inbox:</strong> We'll share valuable tips, insights, and updates weekly to guide you.</li>
-                                      <li><strong>Join the Conversation:</strong> Connect with fellow students and ask questions in our <a href="[Link to Your Forum]" target="_blank" style="color: #0047AB; text-decoration: none; font-weight: bold;">Community Forum</a>.</li>
-                                     <li><strong>Explore Our Resources:</strong> Visit our <a href="[Link to Your Website]" target="_blank" style="color: #0047AB; text-decoration: none; font-weight: bold;">website</a> for more guides and services.</li>
-                                  </ul>
-          
-                                  <p>Got questions already? Don't hesitate to hit reply – we're here to help!</p>
-          
-                                  <p>Best regards,<br><strong>The Tiercel Education Team</strong></p>
-                              </div>
-          
-                              <div class="footer">
-                                  <p>
-                                      <a href="[Link to Facebook]" target="_blank" class="social-icons"><img src="https://your-domain.com/path/to/facebook-icon.png" alt="Facebook"></a>
-                                     <a href="[Link to Instagram]" target="_blank" class="social-icons"><img src="https://your-domain.com/path/to/instagram-icon.png" alt="Instagram"></a>
-                                     <a href="[Link to LinkedIn]" target="_blank" class="social-icons"><img src="https://your-domain.com/path/to/linkedin-icon.png" alt="LinkedIn"></a>
-                                     </p>
-                                  <p>Tiercel Education Consultant<br>
-                                     [Your Company Address, if applicable]</p>
-                                  <p>You received this email because you subscribed to our newsletter via our website.</p>
-                                  <p><a href="[Unsubscribe Link Placeholder]" target="_blank">Unsubscribe</a> | <a href="[Privacy Policy Link]" target="_blank">Privacy Policy</a></p>
-                                  <p>&copy; ${new Date().getFullYear()} Tiercel Education Consultant. All rights reserved.</p>
-                              </div>
-                          </div>
-                          </td>
-                  </tr>
-              </table>
-          </body>
-          </html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thank You for Subscribing</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      background-color: #f9f9f9;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(10, 35, 66, 0.15);
+    }
+    .header {
+      background: linear-gradient(135deg, #e04448, #c02e32);
+      padding: 40px 0;
+      text-align: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .header:before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 150px;
+      height: 150px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+    .header:after {
+      content: '';
+      position: absolute;
+      bottom: -70px;
+      left: -70px;
+      width: 200px;
+      height: 200px;
+      background-color: rgba(10, 35, 66, 0.2);
+      border-radius: 50%;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      position: relative;
+      z-index: 2;
+    }
+    .header p {
+      margin: 12px 0 0;
+      font-size: 18px;
+      opacity: 0.95;
+      font-weight: 500;
+      position: relative;
+      z-index: 2;
+    }
+    .logo {
+      width: 100px;
+      height: 100px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      position: relative;
+      z-index: 2;
+    }
+    .logo img {
+      width: 75px;
+      height: 75px;
+    }
+    .content {
+      padding: 40px 30px;
+    }
+    .welcome-message {
+      margin-bottom: 30px;
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .checklist-container {
+      background-color: #f5f8ff;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      border-left: 5px solid #0a2342;
+      box-shadow: 0 6px 12px rgba(10, 35, 66, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+    .checklist-container:after {
+      content: '✈️';
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      font-size: 24px;
+      opacity: 0.2;
+    }
+    .checklist-container h3 {
+      margin-top: 0;
+      color: #0a2342;
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .checklist {
+      padding-left: 0;
+      list-style-type: none;
+    }
+    .checklist li {
+      position: relative;
+      padding-left: 38px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .checklist li:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 2px;
+      width: 24px;
+      height: 24px;
+      background-color: rgba(224, 68, 72, 0.15);
+      border-radius: 50%;
+    }
+    .checklist li:after {
+      content: '✓';
+      position: absolute;
+      left: 6px;
+      top: 1px;
+      color: #e04448;
+      font-weight: bold;
+    }
+    .download-button {
+      display: block;
+      background-color: #e04448;
+      color: white;
+      text-align: center;
+      padding: 18px 20px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 700;
+      margin: 35px 0;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 16px;
+      box-shadow: 0 6px 12px rgba(224, 68, 72, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .download-button:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.6s;
+    }
+    .download-button:hover {
+      background-color: #c02e32;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(224, 68, 72, 0.4);
+    }
+    .download-button:hover:before {
+      left: 100%;
+    }
+    .social-proof {
+      background-color: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 30px;
+      box-shadow: 0 6px 12px rgba(10, 35, 66, 0.08);
+      border: 2px solid #f0f4f9;
+      position: relative;
+    }
+    .social-proof:before {
+      content: '"';
+      position: absolute;
+      top: 10px;
+      left: 15px;
+      font-size: 60px;
+      color: #e04448;
+      opacity: 0.2;
+      font-family: Georgia, serif;
+      line-height: 0.8;
+    }
+    .social-proof p {
+      font-style: italic;
+      margin: 0;
+      color: #555;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .social-proof strong {
+      display: block;
+      margin-top: 12px;
+      color: #0a2342;
+      font-weight: 700;
+    }
+    .social-proof img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-bottom: 15px;
+      border: 3px solid #f0f4f9;
+    }
+    .next-steps {
+      margin-bottom: 30px;
+    }
+    .next-steps h3 {
+      color: #0a2342;
+      font-size: 20px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .next-steps-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 0;
+      list-style-type: none;
+    }
+    .next-steps-list li {
+      flex: 1 1 180px;
+      background-color: white;
+      border: 1px solid #e1e8f5;
+      border-radius: 16px;
+      padding: 25px 15px;
+      text-align: center;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(10, 35, 66, 0.05);
+    }
+    .next-steps-list li:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(10, 35, 66, 0.1);
+      border-color: rgba(224, 68, 72, 0.3);
+    }
+    .next-steps-list li:before {
+      content: '';
+      position: absolute;
+      height: 5px;
+      left: 0;
+      right: 0;
+      top: 0;
+      background: linear-gradient(90deg, #e04448, #c02e32);
+      opacity: 0;
+      transition: all 0.3s;
+    }
+    .next-steps-list li:hover:before {
+      opacity: 1;
+    }
+    .step-icon {
+      display: block;
+      font-size: 32px;
+      margin-bottom: 15px;
+      color: #e04448;
+    }
+    .step-title {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #0a2342;
+      font-size: 18px;
+    }
+    .footer {
+      background-color: #0a2342;
+      padding: 35px 25px;
+      text-align: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .footer:before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 200px;
+      height: 200px;
+      background-color: rgba(224, 68, 72, 0.1);
+      border-radius: 50%;
+    }
+    .social-links {
+      margin-bottom: 25px;
+    }
+    .social-links a {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      text-align: center;
+      line-height: 40px;
+      margin: 0 8px;
+      font-size: 18px;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+    .social-links a:hover {
+      background-color: #e04448;
+      transform: translateY(-3px);
+    }
+    .contact {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      position: relative;
+      z-index: 2;
+    }
+    .contact a {
+      color: white;
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(255, 255, 255, 0.5);
+      transition: all 0.3s;
+    }
+    .contact a:hover {
+      border-color: #e04448;
+      color: #e04448;
+    }
+    .divider {
+      height: 8px;
+      background: linear-gradient(90deg, #0a2342, #e04448, #0a2342);
+      margin: 0;
+      padding: 0;
+      border: none;
+    }
+    @media (max-width: 600px) {
+      .container {
+        border-radius: 0;
+      }
+      .content {
+        padding: 30px 20px;
+      }
+      .next-steps-list {
+        flex-direction: column;
+      }
+      .next-steps-list li {
+        flex: 1 1 auto;
+      }
+      .header h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <img src="/api/placeholder/150/150" alt="Study Abroad Logo">
+      </div>
+      <h1>THANK YOU FOR JOINING US!</h1>
+      <p>Your global adventure begins now</p>
+    </div>
+    
+    <hr class="divider">
+    
+    <div class="content">
+      <div class="welcome-message">
+        <p><strong>Hi there, future global citizen!</strong></p>
+        <p>We're absolutely <em>thrilled</em> that you've joined our worldwide community of adventurous learners! Your comprehensive Study Abroad Checklist is now ready for you to download and kickstart your life-changing international education journey.</p>
+      </div>
+      
+      <a href="#" class="download-button">Get Your Checklist Now!</a>
+      
+      <div class="checklist-container">
+        <h3>🌍 Your Ultimate Checklist Includes:</h3>
+        <ul class="checklist">
+          <li><strong>Essential Documents Guide</strong> - Passport, visa, and application requirements</li>
+          <li><strong>Housing Navigator</strong> - Finding the perfect place to call home abroad</li>
+          <li><strong>Financial Planner</strong> - Budgeting tools and scholarship opportunities</li>
+          <li><strong>Cultural Immersion Kit</strong> - Language resources and local customs guide</li>
+          <li><strong>Health & Safety Handbook</strong> - Insurance tips and emergency contacts</li>
+        </ul>
+      </div>
+      
+      <div class="social-proof">
+        <img src="/api/placeholder/100/100" alt="Student Photo">
+        <p>"This checklist completely transformed my study abroad preparation! It helped me stay organized and confident when I was feeling overwhelmed about my semester in Barcelona."</p>
+        <strong>Emma Lawrence, Spain Exchange Program 2024</strong>
+      </div>
+      
+      <div class="next-steps">
+        <h3>Your Next Steps to Success:</h3>
+        <ul class="next-steps-list">
+          <li>
+            <span class="step-icon">📥</span>
+            <span class="step-title">Save Your Checklist</span>
+            Download and keep it handy throughout your journey - we recommend printing it too!
+          </li>
+          <li>
+            <span class="step-icon">🔔</span>
+            <span class="step-title">Tuesday Tips</span>
+            Watch for our exclusive weekly insights and opportunities in your inbox
+          </li>
+          <li>
+            <span class="step-icon">👋</span>
+            <span class="step-title">Join Our Community</span>
+            Connect with fellow students and alumni in our private forum
+          </li>
+        </ul>
+      </div>
+      
+      <p>Have questions about studying abroad? Feeling nervous or excited? We're here for you every step of the way! Simply reply to this email and our team of international education experts will get back to you within 24 hours.</p>
+      
+      <p>Here's to the incredible adventure ahead of you!</p>
+      
+      <p>Bon Voyage,<br>
+      <strong>The Study Abroad Team</strong></p>
+    </div>
+    
+    <div class="footer">
+      <div class="social-links">
+        <a href="#">f</a>
+        <a href="#">in</a>
+        <a href="#">ig</a>
+        <a href="#">tw</a>
+      </div>
+      <div class="contact">
+        <p>© 2025 Global Study Abroad Program | <a href="#">Privacy Policy</a> | <a href="#">Unsubscribe</a></p>
+        <p>123 Education Lane, Global City, 10001</p>
+        <p><a href="mailto:hello@studyabroad.com">hello@studyabroad.com</a> | <a href="tel:+12345678900">+1 (234) 567-8900</a></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
               `,
             // --- Attachment Section ---
             // UNCOMMENT and configure this section if you want to attach the PDF
