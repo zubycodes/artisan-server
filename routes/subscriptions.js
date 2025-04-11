@@ -176,13 +176,13 @@ module.exports = (dependencies) => {
                 <p>Best regards,<br>The Study Abroad Team</p>
               </div>
             `,
-            // You could also attach the checklist PDF here
+           /*  // You could also attach the checklist PDF here
             attachments: [
               {
                 filename: "Study-Abroad-Checklist.pdf",
                 path: "./path/to/your/checklist.pdf",
               },
-            ],
+            ], */
           });
         } catch (error) {
           console.error("Error sending thank you email:", error);
