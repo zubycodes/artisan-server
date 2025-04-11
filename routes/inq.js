@@ -562,7 +562,7 @@ module.exports = (dependencies) => {
     
     <div class="content">
       <div class="welcome-message">
-        <p><strong>Hello {{firstName}},</strong></p>
+        <p><strong>Hello ${firstName},</strong></p>
         <p>Thank you for booking a virtual consultation with Tiercel Education Consulting! We're thrilled to help you navigate your study abroad journey and provide personalized guidance for your international education plans.</p>
       </div>
       
