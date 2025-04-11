@@ -8,14 +8,14 @@ const { dbAsync, createHandler } = require("./base_route.js");
 const conversationOps = {
   getAll() {
     return dbAsync.all(`
-      SELECT * FROM chatbot_conversations ORDER BY timestamp DESC
+      SELECT * FROM chatbot_conversations ORDER BY timestamp
     `);
   },
 
   getBySessionId(session_id) {
     return dbAsync.all(
       `
-      SELECT * FROM chatbot_conversations WHERE session_id = ? ORDER BY timestamp DESC
+      SELECT * FROM chatbot_conversations WHERE session_id = ? ORDER BY timestamp
     `,
       [session_id]
     );
