@@ -311,10 +311,13 @@ module.exports = (dependencies) => {
       color: #e04448;
       font-weight: bold;
     }
+    .ii a[href] {
+    color: white;
+    }
     .download-button {
       display: block;
       background-color: #e04448;
-      color: white;
+      color: white !important;
       text-align: center;
       padding: 18px 20px;
       border-radius: 50px;
@@ -548,7 +551,7 @@ module.exports = (dependencies) => {
         <p>We're absolutely <em>thrilled</em> that you've joined our worldwide community of adventurous learners! Your comprehensive Study Abroad Checklist is now ready for you to download and kickstart your life-changing international education journey.</p>
       </div>
       
-      <a href="#" class="download-button">Get Your Checklist Now!</a>
+      <a href="https://tierceledconsulting.com/wp-content/uploads/img/guide.pdf" class="download-button">Get Your Checklist Now!</a>
       
       <div class="checklist-container">
         <h3>🌍 Your Ultimate Checklist Includes:</h3>
@@ -609,16 +612,15 @@ module.exports = (dependencies) => {
               `,
             // --- Attachment Section ---
             // UNCOMMENT and configure this section if you want to attach the PDF
-            /*
-              attachments: [
-                {
-                  filename: "Tiercel-Study-Abroad-Checklist.pdf", // Use a branded filename
-                  // IMPORTANT: Use an absolute path or ensure relative path is correct from where your script runs
-                  path: "/absolute/path/to/your/checklist.pdf", // Example: use path.join(__dirname, 'assets', 'checklist.pdf') in Node.js
-                  contentType: 'application/pdf'
-                },
-              ],
-              */
+
+            /*  attachments: [
+              {
+                filename: "Tiercel-Study-Abroad-Guide.pdf", // Use a branded filename
+                // IMPORTANT: Use an absolute path or ensure relative path is correct from where your script runs
+                path: "/absolute/path/to/your/checklist.pdf", // Example: use path.join(__dirname, 'assets', 'checklist.pdf') in Node.js
+                contentType: "application/pdf",
+              },
+            ], */
           });
         } catch (error) {
           console.error("Error sending thank you email:", error);

@@ -430,7 +430,7 @@ module.exports = (dependencies) => {
     .meeting-link {
       display: inline-block;
       background-color: white;
-      color: #0a2342;
+      color: #0a2342 !important;
       padding: 15px 25px;
       border-radius: 8px;
       text-decoration: none;
@@ -603,7 +603,7 @@ module.exports = (dependencies) => {
           <div class="details-icon">💻</div>
           <div class="details-text">
             <strong>Virtual Meeting Platform</strong>
-            ${platform} (Zoom/Teams/Google Meet)
+            ${platform}
           </div>
         </div>
       </div>
