@@ -590,7 +590,7 @@ module.exports = (dependencies) => {
       <p>Here's to the incredible adventure ahead of you!</p>
       
       <p>Bon Voyage,<br>
-      <strong>The Study Abroad Team</strong></p>
+      <strong>The Tiercel Education Consulting Team</strong></p>
     </div>
     
     <div class="footer">
@@ -601,9 +601,9 @@ module.exports = (dependencies) => {
         <a href="#">tw</a>
       </div>
       <div class="contact">
-        <p>© 2025 Global Study Abroad Program | <a href="#">Privacy Policy</a> | <a href="#">Unsubscribe</a></p>
-        <p>123 Education Lane, Global City, 10001</p>
-        <p><a href="mailto:hello@studyabroad.com">hello@studyabroad.com</a> | <a href="tel:+12345678900">+1 (234) 567-8900</a></p>
+        <p>© 2025 Tiercel Education Consulting | <a href="https://www.processjunction.com">Powered By ProcessJunction Pvt. Ltd</a> | <a href="#">Unsubscribe</a></p>
+        <p>237/1-FF CCA, Phase 4 DHA, Lahore</p>
+        <p><a href="mailto:info@tierceledconsulting.com">info@tierceledconsulting.com</a> | <a href="tel:+923210528888">+92 321 052 8888</a></p>
       </div>
     </div>
   </div>

@@ -651,10 +651,10 @@ module.exports = (dependencies) => {
         <a href="https://www.instagram.com/tierceled">ig</a>
         <a href="#">tw</a>
       </div>
-      <div class="contact">
-        <p>© 2025 Tiercel Education Consulting | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
-        <p>123 Education Lane, Global City, 10001</p>
-        <p><a href="mailto:dev@tierceledconsulting.com">dev@tierceledconsulting.com</a> | <a href="tel:+12345678900">+1 (234) 567-8900</a></p>
+     <div class="contact">
+        <p>© 2025 Tiercel Education Consulting | <a href="https://www.processjunction.com">Powered By ProcessJunction Pvt. Ltd</a> | <a href="#">Unsubscribe</a></p>
+        <p>237/1-FF CCA, Phase 4 DHA, Lahore</p>
+        <p><a href="mailto:info@tierceledconsulting.com">info@tierceledconsulting.com</a> | <a href="tel:+923210528888">+92 321 052 8888</a></p>
       </div>
     </div>
   </div>
