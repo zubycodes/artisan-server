@@ -159,7 +159,7 @@ module.exports = (dependencies) => {
         try {
           // Send the email
           await transporter.sendMail({
-            from: '"Your Company" <noreply@tierceledconsulting.com>',
+            from: '"Tiercel Education Consultant" <dev@tierceledconsulting.com>',
             to: req.body.email_address,
             subject: "Thank You for Subscribing!",
             html: `
@@ -176,7 +176,7 @@ module.exports = (dependencies) => {
                 <p>Best regards,<br>The Study Abroad Team</p>
               </div>
             `,
-           /*  // You could also attach the checklist PDF here
+            /*  // You could also attach the checklist PDF here
             attachments: [
               {
                 filename: "Study-Abroad-Checklist.pdf",
