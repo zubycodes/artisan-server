@@ -551,7 +551,7 @@ module.exports = (dependencies) => {
         <p>We're absolutely <em>thrilled</em> that you've joined our worldwide community of adventurous learners! Your comprehensive Study Abroad Checklist is now ready for you to download and kickstart your life-changing international education journey.</p>
       </div>
       
-      <a href="https://tierceledconsulting.com/wp-content/uploads/img/guide.pdf" class="download-button">Get Your Checklist Now!</a>
+      <a href="https://tierceledconsulting.com/wp-content/uploads/img/checklist.pdf" class="download-button">Get Your Checklist Now!</a>
       
       <div class="checklist-container">
         <h3>🌍 Your Ultimate Checklist Includes:</h3>
