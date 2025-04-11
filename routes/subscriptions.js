@@ -161,7 +161,7 @@ module.exports = (dependencies) => {
           await transporter.sendMail({
             from: '"Your Company" <noreply@tierceledconsulting.com>',
             to: req.body.email_address,
-            subject: subject || "Thank You for Subscribing!",
+            subject: "Thank You for Subscribing!",
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <h2 style="color: #0047AB;">Thank You for Subscribing!</h2>
