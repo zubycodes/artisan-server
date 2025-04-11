@@ -254,7 +254,6 @@ module.exports = (dependencies) => {
     .logo {
       width: 100px;
       height: 100px;
-      background-color: white;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -265,8 +264,7 @@ module.exports = (dependencies) => {
       z-index: 2;
     }
     .logo img {
-      width: 75px;
-      height: 75px;
+      border-radius: 50%;
     }
     .content {
       padding: 40px 30px;
