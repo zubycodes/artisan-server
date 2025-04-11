@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { dbAsync, createHandler } = require("./base_route.js");
-import nodemailer from "nodemailer";
+const nodemailer = require("nodemailer");
 
 /**
  * Email subscription operations
