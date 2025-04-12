@@ -84,36 +84,6 @@ const chartOps = {
           ${whereClause}
         ) AS total_active_artisans,
   
-        (SELECT COUNT(*) FROM artisans
-          LEFT JOIN geo_level AS tehsil ON artisans.tehsil_id = tehsil.id
-          LEFT JOIN geo_level AS district ON substr(tehsil.code, 1, 6) = district.code
-          LEFT JOIN geo_level AS division ON substr(district.code, 1, 3) = division.code
-          JOIN techniques ON artisans.skill_id = techniques.id
-          JOIN categories ON categories.id = techniques.category_Id
-          JOIN crafts ON crafts.id = categories.craft_Id
-          ${whereClause}
-          GROUP BY crafts.id
-        ) AS crafts,
-  
-        (SELECT COUNT(*) FROM artisans
-          LEFT JOIN geo_level AS tehsil ON artisans.tehsil_id = tehsil.id
-          LEFT JOIN geo_level AS district ON substr(tehsil.code, 1, 6) = district.code
-          LEFT JOIN geo_level AS division ON substr(district.code, 1, 3) = division.code
-          JOIN techniques ON artisans.skill_id = techniques.id
-          JOIN categories ON categories.id = techniques.category_Id
-          ${whereClause}
-          GROUP BY categories.id
-        ) AS categories,
-  
-        (SELECT COUNT(*) FROM artisans
-          LEFT JOIN geo_level AS tehsil ON artisans.tehsil_id = tehsil.id
-          LEFT JOIN geo_level AS district ON substr(tehsil.code, 1, 6) = district.code
-          LEFT JOIN geo_level AS division ON substr(district.code, 1, 3) = division.code
-          JOIN techniques ON artisans.skill_id = techniques.id
-          ${whereClause}
-          GROUP BY techniques.id
-        ) AS skills,
-  
         (SELECT COUNT(DISTINCT artisans.tehsil_id) FROM artisans
           LEFT JOIN geo_level AS tehsil ON artisans.tehsil_id = tehsil.id
           LEFT JOIN geo_level AS district ON substr(tehsil.code, 1, 6) = district.code
@@ -142,37 +112,7 @@ const chartOps = {
           LEFT JOIN categories ON categories.id = techniques.category_Id
           LEFT JOIN crafts ON crafts.id = categories.craft_Id
           ${whereClause} AND created_at >= date('now', '-2 month') AND created_at < date('now', '-1 month')
-        ) AS new_registrations_last_month,
-  
-        (SELECT ROUND(AVG(avg_monthly_income)) FROM artisans
-          LEFT JOIN geo_level AS tehsil ON artisans.tehsil_id = tehsil.id
-          LEFT JOIN geo_level AS district ON substr(tehsil.code, 1, 6) = district.code
-          LEFT JOIN geo_level AS division ON substr(district.code, 1, 3) = division.code
-          LEFT JOIN techniques ON artisans.skill_id = techniques.id
-          LEFT JOIN categories ON categories.id = techniques.category_Id
-          LEFT JOIN crafts ON crafts.id = categories.craft_Id
-          ${whereClause}
-        ) AS average_monthly_income,
-  
-        (SELECT COUNT(*) FROM artisans
-          LEFT JOIN geo_level AS tehsil ON artisans.tehsil_id = tehsil.id
-          LEFT JOIN geo_level AS district ON substr(tehsil.code, 1, 6) = district.code
-          LEFT JOIN geo_level AS division ON substr(district.code, 1, 3) = division.code
-          LEFT JOIN techniques ON artisans.skill_id = techniques.id
-          LEFT JOIN categories ON categories.id = techniques.category_Id
-          LEFT JOIN crafts ON crafts.id = categories.craft_Id
-          ${whereClause} AND gender = 'Female'
-        ) AS female_artisans,
-  
-        (SELECT ROUND(AVG(experience)) FROM artisans
-          LEFT JOIN geo_level AS tehsil ON artisans.tehsil_id = tehsil.id
-          LEFT JOIN geo_level AS district ON substr(tehsil.code, 1, 6) = district.code
-          LEFT JOIN geo_level AS division ON substr(district.code, 1, 3) = division.code
-          LEFT JOIN techniques ON artisans.skill_id = techniques.id
-          LEFT JOIN categories ON categories.id = techniques.category_Id
-          LEFT JOIN crafts ON crafts.id = categories.craft_Id
-          ${whereClause}
-        ) AS average_experience_years
+        ) AS new_registrations_last_month
     `;
 
     return dbAsync.all(query, params);
