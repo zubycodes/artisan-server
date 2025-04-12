@@ -141,7 +141,7 @@ const createRouteRegistry = (dbInstance) => ({
       db: dbInstance,
       logger: logger.child({ module: "sessions" }),
     },
-  }
+  },
 });
 
 // Main application factory
@@ -149,7 +149,25 @@ const createApp = async (dbInstance, routeRegistry) => {
   const app = express();
 
   // Enhanced middleware stack
-  app.use(helmet());
+  app.use(
+    helmet(
+      helmet.contentSecurityPolicy({
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: [
+            "'self'",
+            "https://cdn.gpteng.co",
+            "https://maps.googleapis.com",
+          ],
+          styleSrc: ["'self'", "'unsafe-inline'"], // Adjust if needed
+          imgSrc: ["'self'", "data:"], // Adjust if needed
+          connectSrc: ["'self'", "https://artisan-psic.com"], // Add API domains
+          objectSrc: ["'none'"],
+          upgradeInsecureRequests: [],
+        },
+      })
+    )
+  );
   app.use(compression());
   app.use(pinoHttp({ logger }));
   app.use(express.json({ limit: "10mb", strict: true }));
