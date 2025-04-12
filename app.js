@@ -151,26 +151,8 @@ const createApp = async (dbInstance, routeRegistry) => {
   // Enhanced middleware stack
   app.use(
     helmet(
-      helmet.contentSecurityPolicy({
-        directives: {
-          defaultSrc: ["'self'"],
-          scriptSrc: ["'self'", "https://cdn.gpteng.co"],
-          styleSrc: [
-            "'self'",
-            "'unsafe-inline'",
-            "https://fonts.googleapis.com",
-          ],
-          fontSrc: ["'self'", "https://fonts.gstatic.com"],
-          imgSrc: [
-            "'self'",
-            "data:",
-            "https://processjunction.com",
-            "https://artisan.psic-erp.com",
-          ],
-          connectSrc: ["'self'", "https://artisan-psic.com"],
-          objectSrc: ["'none'"],
-          upgradeInsecureRequests: [],
-        },
+      helmet({
+        contentSecurityPolicy: false,
       })
     )
   );
