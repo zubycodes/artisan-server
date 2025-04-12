@@ -141,7 +141,7 @@ const createRouteRegistry = (dbInstance) => ({
       db: dbInstance,
       logger: logger.child({ module: "sessions" }),
     },
-  },
+  }
 });
 
 // Main application factory
@@ -213,21 +213,9 @@ const createApp = async (dbInstance, routeRegistry) => {
   app.use("/uploads", express.static("uploads"));
 
   // Catch-all to serve your Angular app for all other routes
-  app.use(
-    express.static(
-      require("path").join(
-        __dirname,
-        "/home/ubuntu/artisan-monitoring-portal/dist"
-      )
-    )
-  );
+  app.use(express.static(require("path").join(__dirname, "public")));
   app.get("*", (req, res) => {
-    res.sendFile(
-      require("path").join(
-        __dirname,
-        "/home/ubuntu/artisan-monitoring-portal/dist/index.html"
-      )
-    );
+    res.sendFile(require("path").join(__dirname, "public/index.html"));
   });
 
   // Health and monitoring endpoints
