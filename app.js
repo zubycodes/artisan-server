@@ -148,14 +148,14 @@ const createRouteRegistry = (dbInstance) => ({
 const createApp = async (dbInstance, routeRegistry) => {
   const app = express();
 
-  // Enhanced middleware stack
+  /* // Enhanced middleware stack
   app.use(
     helmet(
       helmet({
         contentSecurityPolicy: false,
       })
     )
-  );
+  ); */
   app.use(compression());
   app.use(pinoHttp({ logger }));
   app.use(express.json({ limit: "10mb", strict: true }));
