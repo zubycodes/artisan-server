@@ -154,14 +154,20 @@ const createApp = async (dbInstance, routeRegistry) => {
       helmet.contentSecurityPolicy({
         directives: {
           defaultSrc: ["'self'"],
-          scriptSrc: [
+          scriptSrc: ["'self'", "https://cdn.gpteng.co"],
+          styleSrc: [
             "'self'",
-            "https://cdn.gpteng.co",
-            "https://maps.googleapis.com",
+            "'unsafe-inline'",
+            "https://fonts.googleapis.com",
           ],
-          styleSrc: ["'self'", "'unsafe-inline'"], // Adjust if needed
-          imgSrc: ["'self'", "data:"], // Adjust if needed
-          connectSrc: ["'self'", "https://artisan-psic.com"], // Add API domains
+          fontSrc: ["'self'", "https://fonts.gstatic.com"],
+          imgSrc: [
+            "'self'",
+            "data:",
+            "https://processjunction.com",
+            "https://artisan.psic-erp.com",
+          ],
+          connectSrc: ["'self'", "https://artisan-psic.com"],
           objectSrc: ["'none'"],
           upgradeInsecureRequests: [],
         },
