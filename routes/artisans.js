@@ -436,6 +436,7 @@ const entityOps = {
         artisans.email,
         artisans.address,
         artisans.tehsil_id,
+        artisans.profile_picture,
         division.name as division_name,
         district.name as district_name,
         tehsil.name as tehsil_name,
@@ -480,6 +481,8 @@ const entityOps = {
         machines.title AS machine_title,
         machines.size AS machine_size,
         machines.number_of_machines AS machine_number_of_machines
+        product_images.image_path AS product_image_path,
+        shop_images.image_path AS shop_image_path
       FROM artisans
       LEFT JOIN techniques ON artisans.skill_id = techniques.id
       LEFT JOIN categories ON categories.id = techniques.category_Id
@@ -509,7 +512,7 @@ const entityOps = {
       loans: [],
       machines: [],
       product_images: [],
-      shop_images: [],
+      shop_images: []
     };
 
     rows.forEach((row) => {
@@ -517,7 +520,7 @@ const entityOps = {
         artisan.trainings.push({
           title: row.training_title,
           duration: row.training_duration,
-          organization: row.training_organization,
+          organization: row.training_organization
         });
       }
       if (row.loan_amount) {
@@ -525,14 +528,14 @@ const entityOps = {
           amount: row.loan_amount,
           date: row.loan_date,
           loan_type: row.loan_type,
-          name: row.loan_name,
+          name: row.loan_name
         });
       }
       if (row.machine_title) {
         artisan.machines.push({
           title: row.machine_title,
           size: row.machine_size,
-          number_of_machines: row.machine_number_of_machines,
+          number_of_machines: row.machine_number_of_machines
         });
       }
       if (row.product_image_path) {
