@@ -480,7 +480,7 @@ const entityOps = {
         loans.name AS loan_name,
         machines.title AS machine_title,
         machines.size AS machine_size,
-        machines.number_of_machines AS machine_number_of_machines
+        machines.number_of_machines AS machine_number_of_machines,
         product_images.image_path AS product_image_path,
         shop_images.image_path AS shop_image_path
       FROM artisans
