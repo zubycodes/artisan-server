@@ -540,13 +540,6 @@ const entityOps = {
         });
       }
       if (row.product_image_path) {
-        artisan.product_images.push({
-          title: row.machine_title,
-          size: row.machine_size,
-          number_of_machines: row.machine_number_of_machines
-        });
-      }
-      if (row.product_image_path) {
         artisan.product_images.push(row.product_image_path);
       }
       if (row.shop_image_path) {
