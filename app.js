@@ -26,6 +26,8 @@ const CONFIG = Object.freeze({
   ENV: process.env.NODE_ENV || "development",
   CLIENT_URL: process.env.CLIENT_URL || [
     "http://3.106.165.252:8080",
+    "http://artisan-psic.com",
+    "https://artisan-psic.com",
     "http://localhost:8080",
     "http://localhost:8082",
     "http://localhost:8083",
