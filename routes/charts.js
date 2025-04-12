@@ -175,7 +175,7 @@ const chartOps = {
         ) AS average_experience_years
     `;
 
-    return dbAsync.All(query, params);
+    return dbAsync.all(query, params);
   },
   // Education level distribution
   getEducationDistribution() {
