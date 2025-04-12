@@ -763,8 +763,7 @@ module.exports = (dependencies) => {
       });
       routeLogger.info("Received get all artisans request");
       try {
-        const user_Id = req.query.user_Id;
-        const artisans = await entityOps.getAllArtisans(user_Id);
+        const artisans = await entityOps.getAllArtisans(req.query);
         res.json(artisans);
       } catch (err) {
         routeLogger.error({ error: err }, "Error fetching artisans");
