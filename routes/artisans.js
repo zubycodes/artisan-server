@@ -437,6 +437,7 @@ const entityOps = {
         artisans.address,
         artisans.tehsil_id,
         artisans.profile_picture,
+        concat('https://artisan-psic.com/', artisans.profile_picture) AS profile_picture,
         division.name as division_name,
         district.name as district_name,
         tehsil.name as tehsil_name,
@@ -481,8 +482,8 @@ const entityOps = {
         machines.title AS machine_title,
         machines.size AS machine_size,
         machines.number_of_machines AS machine_number_of_machines,
-        product_images.image_path AS product_image_path,
-        shop_images.image_path AS shop_image_path
+        concat('https://artisan-psic.com/', product_images.image_path) AS product_image_path,
+        concat('https://artisan-psic.com/', shop_images.image_path) AS shop_image_path
       FROM artisans
       LEFT JOIN techniques ON artisans.skill_id = techniques.id
       LEFT JOIN categories ON categories.id = techniques.category_Id
@@ -533,6 +534,13 @@ const entityOps = {
       }
       if (row.machine_title) {
         artisan.machines.push({
+          title: row.machine_title,
+          size: row.machine_size,
+          number_of_machines: row.machine_number_of_machines
+        });
+      }
+      if (row.product_image_path) {
+        artisan.product_images.push({
           title: row.machine_title,
           size: row.machine_size,
           number_of_machines: row.machine_number_of_machines
