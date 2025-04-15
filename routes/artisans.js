@@ -313,7 +313,6 @@ const entityOps = {
       artisan.latitude || null,
       artisan.longitude || null,
       artisan.user_Id || null,
-      artisan.updated_at || null,
       id,
     ]);
   },
