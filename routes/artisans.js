@@ -275,7 +275,7 @@ const entityOps = {
     const sql = `
       UPDATE artisans SET
         name = ?, father_name = ?, cnic = ?, gender = ?, date_of_birth = ?, contact_no = ?, email = ?, address = ?,
-        tehsil_id = ?, education_level_id = ?, dependents_count = ?, profile_picture = ?, ntn = ?, skill_id = ?, uc = ?,
+        tehsil_id = ?, education_level_id = ?, dependents_count = ?, ntn = ?, skill_id = ?, uc = ?,
         major_product = ?, experience = ?, avg_monthly_income = ?, employment_type_id = ?, raw_material = ?,
         loan_status = ?, has_machinery = ?, has_training = ?, inherited_skills = ?, financial_assistance = ?, technical_assistance = ?, comments = ?, latitude = ?,
         longitude = ?, user_Id = ?, updated_at = CURRENT_TIMESTAMP
@@ -294,7 +294,6 @@ const entityOps = {
       artisan.tehsil_id || null,
       artisan.education_level_id || null,
       artisan.dependents_count || null,
-      artisan.profile_picture || null,
       artisan.ntn || null,
       artisan.skill_id || null,
       artisan.uc || null,
