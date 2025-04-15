@@ -9,12 +9,13 @@ const techniqueOps = {
   getAll() {
     return dbAsync.all(`
         SELECT 
-          c.*,
-          COUNT(DISTINCT a.id) AS numberOfArtisans
+         c.*,
+         COUNT(DISTINCT a.id) AS numberOfArtisans
         FROM techniquesView c
         LEFT JOIN artisans a ON a.skill_id = c.id
         WHERE c.isActive = 1
         GROUP BY c.id, c.name
+        order by c.craft_name ASC, c.category_name ASC
       `);
   },
 

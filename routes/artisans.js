@@ -52,78 +52,34 @@ const validateArtisanData = [
 
 // Validation middleware for update
 const validateUpdateArtisanData = [
-  // Artisan validations (optional fields)
-  body("artisan.name")
-    .optional()
-    .notEmpty()
-    .withMessage("Name cannot be empty"),
+  // Artisan validations
+  body("artisan.name").notEmpty().withMessage("Name is required"),
   body("artisan.father_name")
-    .optional()
     .notEmpty()
-    .withMessage("Father's name cannot be empty"),
+    .withMessage("Father's name is required"),
   body("artisan.cnic")
     .isLength({ min: 15, max: 15 })
-    .withMessage("CNIC must be 13 digits with dashes"),
+    .withMessage("CNIC must be 15 digits with dashes"),
   body("artisan.gender")
-    .optional()
-    .isIn(["Male", "Female", "Other"])
+    .isIn(["Male", "Female", "Trangender"])
     .withMessage("Invalid gender"),
   body("artisan.date_of_birth")
-    .optional()
     .isISO8601()
     .withMessage("Invalid date of birth"),
   body("artisan.contact_no")
     .isLength({ min: 12, max: 12 })
-    .withMessage("Invalid phone number! Must be 11 digits with dashes"),
-  body("artisan.dependents_count")
-    .optional()
-    .isInt({ min: 0 })
-    .withMessage("Dependents count must be a non-negative integer"),
-  body("artisan.skill_id")
-    .optional()
-    .notEmpty()
-    .withMessage("Skill ID is required"),
-  body("artisan.uc").optional(),
-  body("artisan.major_product")
-    .optional()
-    .notEmpty()
-    .withMessage("Major product is required"),
-  body("artisan.experience")
-    .optional()
-    .isInt({ min: 0 })
-    .withMessage("Experience must be a non-negative integer"),
-  body("artisan.avg_monthly_income")
-    .optional()
-    .isInt({ min: 0 })
-    .withMessage("Average monthly income must be a non-negative integer"),
-  body("artisan.employment_type_id")
-    .optional()
-    .notEmpty()
-    .withMessage("Employment type ID is required"),
-  body("artisan.raw_material")
-    .optional()
-    .isString()
-    .withMessage("Raw material must be a string"),
-  body("artisan.loan_status")
-    .optional()
-    .isBoolean()
-    .withMessage("Loan status must be a boolean"),
-  body("artisan.has_machinery")
-    .optional()
-    .isBoolean()
-    .withMessage("Has machinery must be a boolean"),
-  body("artisan.has_training")
-    .optional()
-    .isBoolean()
-    .withMessage("Has training must be a boolean"),
-  body("artisan.inherited_skills")
-    .optional()
-    .isBoolean()
-    .withMessage("Inherited skills must be a boolean"),
-  body("artisan.comments")
-    .optional()
-    .isString()
-    .withMessage("Comments must be a string"),
+    .withMessage("Invalid phone number! Must be 12 digits with dashes"),
+  /* body('artisan.skill_id').notEmpty().withMessage('Skill ID is required'),
+  body('artisan.major_product').notEmpty().withMessage('Major product is required'),
+  body('artisan.experience').optional().isInt({ min: 0 }).withMessage('Experience must be a non-negative integer'),
+  body('artisan.avg_monthly_income').optional().isInt({ min: 0 }).withMessage('Average monthly income must be a non-negative integer'),
+  body('artisan.employment_type_id').notEmpty().withMessage('Employment type ID is required'),
+  body('artisan.raw_material').optional().isString().withMessage('Raw material must be a string'),
+  body('artisan.loan_status').optional().isBoolean().withMessage('Loan status must be a boolean'),
+  body('artisan.has_machinery').optional().isBoolean().withMessage('Has machinery must be a boolean'),
+  body('artisan.has_training').optional().isBoolean().withMessage('Has training must be a boolean'),
+  body('artisan.inherited_skills').optional().isBoolean().withMessage('Inherited skills must be a boolean'),
+  body('artisan.comments').optional().isString().withMessage('Comments must be a string'), */
   body("artisan.latitude")
     .optional()
     .isFloat()
@@ -319,41 +275,45 @@ const entityOps = {
     const sql = `
       UPDATE artisans SET
         name = ?, father_name = ?, cnic = ?, gender = ?, date_of_birth = ?, contact_no = ?, email = ?, address = ?,
-        tehsil_id = ?, education_level_id = ?, dependents_count = ?, profile_picture = ?, ntn = ?, skill_id = ?,
+        tehsil_id = ?, education_level_id = ?, dependents_count = ?, profile_picture = ?, ntn = ?, skill_id = ?, uc = ?,
         major_product = ?, experience = ?, avg_monthly_income = ?, employment_type_id = ?, raw_material = ?,
-        loan_status = ?, has_machinery = ?, has_training = ?, inherited_skills = ?, comments = ?, latitude = ?,
+        loan_status = ?, has_machinery = ?, has_training = ?, inherited_skills = ?, financial_assistance = ?, technical_assistance = ?, comments = ?, latitude = ?,
         longitude = ?, user_Id = ?, updated_at = CURRENT_TIMESTAMP
-      WHERE id = ? AND isActive = 1
+      WHERE id = ?
     `;
 
     return dbAsync.run(sql, [
-      artisan.name,
-      artisan.father_name,
-      artisan.cnic,
-      artisan.gender,
-      artisan.date_of_birth,
-      artisan.contact_no,
+      artisan.name || null,
+      artisan.father_name || null,
+      artisan.cnic || null,
+      artisan.gender || null,
+      artisan.date_of_birth || null,
+      artisan.contact_no || null,
       artisan.email || null,
       artisan.address || null,
       artisan.tehsil_id || null,
       artisan.education_level_id || null,
-      artisan.dependents_count,
-      artisan.profile_picture,
+      artisan.dependents_count || null,
+      artisan.profile_picture || null,
       artisan.ntn || null,
-      artisan.skill_id,
-      artisan.major_product,
+      artisan.skill_id || null,
+      artisan.uc || null,
+      artisan.major_product || null,
       artisan.experience || null,
       artisan.avg_monthly_income || null,
-      artisan.employment_type_id,
+      artisan.employment_type_id || null,
       artisan.raw_material || null,
       artisan.loan_status || null,
       artisan.has_machinery || null,
       artisan.has_training || null,
       artisan.inherited_skills || null,
+      artisan.financial_assistance || null,
+      artisan.technical_assistance || null,
       artisan.comments || null,
       artisan.latitude || null,
       artisan.longitude || null,
       artisan.user_Id || null,
+      artisan.updated_at || null,
       id,
     ]);
   },
@@ -513,7 +473,7 @@ const entityOps = {
       loans: [],
       machines: [],
       product_images: [],
-      shop_images: []
+      shop_images: [],
     };
 
     rows.forEach((row) => {
@@ -521,7 +481,7 @@ const entityOps = {
         artisan.trainings.push({
           title: row.training_title,
           duration: row.training_duration,
-          organization: row.training_organization
+          organization: row.training_organization,
         });
       }
       if (row.loan_amount) {
@@ -529,14 +489,14 @@ const entityOps = {
           amount: row.loan_amount,
           date: row.loan_date,
           loan_type: row.loan_type,
-          name: row.loan_name
+          name: row.loan_name,
         });
       }
       if (row.machine_title) {
         artisan.machines.push({
           title: row.machine_title,
           size: row.machine_size,
-          number_of_machines: row.machine_number_of_machines
+          number_of_machines: row.machine_number_of_machines,
         });
       }
       if (row.product_image_path) {
@@ -841,12 +801,12 @@ module.exports = (dependencies) => {
             assistance,
           } = req.body;
 
-          res.write(
+          /* res.write(
             `data: ${JSON.stringify({
               status: "progress",
               message: "Updating artisan...",
             })}\n\n`
-          );
+          ); */
 
           // Start transaction
           await dbAsync.run("BEGIN TRANSACTION");
@@ -866,65 +826,65 @@ module.exports = (dependencies) => {
           const operations = [];
 
           if (business) {
-            res.write(
+            /* res.write(
               `data: ${JSON.stringify({
                 status: "progress",
                 message: "Updating business...",
               })}\n\n`
-            );
+            ); */
             operations.push(entityOps.updateBusiness(artisanId, business));
           }
 
           if (craft) {
-            res.write(
+            /* res.write(
               `data: ${JSON.stringify({
                 status: "progress",
                 message: "Updating craft...",
               })}\n\n`
-            );
+            ); */
             operations.push(entityOps.updateCraft(artisanId, craft));
           }
 
           if (trainings) {
-            res.write(
+            /* res.write(
               `data: ${JSON.stringify({
                 status: "progress",
                 message: "Updating trainings...",
               })}\n\n`
-            );
+            ); */
             operations.push(entityOps.deleteTrainings(artisanId));
             operations.push(entityOps.createTrainings(artisanId, trainings));
           }
 
           if (loans) {
-            res.write(
+            /* res.write(
               `data: ${JSON.stringify({
                 status: "progress",
                 message: "Updating loans...",
               })}\n\n`
-            );
+            ); */
             operations.push(entityOps.deleteLoans(artisanId));
             operations.push(entityOps.createLoans(artisanId, loans));
           }
 
           if (machines) {
-            res.write(
+           /*  res.write(
               `data: ${JSON.stringify({
                 status: "progress",
                 message: "Updating machines...",
               })}\n\n`
-            );
+            ); */
             operations.push(entityOps.deleteMachines(artisanId));
             operations.push(entityOps.createMachines(artisanId, machines));
           }
 
           if (assistance) {
-            res.write(
+            /* res.write(
               `data: ${JSON.stringify({
                 status: "progress",
                 message: "Updating assistance...",
               })}\n\n`
-            );
+            ); */
             operations.push(entityOps.updateAssistance(artisanId, assistance));
           }
 
