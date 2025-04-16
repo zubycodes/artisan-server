@@ -381,7 +381,7 @@ const entityOps = {
     return dbAsync.all(query, params);
   },
 
-  async getArtisanById(id) {
+  /* async getArtisanById(id) {
     const sql = `
        SELECT
         artisans.id,
@@ -520,6 +520,152 @@ const entityOps = {
     }
     if (artisan.shop_images.length === 0) {
       delete artisan.shop_images;
+    }
+
+    return artisan;
+  }, */
+
+  async getArtisanById(id) {
+    // Step 1: Query the main artisan information
+    const mainSql = `
+        SELECT
+            artisans.id,
+            artisans.name,
+            artisans.father_name,
+            artisans.cnic,
+            artisans.gender,
+            artisans.date_of_birth,
+            artisans.contact_no,
+            artisans.email,
+            artisans.address,
+            artisans.tehsil_id,
+            artisans.profile_picture,
+            concat('https://artisan-psic.com/', artisans.profile_picture) AS profile_picture,
+            division.name AS division_name,
+            district.name AS district_name,
+            tehsil.name AS tehsil_name,
+            artisans.education_level_id,
+            artisans.dependents_count,
+            artisans.ntn,
+            artisans.uc,
+            artisans.skill_id,
+            crafts.name AS craft_name,
+            crafts.color AS craft_color,
+            categories.name AS category_name,
+            categories.color AS category_color,
+            techniques.name AS skill_name,
+            techniques.color AS skill_color,
+            education.name AS education_name,
+            artisans.major_product,
+            artisans.experience,
+            artisans.avg_monthly_income,
+            artisans.employment_type_id,
+            artisans.raw_material,
+            artisans.loan_status,
+            artisans.has_machinery,
+            artisans.has_training,
+            artisans.inherited_skills,
+            artisans.financial_assistance,
+            artisans.technical_assistance,
+            artisans.comments,
+            artisans.latitude,
+            artisans.longitude,
+            artisans.created_at,
+            artisans.updated_at,
+            artisans.isActive,
+            artisans.user_Id,
+            user.username
+        FROM artisans
+        LEFT JOIN techniques ON artisans.skill_id = techniques.id
+        LEFT JOIN categories ON techniques.category_Id = categories.id
+        LEFT JOIN crafts ON categories.craft_Id = crafts.id
+        LEFT JOIN education ON artisans.education_level_id = education.id
+        LEFT JOIN geo_level AS tehsil ON artisans.tehsil_id = tehsil.id
+        LEFT JOIN geo_level AS district ON substr(tehsil.code, 1, 6) = district.code
+        LEFT JOIN geo_level AS division ON substr(district.code, 1, 3) = division.code
+        LEFT JOIN user ON artisans.user_Id = user.id
+        WHERE artisans.id = ? AND artisans.isActive = 1
+    `;
+
+    const artisanRow = await dbAsync.get(mainSql, [id]);
+
+    if (!artisanRow) {
+      return null;
+    }
+
+    // Initialize the artisan object with main data
+    const artisan = { ...artisanRow };
+
+    // Step 2: Query one-to-many related data concurrently
+    const trainingsSql = `
+        SELECT
+            title AS training_title,
+            duration AS training_duration,
+            organization AS training_organization
+        FROM trainings
+        WHERE artisan_id = ?
+    `;
+
+    const loansSql = `
+        SELECT
+            amount AS loan_amount,
+            date AS loan_date,
+            loan_type,
+            name AS loan_name
+        FROM loans
+        WHERE artisan_id = ?
+    `;
+
+    const machinesSql = `
+        SELECT
+            title AS machine_title,
+            size AS machine_size,
+            number_of_machines AS machine_number_of_machines
+        FROM machines
+        WHERE artisan_id = ?
+    `;
+
+    const productImagesSql = `
+        SELECT
+            concat('https://artisan-psic.com/', image_path) AS product_image_path
+        FROM product_images
+        WHERE artisan_id = ?
+    `;
+
+    const shopImagesSql = `
+        SELECT
+            concat('https://artisan-psic.com/', image_path) AS shop_image_path
+        FROM shop_images
+        WHERE artisan_id = ?
+    `;
+
+    // Execute all related queries concurrently for efficiency
+    const [trainings, loans, machines, productImages, shopImages] =
+      await Promise.all([
+        dbAsync.all(trainingsSql, [id]),
+        dbAsync.all(loansSql, [id]),
+        dbAsync.all(machinesSql, [id]),
+        dbAsync.all(productImagesSql, [id]),
+        dbAsync.all(shopImagesSql, [id]),
+      ]);
+
+    // Step 3: Attach related data to the artisan object
+    if (trainings.length > 0) {
+      artisan.trainings = trainings;
+    }
+    if (loans.length > 0) {
+      artisan.loans = loans;
+    }
+    if (machines.length > 0) {
+      artisan.machines = machines;
+    }
+    if (productImages.length > 0) {
+      artisan.product_images = productImages.map(
+        (row) => row.product_image_path
+      );
+    }
+    if (shopImages.length > 0) {
+      artisan.shop_images = shopImages.map((row) => row.shop_image_path);
     }
 
     return artisan;
@@ -866,7 +1012,7 @@ module.exports = (dependencies) => {
           }
 
           if (machines) {
-           /*  res.write(
+            /*  res.write(
               `data: ${JSON.stringify({
                 status: "progress",
                 message: "Updating machines...",
