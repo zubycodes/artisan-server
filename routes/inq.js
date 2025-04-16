@@ -168,15 +168,15 @@ module.exports = (dependencies) => {
           const userEmail = req.body.email_address; // Use this for the 'to' field
           const timezone = "PST (GMT+5)";
           const duration = "30";
-          const platform = "Zoom";
-          const meetingId = "123456";
-          const passcode = "456789";
           const phoneNumber = "+92 321 052 8888";
           const consultantName = "Aleem";
           const consultantTitle = "Education Consultant";
           const consultantBio = "Software Enginner - Male, 25";
           const consultationDate = "Tuesday, 15 April, 2025";
           const consultationTime = "10:00 AM";
+          const platform = "Zoom";
+          const meetingId = "123456";
+          const passcode = "456789";
           const meetingLink = "https://zoom.us/j/1234567890";
           await transporter.sendMail({
             from: '"Tiercel Education Consultant" <dev@tierceledconsulting.com>',
