@@ -20,6 +20,7 @@ const craftOps = {
       LEFT JOIN artisans a ON a.skill_id = t.id
       WHERE c.isActive = 1
       GROUP BY c.id, c.name
+      order by c.name ASC
       `);
   },
 

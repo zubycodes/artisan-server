@@ -152,6 +152,7 @@ const createApp = async (dbInstance, routeRegistry) => {
   app.use(
     helmet({
       contentSecurityPolicy: false,
+      crossOriginResourcePolicy: false,
     })
   );
   app.use(compression());
