@@ -599,28 +599,28 @@ const entityOps = {
     // Step 2: Query one-to-many related data concurrently
     const trainingsSql = `
         SELECT
-            title AS training_title,
-            duration AS training_duration,
-            organization AS training_organization
+            title AS title,
+            duration AS duration,
+            organization AS organization
         FROM trainings
         WHERE artisan_id = ?
     `;
 
     const loansSql = `
         SELECT
-            amount AS loan_amount,
-            date AS loan_date,
+            amount AS amount,
+            date AS date,
             loan_type,
-            name AS loan_name
+            name AS name
         FROM loans
         WHERE artisan_id = ?
     `;
 
     const machinesSql = `
         SELECT
-            title AS machine_title,
-            size AS machine_size,
-            number_of_machines AS machine_number_of_machines
+            title AS title,
+            size AS size,
+            number_of_machines AS number_of_machines
         FROM machines
         WHERE artisan_id = ?
     `;
