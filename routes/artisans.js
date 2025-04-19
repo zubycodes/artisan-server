@@ -213,8 +213,8 @@ const entityOps = {
 
     const ops = trainings.map((training) => {
       const sql = `
-        INSERT INTO trainings (artisan_id, title, duration, organization, user_Id)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO trainings (artisan_id, title, duration, organization, date, user_Id)
+        VALUES (?, ?, ?, ?, ?, ?)
       `;
 
       return dbAsync.run(sql, [
@@ -222,6 +222,7 @@ const entityOps = {
         training.title,
         training.duration,
         training.organization,
+        training.date,
         training.user_Id || null,
       ]);
     });
@@ -234,8 +235,8 @@ const entityOps = {
 
     const ops = loans.map((loan) => {
       const sql = `
-        INSERT INTO loans (artisan_id, amount, date, loan_type, name, user_Id)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO loans (artisan_id, amount, date, loan_type, name, subName, user_Id)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
 
       return dbAsync.run(sql, [
@@ -244,6 +245,7 @@ const entityOps = {
         loan.date,
         loan.loan_type || null,
         loan.name || null,
+        loan.subName || null,
         loan.user_Id || null,
       ]);
     });
@@ -644,7 +646,8 @@ const entityOps = {
         SELECT
             title AS title,
             duration AS duration,
-            organization AS organization
+            organization AS organization,
+            date
         FROM trainings
         WHERE artisan_id = ?
     `;
@@ -654,7 +657,8 @@ const entityOps = {
             amount AS amount,
             date AS date,
             loan_type,
-            name AS name
+            name AS name,
+            subName
         FROM loans
         WHERE artisan_id = ?
     `;
@@ -950,220 +954,197 @@ module.exports = (dependencies) => {
 
     // Update an artisan and related data
     update: [
-      // 1. Middleware for handling file uploads (like in create)
+      // 1. Middleware for handling file uploads
       upload.fields([
         { name: "profile_picture", maxCount: 1 },
         { name: "product_images", maxCount: 5 }, // Adjust maxCount as needed
         { name: "shop_images", maxCount: 5 }, // Adjust maxCount as needed
       ]),
-      // 2. NEW: Parse the specific stringified fields into objects/arrays
+      // 2. Parse the specific stringified fields into objects/arrays
       parseJsonFields(['artisan', 'trainings', 'loans', 'machines']),
 
-      // 3. Validation runs now, operating on the parsed objects in req.body
+      // 3. Validation middleware
       validateUpdateArtisanData,
+
+      // 4. Main Handler Function
       async (req, res) => {
         const artisanId = req.params.id; // Get ID from route parameters
         const routeLogger = logger.child({
           route: "artisans",
           handler: "update",
-          artisanId: artisanId, // Log the ID being updated
+          artisanId: artisanId,
         });
 
         routeLogger.info(
           { body: req.body, files: req.files },
-          "Received update artisan request"
+          "Received update artisan request (post-parsing)" // Log after parsing
         );
 
-        // 3. Set up SSE headers
-        res.setHeader("Content-Type", "text/event-stream");
-        res.setHeader("Cache-Control", "no-cache");
-        res.setHeader("Connection", "keep-alive");
-        res.flushHeaders();
+        // --- SSE Headers Removed ---
 
-        // 4. Validation check (similar to create)
+        // Validation check performed by middleware, but double check here
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
           routeLogger.warn({ errors: errors.array() }, "Validation failed");
-          res.write(
-            `data: ${JSON.stringify({
-              status: "error",
-              statusCode: 400, // Use 400 for validation errors
-              message: errors
-                .array()
-                .map((error) => error.msg)
-                .join(", "),
-              errors: errors.array(),
-            })}\n\n`
-          );
-          // Use 400 status for the final response end for validation errors
-          return res.status(400).end();
+          // Standard JSON error response for validation
+          return res.status(400).json({
+            status: "error",
+            statusCode: 400,
+            message: errors.array().map((error) => error.msg).join(", "),
+            errors: errors.array(),
+          });
         }
 
         // Start transaction
         let transactionStarted = false;
         try {
-          await dbAsync.run("BEGIN TRANSACTION"); // Assuming dbAsync manages transactions
+          await dbAsync.run("BEGIN TRANSACTION");
           transactionStarted = true;
           routeLogger.info("Database transaction started.");
 
-          const { artisan, trainings, loans, machines } = req.body; // Extract main data parts
-          let profilePicturePath = undefined; // Use undefined to signify no update initially
+          // Now artisan, trainings etc are objects/arrays due to parseJsonFields middleware
+          const { artisan, trainings, loans, machines } = req.body;
+          let profilePicturePath = undefined;
           let productImagesPaths = [];
           let shopImagesPaths = [];
 
           // Check if a new profile picture was uploaded
-          if (
-            req.files &&
-            req.files["profile_picture"] &&
-            req.files["profile_picture"][0]
-          ) {
+          if (req.files?.["profile_picture"]?.[0]) {
             profilePicturePath = req.files["profile_picture"][0].path;
-            routeLogger.info(
-              { profilePicturePath },
-              "New profile picture uploaded."
-            );
+            routeLogger.info({ profilePicturePath }, "New profile picture uploaded.");
             // Optional: Add logic here to delete the old profile picture file if needed
           }
 
-          // 5. Update Artisan Core Data (if provided)
-          if (artisan || profilePicturePath !== undefined) {
-            //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Updating artisan core data...' })}\n\n`);
+          // Update Artisan Core Data
+          // Check if artisan object exists (post-parsing) or if profile pic changed
+          if ((artisan && Object.keys(artisan).length > 0) || profilePicturePath !== undefined) {
             routeLogger.info("Updating artisan core data...");
-            // Pass artisan data and the *new* picture path (or undefined if not changed)
             const updateResult = await entityOps.updateArtisan(
               artisanId,
-              artisan,
-              profilePicturePath
+              artisan, // Pass the parsed artisan object
+              profilePicturePath // Pass the new path or undefined
             );
-            // Check if the artisan was actually found and updated
             if (!updateResult || updateResult.changes === 0) {
-              throw Object.assign(new Error("Artisan not found"), {
-                statusCode: 404,
+              throw Object.assign(new Error("Artisan not found or no changes made to core data"), {
+                statusCode: 404, // Or 400 if no changes is considered a client error
               });
             }
             routeLogger.info("Artisan core data updated successfully.");
           } else {
-            routeLogger.info(
-              "No core artisan data or profile picture provided for update."
-            );
+            routeLogger.info("No core artisan data or profile picture provided for update.");
           }
 
-          /* // 6. Update Trainings (Delete old, Create new if provided)
-          if (trainings) {
-            //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Updating trainings...' })}\n\n`);
-            routeLogger.info("Deleting old trainings...");
+          // Update Trainings (Delete old, Create new if provided in body)
+          // Check if trainings array exists post-parsing
+          if (trainings !== undefined && trainings !== null) { // Check presence, even if empty array []
+            routeLogger.info(`Updating trainings (Received: ${Array.isArray(trainings) ? trainings.length : 'Not an array'})`);
             await entityOps.deleteTrainings(artisanId);
-            routeLogger.info("Creating new trainings...");
-            await entityOps.createTrainings(artisanId, trainings);
-            routeLogger.info("Trainings updated successfully.");
+            if (Array.isArray(trainings) && trainings.length > 0) {
+              await entityOps.createTrainings(artisanId, trainings); // Pass parsed array
+              routeLogger.info("New trainings created successfully.");
+            } else {
+              routeLogger.info("No new trainings to create (received empty or non-array).");
+            }
           }
 
-          // 7. Update Loans (Delete old, Create new if provided)
-          if (loans) {
-            //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Updating loans...' })}\n\n`);
-            routeLogger.info("Deleting old loans...");
+          // Update Loans (Delete old, Create new if provided)
+          if (loans !== undefined && loans !== null) {
+            routeLogger.info(`Updating loans (Received: ${Array.isArray(loans) ? loans.length : 'Not an array'})`);
             await entityOps.deleteLoans(artisanId);
-            routeLogger.info("Creating new loans...");
-            await entityOps.createLoans(artisanId, loans);
-            routeLogger.info("Loans updated successfully.");
+            if (Array.isArray(loans) && loans.length > 0) {
+              await entityOps.createLoans(artisanId, loans); // Pass parsed array
+              routeLogger.info("New loans created successfully.");
+            } else {
+              routeLogger.info("No new loans to create.");
+            }
           }
 
-          // 8. Update Machines (Delete old, Create new if provided)
-          if (machines) {
-            // res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Updating machines...' })}\n\n`);
-            routeLogger.info("Deleting old machines...");
+          // Update Machines (Delete old, Create new if provided)
+          if (machines !== undefined && machines !== null) {
+            routeLogger.info(`Updating machines (Received: ${Array.isArray(machines) ? machines.length : 'Not an array'})`);
             await entityOps.deleteMachines(artisanId);
-            routeLogger.info("Creating new machines...");
-            await entityOps.createMachines(artisanId, machines);
-            routeLogger.info("Machines updated successfully.");
-          } */
-
-          /* // 9. Update Product Images (Delete old, Create new if provided)
-          const productImages = req.files ? req.files["product_images"] : [];
-          if (productImages && productImages.length > 0) {
-            //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Updating product images...' })}\n\n`);
-            routeLogger.info("Deleting old product images...");
-            // Optional: Add logic here to delete old image files from storage
-            await entityOps.deleteProductImages(artisanId);
-            routeLogger.info("Creating new product images...");
-            productImagesPaths = await entityOps.createProductImages(
-              artisanId,
-              productImages
-            );
-            routeLogger.info("Product images updated successfully.");
+            if (Array.isArray(machines) && machines.length > 0) {
+              await entityOps.createMachines(artisanId, machines); // Pass parsed array
+              routeLogger.info("New machines created successfully.");
+            } else {
+              routeLogger.info("No new machines to create.");
+            }
           }
 
-          // 10. Update Shop Images (Delete old, Create new if provided)
-          const shopImages = req.files ? req.files["shop_images"] : [];
-          if (shopImages && shopImages.length > 0) {
-            //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Updating shop images...' })}\n\n`);
-            routeLogger.info("Deleting old shop images...");
-            // Optional: Add logic here to delete old image files from storage
-            await entityOps.deleteShopImages(artisanId);
-            routeLogger.info("Creating new shop images...");
-            shopImagesPaths = await entityOps.createShopImages(
-              artisanId,
-              shopImages
-            );
-            routeLogger.info("Shop images updated successfully.");
-          } */
-
+          /*  // Update Product Images (Delete old, Create new if files provided)
+           const productImages = req.files?.["product_images"] || []; // Use optional chaining
+           if (productImages.length > 0) {
+             routeLogger.info(`Updating product images (Received: ${productImages.length} files)`);
+             await entityOps.deleteProductImages(artisanId); // Optional: Delete old files from storage here
+             productImagesPaths = await entityOps.createProductImages(artisanId, productImages);
+             routeLogger.info("New product images created successfully.");
+           } else {
+             routeLogger.info("No new product image files provided for update.");
+           }
+ 
+ 
+           // Update Shop Images (Delete old, Create new if files provided)
+           const shopImages = req.files?.["shop_images"] || []; // Use optional chaining
+           if (shopImages.length > 0) {
+             routeLogger.info(`Updating shop images (Received: ${shopImages.length} files)`);
+             await entityOps.deleteShopImages(artisanId); // Optional: Delete old files from storage here
+             shopImagesPaths = await entityOps.createShopImages(artisanId, shopImages);
+             routeLogger.info("New shop images created successfully.");
+           } else {
+             routeLogger.info("No new shop image files provided for update.");
+           }
+  */
           // Commit transaction
           await dbAsync.run("COMMIT");
           routeLogger.info("Database transaction committed.");
 
-          // 11. Send Complete Response (similar to create)
-          res.write(
-            `data: ${JSON.stringify({
-              status: "complete",
-              statusCode: 200, // Use 200 for successful update
-              id: artisanId, // Include the ID being updated
-              message: "Artisan and related data updated successfully",
-              // Include paths of *newly created* images/profile pic
-              profilePicturePath: profilePicturePath, // Path of the *new* profile picture if uploaded
-              productImagesPaths: productImagesPaths,
-              shopImagesPaths: shopImagesPaths,
-            })}\n\n`
-          );
-          return res.status(200).end(); // Use 200 for successful update
+          // --- Removed res.write ---
+
+          // Standard JSON success response
+          return res.status(200).json({
+            status: "complete",
+            statusCode: 200,
+            id: artisanId,
+            message: "Artisan and related data updated successfully",
+            profilePicturePath: profilePicturePath, // Path of the *new* profile picture if uploaded
+            productImagesPaths: productImagesPaths, // Paths of *newly created* product images
+            shopImagesPaths: shopImagesPaths,       // Paths of *newly created* shop images
+          });
+
+          // --- Removed res.status(200).end() ---
+
         } catch (err) {
           // Rollback transaction if it was started
           if (transactionStarted) {
             try {
               await dbAsync.run("ROLLBACK");
-              routeLogger.info(
-                "Database transaction rolled back due to error."
-              );
+              routeLogger.info("Database transaction rolled back due to error.");
             } catch (rollbackErr) {
-              routeLogger.error(
-                { error: rollbackErr },
-                "Failed to rollback transaction."
-              );
+              routeLogger.error({ error: rollbackErr }, "Failed to rollback transaction.");
             }
           }
 
-          const statusCode = err.statusCode || 500; // Use specific status code if provided (e.g., 404), otherwise 500
-          routeLogger.error(
-            { error: err, statusCode },
-            "Error updating artisan"
-          );
+          const statusCode = err.statusCode || 500;
+          // Log the detailed error
+          routeLogger.error({
+            message: err.message, // Main error message
+            statusCode: statusCode,
+            stack: err.stack, // Include stack trace for debugging
+            originalError: err // Include the full error object if needed
+          }, "Error updating artisan");
 
-          // 12. Send Error Response (similar to create)
-          res.write(
-            `data: ${JSON.stringify({
-              status: "error",
-              statusCode: statusCode,
-              message:
-                err.message ||
-                "An internal server error occurred during update.",
-              // Avoid sending the full error object in production for security
-              error:
-                process.env.NODE_ENV === "development"
-                  ? { message: err.message, stack: err.stack }
-                  : { message: err.message },
-            })}\n\n`
-          );
-          return res.status(statusCode).end(); // Use the determined status code
+
+          // --- Removed res.write for error ---
+
+          // Standard JSON error response
+          return res.status(statusCode).json({
+            status: "error",
+            statusCode: statusCode,
+            message: err.message || "An internal server error occurred during update.",
+            // Avoid sending detailed stack in production JSON response for security
+            error: process.env.NODE_ENV === "development" ? { message: err.message } : { message: "An internal server error occurred." },
+          });
+          // --- Removed res.status(statusCode).end() ---
         }
       },
     ],
