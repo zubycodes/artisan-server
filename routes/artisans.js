@@ -271,49 +271,89 @@ const entityOps = {
     return Promise.all(ops);
   },
 
-  updateArtisan(id, artisan) {
+  // Updated function signature to accept newProfilePicturePath
+  async updateArtisan(id, artisan, newProfilePicturePath) {
+    // Base fields from the artisan object (excluding profile_picture)
+    const fieldsToUpdate = [
+      "name",
+      "father_name",
+      "cnic",
+      "gender",
+      "date_of_birth",
+      "contact_no",
+      "email",
+      "address",
+      "tehsil_id",
+      "education_level_id",
+      "dependents_count",
+      "ntn",
+      "skill_id",
+      "uc",
+      "major_product",
+      "experience",
+      "avg_monthly_income",
+      "employment_type_id",
+      "raw_material",
+      "loan_status",
+      "has_machinery",
+      "has_training",
+      "inherited_skills",
+      "financial_assistance",
+      "technical_assistance",
+      "comments",
+      "latitude",
+      "longitude",
+      "user_Id",
+    ];
+
+    const setClauses = [];
+    const params = [];
+
+    // Build SET clauses and params for fields coming from the artisan object
+    fieldsToUpdate.forEach((field) => {
+      // Check if the field exists in the input 'artisan' object
+      // This allows for partial updates if the 'artisan' object only contains changed fields.
+      // If you expect 'artisan' to always contain *all* fields, you can skip the 'hasOwnProperty' check.
+      if (artisan && Object.prototype.hasOwnProperty.call(artisan, field)) {
+        setClauses.push(`${field} = ?`);
+        // Use null if the value is explicitly undefined or null, otherwise use the value
+        params.push(
+          artisan[field] !== undefined && artisan[field] !== null
+            ? artisan[field]
+            : null
+        );
+      }
+    });
+
+    // Conditionally add profile_picture update if a new path is provided
+    // Use 'undefined' check because null might be a valid value to *clear* the picture
+    if (newProfilePicturePath !== undefined) {
+      setClauses.push("profile_picture = ?");
+      params.push(newProfilePicturePath); // Pass the new path (could be null to clear it)
+    }
+
+    // Only proceed if there's something to update
+    if (setClauses.length === 0) {
+      // Nothing to update (no fields in artisan object and no new profile picture)
+      // Return a result indicating no changes were needed or made
+      return { changes: 0 };
+    }
+
+    // Add updated_at timestamp
+    setClauses.push("updated_at = CURRENT_TIMESTAMP");
+
+    // Add the ID for the WHERE clause
+    params.push(id);
+
+    // Construct the final SQL query
     const sql = `
-      UPDATE artisans SET
-        name = ?, father_name = ?, cnic = ?, gender = ?, date_of_birth = ?, contact_no = ?, email = ?, address = ?,
-        tehsil_id = ?, education_level_id = ?, dependents_count = ?, ntn = ?, skill_id = ?, uc = ?,
-        major_product = ?, experience = ?, avg_monthly_income = ?, employment_type_id = ?, raw_material = ?,
-        loan_status = ?, has_machinery = ?, has_training = ?, inherited_skills = ?, financial_assistance = ?, technical_assistance = ?, comments = ?, latitude = ?,
-        longitude = ?, user_Id = ?, updated_at = CURRENT_TIMESTAMP
+      UPDATE artisans
+      SET ${setClauses.join(", ")}
       WHERE id = ?
     `;
 
-    return dbAsync.run(sql, [
-      artisan.name || null,
-      artisan.father_name || null,
-      artisan.cnic || null,
-      artisan.gender || null,
-      artisan.date_of_birth || null,
-      artisan.contact_no || null,
-      artisan.email || null,
-      artisan.address || null,
-      artisan.tehsil_id || null,
-      artisan.education_level_id || null,
-      artisan.dependents_count || null,
-      artisan.ntn || null,
-      artisan.skill_id || null,
-      artisan.uc || null,
-      artisan.major_product || null,
-      artisan.experience || null,
-      artisan.avg_monthly_income || null,
-      artisan.employment_type_id || null,
-      artisan.raw_material || null,
-      artisan.loan_status || null,
-      artisan.has_machinery || null,
-      artisan.has_training || null,
-      artisan.inherited_skills || null,
-      artisan.financial_assistance || null,
-      artisan.technical_assistance || null,
-      artisan.comments || null,
-      artisan.latitude || null,
-      artisan.longitude || null,
-      artisan.user_Id || null,
-      id,
-    ]);
+    // Execute the query and return the result (contains 'changes')
+    return dbAsync.run(sql, params);
   },
 
   softDeleteArtisan(id) {
@@ -909,161 +949,217 @@ module.exports = (dependencies) => {
 
     // Update an artisan and related data
     update: [
-      validateUpdateArtisanData,
+      // 1. Middleware for handling file uploads (like in create)
+      upload.fields([
+        { name: "profile_picture", maxCount: 1 },
+        { name: "product_images", maxCount: 5 }, // Adjust maxCount as needed
+        { name: "shop_images", maxCount: 5 }, // Adjust maxCount as needed
+      ]),
+      // 2. Validation middleware
+      validateUpdateArtisanData, // Assuming this validates fields for update
       async (req, res) => {
+        const artisanId = req.params.id; // Get ID from route parameters
         const routeLogger = logger.child({
           route: "artisans",
           handler: "update",
+          artisanId: artisanId, // Log the ID being updated
         });
+
         routeLogger.info(
-          { id: req.params.id, body: req.body },
+          { body: req.body, files: req.files },
           "Received update artisan request"
         );
+
+        // 3. Set up SSE headers
         res.setHeader("Content-Type", "text/event-stream");
         res.setHeader("Cache-Control", "no-cache");
         res.setHeader("Connection", "keep-alive");
         res.flushHeaders();
 
+        // 4. Validation check (similar to create)
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+          routeLogger.warn({ errors: errors.array() }, "Validation failed");
           res.write(
             `data: ${JSON.stringify({
               status: "error",
-              error: errors.array(),
+              statusCode: 400, // Use 400 for validation errors
+              message: errors
+                .array()
+                .map((error) => error.msg)
+                .join(", "),
+              errors: errors.array(),
             })}\n\n`
           );
+          // Use 400 status for the final response end for validation errors
           return res.status(400).end();
         }
 
+        // Start transaction
+        let transactionStarted = false;
         try {
-          const artisanId = req.params.id;
-          const {
-            artisan,
-            business,
-            craft,
-            trainings,
-            loans,
-            machines,
-            assistance,
-          } = req.body;
+          await dbAsync.run("BEGIN TRANSACTION"); // Assuming dbAsync manages transactions
+          transactionStarted = true;
+          routeLogger.info("Database transaction started.");
 
-          /* res.write(
-            `data: ${JSON.stringify({
-              status: "progress",
-              message: "Updating artisan...",
-            })}\n\n`
-          ); */
+          const { artisan, trainings, loans, machines } = req.body; // Extract main data parts
+          let profilePicturePath = undefined; // Use undefined to signify no update initially
+          let productImagesPaths = [];
+          let shopImagesPaths = [];
 
-          // Start transaction
-          await dbAsync.run("BEGIN TRANSACTION");
-
-          // Update artisan if provided
-          if (artisan) {
-            const { changes } = await entityOps.updateArtisan(
-              artisanId,
-              artisan
+          // Check if a new profile picture was uploaded
+          if (
+            req.files &&
+            req.files["profile_picture"] &&
+            req.files["profile_picture"][0]
+          ) {
+            profilePicturePath = req.files["profile_picture"][0].path;
+            routeLogger.info(
+              { profilePicturePath },
+              "New profile picture uploaded."
             );
-            if (changes === 0) {
-              throw new Error("Artisan not found");
+            // Optional: Add logic here to delete the old profile picture file if needed
+          }
+
+          // 5. Update Artisan Core Data (if provided)
+          if (artisan || profilePicturePath !== undefined) {
+            //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Updating artisan core data...' })}\n\n`);
+            routeLogger.info("Updating artisan core data...");
+            // Pass artisan data and the *new* picture path (or undefined if not changed)
+            const updateResult = await entityOps.updateArtisan(
+              artisanId,
+              artisan,
+              profilePicturePath
+            );
+            // Check if the artisan was actually found and updated
+            if (!updateResult || updateResult.changes === 0) {
+              throw Object.assign(new Error("Artisan not found"), {
+                statusCode: 404,
+              });
             }
+            routeLogger.info("Artisan core data updated successfully.");
+          } else {
+            routeLogger.info(
+              "No core artisan data or profile picture provided for update."
+            );
           }
 
-          // Update related data if provided
-          const operations = [];
-
-          if (business) {
-            /* res.write(
-              `data: ${JSON.stringify({
-                status: "progress",
-                message: "Updating business...",
-              })}\n\n`
-            ); */
-            operations.push(entityOps.updateBusiness(artisanId, business));
-          }
-
-          if (craft) {
-            /* res.write(
-              `data: ${JSON.stringify({
-                status: "progress",
-                message: "Updating craft...",
-              })}\n\n`
-            ); */
-            operations.push(entityOps.updateCraft(artisanId, craft));
-          }
-
+          /* // 6. Update Trainings (Delete old, Create new if provided)
           if (trainings) {
-            /* res.write(
-              `data: ${JSON.stringify({
-                status: "progress",
-                message: "Updating trainings...",
-              })}\n\n`
-            ); */
-            operations.push(entityOps.deleteTrainings(artisanId));
-            operations.push(entityOps.createTrainings(artisanId, trainings));
+            //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Updating trainings...' })}\n\n`);
+            routeLogger.info("Deleting old trainings...");
+            await entityOps.deleteTrainings(artisanId);
+            routeLogger.info("Creating new trainings...");
+            await entityOps.createTrainings(artisanId, trainings);
+            routeLogger.info("Trainings updated successfully.");
           }
 
+          // 7. Update Loans (Delete old, Create new if provided)
           if (loans) {
-            /* res.write(
-              `data: ${JSON.stringify({
-                status: "progress",
-                message: "Updating loans...",
-              })}\n\n`
-            ); */
-            operations.push(entityOps.deleteLoans(artisanId));
-            operations.push(entityOps.createLoans(artisanId, loans));
+            //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Updating loans...' })}\n\n`);
+            routeLogger.info("Deleting old loans...");
+            await entityOps.deleteLoans(artisanId);
+            routeLogger.info("Creating new loans...");
+            await entityOps.createLoans(artisanId, loans);
+            routeLogger.info("Loans updated successfully.");
           }
 
+          // 8. Update Machines (Delete old, Create new if provided)
           if (machines) {
-            /*  res.write(
-              `data: ${JSON.stringify({
-                status: "progress",
-                message: "Updating machines...",
-              })}\n\n`
-            ); */
-            operations.push(entityOps.deleteMachines(artisanId));
-            operations.push(entityOps.createMachines(artisanId, machines));
+            // res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Updating machines...' })}\n\n`);
+            routeLogger.info("Deleting old machines...");
+            await entityOps.deleteMachines(artisanId);
+            routeLogger.info("Creating new machines...");
+            await entityOps.createMachines(artisanId, machines);
+            routeLogger.info("Machines updated successfully.");
+          } */
+
+          /* // 9. Update Product Images (Delete old, Create new if provided)
+          const productImages = req.files ? req.files["product_images"] : [];
+          if (productImages && productImages.length > 0) {
+            //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Updating product images...' })}\n\n`);
+            routeLogger.info("Deleting old product images...");
+            // Optional: Add logic here to delete old image files from storage
+            await entityOps.deleteProductImages(artisanId);
+            routeLogger.info("Creating new product images...");
+            productImagesPaths = await entityOps.createProductImages(
+              artisanId,
+              productImages
+            );
+            routeLogger.info("Product images updated successfully.");
           }
 
-          if (assistance) {
-            /* res.write(
-              `data: ${JSON.stringify({
-                status: "progress",
-                message: "Updating assistance...",
-              })}\n\n`
-            ); */
-            operations.push(entityOps.updateAssistance(artisanId, assistance));
-          }
-
-          if (operations.length > 0) {
-            await executeTransaction(operations);
-          }
+          // 10. Update Shop Images (Delete old, Create new if provided)
+          const shopImages = req.files ? req.files["shop_images"] : [];
+          if (shopImages && shopImages.length > 0) {
+            //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Updating shop images...' })}\n\n`);
+            routeLogger.info("Deleting old shop images...");
+            // Optional: Add logic here to delete old image files from storage
+            await entityOps.deleteShopImages(artisanId);
+            routeLogger.info("Creating new shop images...");
+            shopImagesPaths = await entityOps.createShopImages(
+              artisanId,
+              shopImages
+            );
+            routeLogger.info("Shop images updated successfully.");
+          } */
 
           // Commit transaction
           await dbAsync.run("COMMIT");
+          routeLogger.info("Database transaction committed.");
+
+          // 11. Send Complete Response (similar to create)
           res.write(
             `data: ${JSON.stringify({
               status: "complete",
+              statusCode: 200, // Use 200 for successful update
+              id: artisanId, // Include the ID being updated
               message: "Artisan and related data updated successfully",
+              // Include paths of *newly created* images/profile pic
+              profilePicturePath: profilePicturePath, // Path of the *new* profile picture if uploaded
+              productImagesPaths: productImagesPaths,
+              shopImagesPaths: shopImagesPaths,
             })}\n\n`
           );
-          res.status(200).end();
+          return res.status(200).end(); // Use 200 for successful update
         } catch (err) {
-          await dbAsync.run("ROLLBACK");
-          const routeLogger = logger.child({
-            route: "artisans",
-            handler: "update",
-          });
+          // Rollback transaction if it was started
+          if (transactionStarted) {
+            try {
+              await dbAsync.run("ROLLBACK");
+              routeLogger.info(
+                "Database transaction rolled back due to error."
+              );
+            } catch (rollbackErr) {
+              routeLogger.error(
+                { error: rollbackErr },
+                "Failed to rollback transaction."
+              );
+            }
+          }
+
+          const statusCode = err.statusCode || 500; // Use specific status code if provided (e.g., 404), otherwise 500
           routeLogger.error(
-            { error: err, id: req.params.id },
+            { error: err, statusCode },
             "Error updating artisan"
           );
+
+          // 12. Send Error Response (similar to create)
           res.write(
             `data: ${JSON.stringify({
               status: "error",
-              error: err.message,
+              statusCode: statusCode,
+              message:
+                err.message ||
+                "An internal server error occurred during update.",
+              // Avoid sending the full error object in production for security
+              error:
+                process.env.NODE_ENV === "development"
+                  ? { message: err.message, stack: err.stack }
+                  : { message: err.message },
             })}\n\n`
           );
-          res.status(500).end();
+          return res.status(statusCode).end(); // Use the determined status code
         }
       },
     ],
