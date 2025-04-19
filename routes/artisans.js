@@ -9,6 +9,7 @@ const {
   body,
   validationResult,
 } = require("./artisans_base_route.js");
+const parseJsonFields = require('../config/parseJsonFields.js'); // Adjust path
 
 // Validation middleware for create
 const validateArtisanData = [
@@ -955,8 +956,11 @@ module.exports = (dependencies) => {
         { name: "product_images", maxCount: 5 }, // Adjust maxCount as needed
         { name: "shop_images", maxCount: 5 }, // Adjust maxCount as needed
       ]),
-      // 2. Validation middleware
-      validateUpdateArtisanData, // Assuming this validates fields for update
+      // 2. NEW: Parse the specific stringified fields into objects/arrays
+      parseJsonFields(['artisan', 'trainings', 'loans', 'machines']),
+
+      // 3. Validation runs now, operating on the parsed objects in req.body
+      validateUpdateArtisanData,
       async (req, res) => {
         const artisanId = req.params.id; // Get ID from route parameters
         const routeLogger = logger.child({
