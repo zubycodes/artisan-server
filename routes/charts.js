@@ -125,6 +125,7 @@ const chartOps = {
       SELECT el.name, COUNT(*) as value 
       FROM artisans a 
       JOIN education el ON a.education_level_id = el.id 
+      where a.isActive = 1
       GROUP BY el.name
     `
       )
@@ -145,6 +146,7 @@ const chartOps = {
     SELECT s.name, COUNT(*) as value 
     FROM artisans a 
     JOIN techniques s ON a.skill_id = s.id 
+      where a.isActive = 1
     GROUP BY s.name
   `
       )
@@ -162,6 +164,7 @@ const chartOps = {
     SELECT et.name, COUNT(*) as value 
     FROM artisans a 
     JOIN employment_types et ON a.employment_type_id = et.id 
+      where a.isActive = 1
     GROUP BY et.name
   `
       )
@@ -181,6 +184,7 @@ const chartOps = {
     JOIN geo_level as tehsil ON a.tehsil_id = tehsil.id
     JOIN geo_level as district ON substr( tehsil.code, 1, 6 ) = district.code
     JOIN geo_level as division ON substr( district.code, 1, 3 ) = division.code
+    where a.isActive = 1
     GROUP BY division.name
     LIMIT 5
   `
@@ -199,6 +203,7 @@ const chartOps = {
     FROM artisans a 
     JOIN geo_level as tehsil ON a.tehsil_id = tehsil.id
     JOIN geo_level as district ON substr( tehsil.code, 1, 6 ) = district.code
+      where a.isActive = 1
     GROUP BY district.name
   `
       )
@@ -215,6 +220,7 @@ const chartOps = {
     SELECT t.name, COUNT(*) as value 
     FROM artisans a 
     JOIN geo_level t ON a.tehsil_id = t.id 
+      where a.isActive = 1
     GROUP BY t.name
   `
       )
@@ -230,6 +236,7 @@ const chartOps = {
     SELECT skill.name, COUNT(*) as value 
     FROM artisans a 
     JOIN techniques as skill ON a.skill_id = skill.id
+      where a.isActive = 1
     GROUP BY skill.name
     LIMIT 5
   `);
@@ -260,6 +267,7 @@ const chartOps = {
     SELECT s.name as skill, ROUND(AVG(a.avg_monthly_income), 2) as avgIncome 
     FROM artisans a 
     JOIN techniques s ON a.skill_id = s.id 
+      where a.isActive = 1
     GROUP BY s.name
   `);
   },
@@ -341,8 +349,7 @@ const chartOps = {
   getGenderByTehsil() {
     return dbAsync
       .all(
-        `
-    SELECT t.name, a.gender, COUNT(*) as value FROM artisans a JOIN geo_level t ON a.tehsil_id = t.id GROUP BY t.name, a.gender
+        `SELECT t.name, a.gender, COUNT(*) as value FROM artisans a JOIN geo_level t ON a.tehsil_id = t.id  where a.isActive = 1 GROUP BY t.name, a.gender
   `
       )
       .then((rows) => {
@@ -369,6 +376,7 @@ const chartOps = {
     FROM artisans a 
     JOIN techniques s ON a.skill_id = s.id 
     JOIN employment_types et ON a.employment_type_id = et.id 
+     where a.isActive = 1
     GROUP BY s.name, et.name
   `
       )
