@@ -10,7 +10,7 @@ const chartOps = {
   // Gender distribution
   getGenderDistribution() {
     return dbAsync
-      .all("SELECT gender, COUNT(*) as value FROM artisans GROUP BY gender")
+      .all("SELECT gender, COUNT(*) as value FROM artisans a where a.isActive = 1 GROUP BY gender")
       .then((results) => {
         // Return data already in the format Recharts expects
         return results.map((item) => ({
@@ -399,7 +399,8 @@ const chartOps = {
   getRegistrationsOverTime() {
     return dbAsync.all(`
     SELECT strftime('%Y-%m-%d', created_at) as name, COUNT(*) as value 
-    FROM artisans 
+    FROM artisans a
+     where a.isActive = 1
     GROUP BY 1 
     ORDER BY 1
   `);
@@ -411,7 +412,8 @@ const chartOps = {
       .all(
         `
     SELECT strftime('%Y-%m', created_at) as month, COUNT(*) as monthly_count 
-    FROM artisans 
+    FROM artisans a 
+     where a.isActive = 1
     GROUP BY month 
     ORDER BY month
   `
@@ -431,7 +433,8 @@ const chartOps = {
   // Experience vs income (scatter plot)
   getExperienceVsIncome() {
     return dbAsync.all(`
-    SELECT experience, avg_monthly_income as income FROM artisans
+    SELECT experience, avg_monthly_income as income FROM artisans a 
+     where a.isActive = 1
   `);
     // This is already in a good format for scatter plot
   },
@@ -439,7 +442,8 @@ const chartOps = {
   // Geographical distribution (for scatter plot/map)
   getGeographicalDistribution() {
     return dbAsync.all(`
-    SELECT latitude, longitude, name, father_name FROM artisans
+    SELECT latitude, longitude, name, father_name FROM artisans a 
+     where a.isActive = 1
   `);
     // This is already in a good format for geographical visualization
   },

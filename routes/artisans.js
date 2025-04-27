@@ -97,11 +97,11 @@ const entityOps = {
     const sql = `
       INSERT INTO artisans (
         name, father_name, cnic, gender, date_of_birth, contact_no, email, address,
-        tehsil_id, education_level_id, dependents_count, profile_picture, ntn, skill_id, uc,
+        tehsil_id, education_level_id, dependents_count, crafting_method, profile_picture, ntn, skill_id, uc,
         major_product, experience, avg_monthly_income, employment_type_id, raw_material,
         loan_status, has_machinery, has_training, inherited_skills, financial_assistance, technical_assistance, comments, latitude,
         longitude, user_Id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const params = [
@@ -116,6 +116,7 @@ const entityOps = {
       artisan.tehsil_id || null,
       artisan.education_level_id || null,
       artisan.dependents_count,
+      artisan.crafting_method,
       profilePicturePath,
       artisan.ntn || null,
       artisan.skill_id,
@@ -289,6 +290,7 @@ const entityOps = {
       "tehsil_id",
       "education_level_id",
       "dependents_count",
+      "crafting_method",
       "ntn",
       "skill_id",
       "uc",
@@ -589,6 +591,7 @@ const entityOps = {
             tehsil.name AS tehsil_name,
             artisans.education_level_id,
             artisans.dependents_count,
+            artisans.crafting_method,
             artisans.ntn,
             artisans.uc,
             artisans.skill_id,
