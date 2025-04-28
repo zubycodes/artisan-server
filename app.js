@@ -29,9 +29,12 @@ const CONFIG = Object.freeze({
     "http://artisan-psic.com",
     "https://artisan-psic.com",
     "https://tierceledconsulting.com",
+    "http://localhost:6500",
     "http://localhost:8080",
+    "http://localhost:8081",
     "http://localhost:8082",
     "http://localhost:8083",
+    "http://localhost:8084",
     "http://3.106.165.252",
   ],
   WORKER_COUNT: process.env.WORKER_COUNT || os.cpus().length,
@@ -44,13 +47,13 @@ const logger = pino({
   transport:
     CONFIG.ENV !== "production"
       ? {
-          target: "pino-pretty",
-          options: {
-            colorize: true,
-            translateTime: "SYS:yyyy-mm-dd HH:MM:ss",
-            ignore: "pid,hostname",
-          },
-        }
+        target: "pino-pretty",
+        options: {
+          colorize: true,
+          translateTime: "SYS:yyyy-mm-dd HH:MM:ss",
+          ignore: "pid,hostname",
+        },
+      }
       : undefined,
   base: { pid: process.pid, env: CONFIG.ENV },
 });
