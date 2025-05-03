@@ -19,7 +19,6 @@ const chartOps = {
         }));
       });
   },
-
   getDashboardData(filters = {}) {
     const {
       user_Id,
@@ -39,80 +38,56 @@ const chartOps = {
       conditions.push("artisans.user_Id = ?");
       params.push(user_Id);
     }
-    if (division) {
-      conditions.push("division.name = ?");
-      params.push(division);
-    }
-    if (district) {
-      conditions.push("district.name = ?");
-      params.push(district);
-    }
-    if (tehsil) {
-      conditions.push("tehsil.name = ?");
-      params.push(tehsil);
-    }
-    if (gender) {
-      conditions.push("artisans.gender = ?");
-      params.push(gender);
-    }
-    if (craft) {
-      conditions.push("crafts.name = ?");
-      params.push(craft);
-    }
-    if (category) {
-      conditions.push("categories.name = ?");
-      params.push(category);
-    }
-    if (skill) {
-      conditions.push("techniques.name = ?");
-      params.push(skill);
-    }
 
-    const whereClause = conditions.length
-      ? `WHERE ${conditions.join(" AND ")}`
-      : "";
+    // Helper function to handle array filters
+    const addMultiSelectCondition = (filterValue, columnName, paramsArray, conditionsArray, tableName = '') => {
+      if (filterValue && Array.isArray(filterValue) && filterValue.length > 0) {
+        const placeholders = filterValue.map(() => "?").join(", ");
+        const columnPrefix = tableName ? `${tableName}.` : '';
+        conditionsArray.push(`${columnPrefix}${columnName} IN (${placeholders})`);
+        paramsArray.push(...filterValue);
+      } else if (filterValue && !Array.isArray(filterValue)) {
+        // Handle case where a single value might still be sent for some filters
+        const columnPrefix = tableName ? `${tableName}.` : '';
+        conditionsArray.push(`${columnPrefix}${columnName} = ?`);
+        paramsArray.push(filterValue);
+      }
+    };
+
+    addMultiSelectCondition(division, 'name', params, conditions, 'division');
+    addMultiSelectCondition(district, 'name', params, conditions, 'district');
+    addMultiSelectCondition(tehsil, 'name', params, conditions, 'tehsil');
+    addMultiSelectCondition(gender, 'gender', params, conditions, 'artisans');
+    addMultiSelectCondition(craft, 'name', params, conditions, 'crafts');
+    addMultiSelectCondition(category, 'name', params, conditions, 'categories');
+    addMultiSelectCondition(skill, 'name', params, conditions, 'techniques');
+
+
+    const whereClause = conditions.length ?
+      `WHERE ${conditions.join(" AND ")}` :
+      "";
+
+    // Construct the base query that includes all necessary joins
+    const baseQuery = `
+      FROM artisans
+      LEFT JOIN geo_level AS tehsil ON artisans.tehsil_id = tehsil.id
+      LEFT JOIN geo_level AS district ON substr(tehsil.code, 1, 6) = district.code
+      LEFT JOIN geo_level AS division ON substr(district.code, 1, 3) = division.code
+      LEFT JOIN techniques ON artisans.skill_id = techniques.id
+      LEFT JOIN categories ON categories.id = techniques.category_Id
+      LEFT JOIN crafts ON crafts.id = categories.craft_Id
+      ${whereClause}
+    `;
 
     const query = `
       SELECT
-        (SELECT COUNT(*) FROM artisans
-          LEFT JOIN geo_level AS tehsil ON artisans.tehsil_id = tehsil.id
-          LEFT JOIN geo_level AS district ON substr(tehsil.code, 1, 6) = district.code
-          LEFT JOIN geo_level AS division ON substr(district.code, 1, 3) = division.code
-          LEFT JOIN techniques ON artisans.skill_id = techniques.id
-          LEFT JOIN categories ON categories.id = techniques.category_Id
-          LEFT JOIN crafts ON crafts.id = categories.craft_Id
-          ${whereClause}
-        ) AS total_active_artisans,
+        (SELECT COUNT(*) ${baseQuery}) AS total_active_artisans,
   
-        (SELECT COUNT(DISTINCT artisans.tehsil_id) FROM artisans
-          LEFT JOIN geo_level AS tehsil ON artisans.tehsil_id = tehsil.id
-          LEFT JOIN geo_level AS district ON substr(tehsil.code, 1, 6) = district.code
-          LEFT JOIN geo_level AS division ON substr(district.code, 1, 3) = division.code
-          LEFT JOIN techniques ON artisans.skill_id = techniques.id
-          LEFT JOIN categories ON categories.id = techniques.category_Id
-          LEFT JOIN crafts ON crafts.id = categories.craft_Id
-          ${whereClause}
-        ) AS regions_covered,
+        (SELECT COUNT(DISTINCT artisans.tehsil_id) ${baseQuery}) AS regions_covered,
   
-        (SELECT COUNT(*) FROM artisans
-          LEFT JOIN geo_level AS tehsil ON artisans.tehsil_id = tehsil.id
-          LEFT JOIN geo_level AS district ON substr(tehsil.code, 1, 6) = district.code
-          LEFT JOIN geo_level AS division ON substr(district.code, 1, 3) = division.code
-          LEFT JOIN techniques ON artisans.skill_id = techniques.id
-          LEFT JOIN categories ON categories.id = techniques.category_Id
-          LEFT JOIN crafts ON crafts.id = categories.craft_Id
-          ${whereClause} AND created_at >= date('now', '-1 month')
-        ) AS new_registrations_this_month,
+        (SELECT COUNT(*) ${baseQuery} AND created_at >= date('now', '-1 month')) AS new_registrations_this_month,
   
-        (SELECT COUNT(*) FROM artisans
-          LEFT JOIN geo_level AS tehsil ON artisans.tehsil_id = tehsil.id
-          LEFT JOIN geo_level AS district ON substr(tehsil.code, 1, 6) = district.code
-          LEFT JOIN geo_level AS division ON substr(district.code, 1, 3) = division.code
-          LEFT JOIN techniques ON artisans.skill_id = techniques.id
-          LEFT JOIN categories ON categories.id = techniques.category_Id
-          LEFT JOIN crafts ON crafts.id = categories.craft_Id
-          ${whereClause} AND created_at >= date('now', '-2 month') AND created_at < date('now', '-1 month')
-        ) AS new_registrations_last_month
+        (SELECT COUNT(*) ${baseQuery} AND created_at >= date('now', '-2 month') AND created_at < date('now', '-1 month')) AS new_registrations_last_month
     `;
 
     return dbAsync.all(query, params);
