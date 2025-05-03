@@ -39,29 +39,27 @@ const chartOps = {
       params.push(user_Id);
     }
 
-    // Helper function to handle array filters
-    const addMultiSelectCondition = (filterValue, columnName, paramsArray, conditionsArray, tableName = '') => {
-      if (filterValue && Array.isArray(filterValue) && filterValue.length > 0) {
-        const placeholders = filterValue.map(() => "?").join(", ");
-        const columnPrefix = tableName ? `${tableName}.` : '';
-        conditionsArray.push(`${columnPrefix}${columnName} IN (${placeholders})`);
-        paramsArray.push(...filterValue);
-      } else if (filterValue && !Array.isArray(filterValue)) {
-        // Handle case where a single value might still be sent for some filters
-        const columnPrefix = tableName ? `${tableName}.` : '';
-        conditionsArray.push(`${columnPrefix}${columnName} = ?`);
-        paramsArray.push(filterValue);
+    // Helper function to handle comma-separated string filters
+    const addCommaSeparatedCondition = (filterValue, columnName, paramsArray, conditionsArray, tableName = '') => {
+      if (filterValue) {
+        const values = typeof filterValue === 'string' ? filterValue.split(',').map(v => v.trim()).filter(v => v !== '') : [filterValue];
+
+        if (values.length > 0) {
+          const placeholders = values.map(() => "?").join(", ");
+          const columnPrefix = tableName ? `${tableName}.` : '';
+          conditionsArray.push(`${columnPrefix}${columnName} IN (${placeholders})`);
+          paramsArray.push(...values);
+        }
       }
     };
 
-    addMultiSelectCondition(division, 'name', params, conditions, 'division');
-    addMultiSelectCondition(district, 'name', params, conditions, 'district');
-    addMultiSelectCondition(tehsil, 'name', params, conditions, 'tehsil');
-    addMultiSelectCondition(gender, 'gender', params, conditions, 'artisans');
-    addMultiSelectCondition(craft, 'name', params, conditions, 'crafts');
-    addMultiSelectCondition(category, 'name', params, conditions, 'categories');
-    addMultiSelectCondition(skill, 'name', params, conditions, 'techniques');
-
+    addCommaSeparatedCondition(division, 'name', params, conditions, 'division');
+    addCommaSeparatedCondition(district, 'name', params, conditions, 'district');
+    addCommaSeparatedCondition(tehsil, 'name', params, conditions, 'tehsil');
+    addCommaSeparatedCondition(gender, 'gender', params, conditions, 'artisans');
+    addCommaSeparatedCondition(craft, 'name', params, conditions, 'crafts');
+    addCommaSeparatedCondition(category, 'name', params, conditions, 'categories');
+    addCommaSeparatedCondition(skill, 'name', params, conditions, 'techniques');
 
     const whereClause = conditions.length ?
       `WHERE ${conditions.join(" AND ")}` :
