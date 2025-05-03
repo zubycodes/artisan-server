@@ -383,45 +383,42 @@ const entityOps = {
     let query = "SELECT * FROM artisansView WHERE isActive = 1";
     const params = [];
 
+    // Helper function to add condition for potentially comma-separated values
+    const addFilterCondition = (filterValue, columnName, paramsArray, queryString) => {
+      if (filterValue) {
+        // Split comma-separated string, trim whitespace, and remove empty strings
+        const values = typeof filterValue === 'string' ? filterValue.split(',').map(v => v.trim()).filter(v => v !== '') : [filterValue];
+
+        if (values.length > 0) {
+          if (values.length > 1) {
+            // Multi-select: Use IN clause
+            const placeholders = values.map(() => "?").join(", ");
+            queryString += ` AND ${columnName} IN (${placeholders})`;
+            paramsArray.push(...values);
+          } else {
+            // Single select or single value from split
+            queryString += ` AND ${columnName} = ?`;
+            paramsArray.push(values[0]);
+          }
+        }
+      }
+      return queryString; // Return the updated query string
+    };
+
+    // User_Id is assumed to be single-select
     if (user_Id) {
       query += " AND user_Id = ?";
       params.push(user_Id);
     }
 
-    if (division) {
-      query += " AND division_name = ?";
-      params.push(division);
-    }
-
-    if (district) {
-      query += " AND district_name = ?";
-      params.push(district);
-    }
-
-    if (tehsil) {
-      query += " AND tehsil_name = ?";
-      params.push(tehsil);
-    }
-
-    if (gender) {
-      query += " AND gender = ?";
-      params.push(gender);
-    }
-
-    if (craft) {
-      query += " AND craft_name = ?";
-      params.push(craft);
-    }
-
-    if (category) {
-      query += " AND category_name = ?";
-      params.push(category);
-    }
-
-    if (skill) {
-      query += " AND skill_name = ?";
-      params.push(skill);
-    }
+    // Apply the helper to other filters
+    query = addFilterCondition(division, 'division_name', params, query);
+    query = addFilterCondition(district, 'district_name', params, query);
+    query = addFilterCondition(tehsil, 'tehsil_name', params, query);
+    query = addFilterCondition(gender, 'gender', params, query);
+    query = addFilterCondition(craft, 'craft_name', params, query);
+    query = addFilterCondition(category, 'category_name', params, query);
+    query = addFilterCondition(skill, 'skill_name', params, query);
 
     return dbAsync.all(query, params);
   },
