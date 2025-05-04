@@ -234,6 +234,8 @@ const chartOps = {
       .then((results) => {
         // Ensure the result is formatted as expected by the frontend
         const result = results[0] || {};
+        console.log("Dashboard results:", results); // Log parameters
+
         return {
           total_active_artisans: result.total_active_artisans || 0,
           regions_covered: result.regions_covered || 0,
