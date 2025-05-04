@@ -1685,13 +1685,15 @@ module.exports = (dependencies) => {
 
     // Get skill distribution
     getSkillDistribution: createHandler(async (req, res) => {
+      const field = req.params.field;
       const routeLogger = logger.child({
         route: "charts",
         handler: "getSkillDistribution",
+        field
       });
       routeLogger.info("Fetching skill distribution data");
       try {
-        const data = await chartOps.getSkillDistribution();
+        const data = await chartOps.getSkillDistribution(field);
         res.json(data);
       } catch (error) {
         routeLogger.error({ error }, "Error fetching skill distribution data");
