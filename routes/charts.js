@@ -1013,9 +1013,13 @@ const chartOps = {
     let query = `
       SELECT 
         CASE 
-          WHEN a.experience <= 5 THEN '0-5'
-          WHEN a.experience > 5 AND a.experience <= 10 THEN '6-10'
-          ELSE '11+' 
+          WHEN a.experience <= 2 THEN '0-2'
+          WHEN a.experience > 2 AND <= 4 THEN '2-4'
+          WHEN a.experience > 4 AND <= 6 THEN '4-6'
+          WHEN a.experience > 6 AND <= 8 THEN '6-8'
+          WHEN a.experience > 8 AND <= 10 THEN '8-10'
+          WHEN a.experience > 10 AND a.experience <= 15 THEN '10-15'
+          ELSE '15+' 
         END as name, 
         COUNT(*) as value 
       FROM artisansView a 

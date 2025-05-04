@@ -700,6 +700,11 @@ const entityOps = {
             artisans.experience,
             artisans.avg_monthly_income,
             artisans.employment_type_id,
+            CASE
+            WHEN artisans.employment_type_id = 1 THEN 'Self Employed'
+            WHEN artisans.employment_type_id = 2 THEN 'Entrepreneur'
+            WHEN artisans.employment_type_id = 3 THEN 'Employee'
+            ELSE '' END AS employment_type,
             artisans.raw_material,
             artisans.loan_status,
             artisans.has_machinery,
