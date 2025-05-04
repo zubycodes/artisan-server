@@ -226,15 +226,21 @@ const chartOps = {
     // Replace placeholder with actual WHERE clause
     query = query.replace(/{WHERE_CLAUSE}/g, whereClause);
 
+    // Repeat parameters for each subquery (4 subqueries)
+    const repeatedParams = [];
+    for (let i = 0; i < 4; i++) {
+      repeatedParams.push(...params);
+    }
+
     console.log("Dashboard Data Query:", query); // Log the constructed query for debugging
-    console.log("Dashboard Data Params:", params); // Log parameters
+    console.log("Dashboard Data Params:", repeatedParams); // Log parameters
 
     return dbAsync
-      .all(query, params)
+      .all(query, repeatedParams)
       .then((results) => {
         // Ensure the result is formatted as expected by the frontend
         const result = results[0] || {};
-        console.log("Dashboard results:", results); // Log parameters
+        console.log("Dashboard results:", results); // Log results
 
         return {
           total_active_artisans: result.total_active_artisans || 0,
