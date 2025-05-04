@@ -1648,13 +1648,15 @@ module.exports = (dependencies) => {
     }),
     // Get gender distribution
     getGenderDistribution: createHandler(async (req, res) => {
+      const field = req.params.field;
       const routeLogger = logger.child({
         route: "charts",
         handler: "getGenderDistribution",
+        field,
       });
       routeLogger.info("Fetching gender distribution data");
       try {
-        const data = await chartOps.getGenderDistribution();
+        const data = await chartOps.getGenderDistribution(field);
         res.json(data);
       } catch (error) {
         routeLogger.error({ error }, "Error fetching gender distribution data");
@@ -1718,13 +1720,15 @@ module.exports = (dependencies) => {
 
     // Get division distribution
     getDivisionDistribution: createHandler(async (req, res) => {
+      const field = req.params.field;
       const routeLogger = logger.child({
         route: "charts",
         handler: "getDivisionDistribution",
+        field,
       });
       routeLogger.info("Fetching division distribution data");
       try {
-        const data = await chartOps.getDivisionDistribution();
+        const data = await chartOps.getDivisionDistribution(field);
         res.json(data);
       } catch (error) {
         routeLogger.error(
@@ -1769,13 +1773,15 @@ module.exports = (dependencies) => {
     }),
     // Get top skill
     getTopSkillDistribution: createHandler(async (req, res) => {
+      const field = req.params.field;
       const routeLogger = logger.child({
         route: "charts",
         handler: "getTopSkillDistribution",
+        field,
       });
       routeLogger.info("Fetching top skill data");
       try {
-        const data = await chartOps.getTopSkillDistribution();
+        const data = await chartOps.getTopSkillDistribution(field);
         res.json(data);
       } catch (error) {
         routeLogger.error({ error }, "Error fetching top skill data");
@@ -1825,13 +1831,15 @@ module.exports = (dependencies) => {
 
     // Get age distribution
     getAgeDistribution: createHandler(async (req, res) => {
+      const field = req.params.field;
       const routeLogger = logger.child({
         route: "charts",
         handler: "getAgeDistribution",
+        field,
       });
       routeLogger.info("Fetching age distribution data");
       try {
-        const data = await chartOps.getAgeDistribution();
+        const data = await chartOps.getAgeDistribution(field);
         res.json(data);
       } catch (error) {
         routeLogger.error({ error }, "Error fetching age distribution data");
