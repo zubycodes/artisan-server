@@ -378,26 +378,42 @@ const entityOps = {
       craft,
       category,
       skill,
+      // Add new filter parameters here
+      education,
+      raw_material,
+      employment_type, // Corresponds to employment_type_id in frontend mapping, verify DB column name
+      crafting_method,
+      avg_monthly_income,
+      dependents_count,
+      inherited_skills,
+      has_machinery,
+      has_training,
+      loan_status,
+      financial_assistance,
+      technical_assistance,
+      // Add other new filters as needed
     } = filters;
 
     let query = "SELECT * FROM artisansView WHERE isActive = 1";
     const params = [];
 
-    // Helper function to add condition for potentially comma-separated values
+    // Helper function to add condition for potentially comma-separated values (for string/categorical filters)
     const addFilterCondition = (filterValue, columnName, paramsArray, queryString) => {
       if (filterValue) {
         // Split comma-separated string, trim whitespace, and remove empty strings
         const values = typeof filterValue === 'string' ? filterValue.split(',').map(v => v.trim()).filter(v => v !== '') : [filterValue];
 
         if (values.length > 0) {
+          // Use lowercase column names for safety unless case-sensitivity is required by DB
+          const lowerColumnName = columnName.toLowerCase();
           if (values.length > 1) {
             // Multi-select: Use IN clause
             const placeholders = values.map(() => "?").join(", ");
-            queryString += ` AND ${columnName} IN (${placeholders})`;
+            queryString += ` AND ${lowerColumnName} IN (${placeholders})`;
             paramsArray.push(...values);
           } else {
             // Single select or single value from split
-            queryString += ` AND ${columnName} = ?`;
+            queryString += ` AND ${lowerColumnName} = ?`;
             paramsArray.push(values[0]);
           }
         }
@@ -405,20 +421,99 @@ const entityOps = {
       return queryString; // Return the updated query string
     };
 
+    // Helper function for numerical range filtering
+    const addNumericalRangeCondition = (filterValue, columnName, paramsArray, queryString) => {
+      if (filterValue && typeof filterValue === 'string' && filterValue !== 'Select') {
+        const lowerColumnName = columnName.toLowerCase();
+        const value = filterValue.trim();
+
+        if (value.includes('-')) {
+          // Handle range like "10000-20000"
+          const [minStr, maxStr] = value.split('-').map(s => s.trim());
+          const min = parseFloat(minStr);
+          const max = parseFloat(maxStr);
+
+          if (!isNaN(min) && !isNaN(max)) {
+            queryString += ` AND ${lowerColumnName} BETWEEN ? AND ?`;
+            paramsArray.push(min, max);
+          } else if (!isNaN(min)) { // Handle cases like "10000-" (greater than or equal)
+            queryString += ` AND ${lowerColumnName} >= ?`;
+            paramsArray.push(min);
+          } else if (!isNaN(max)) { // Handle cases like "-20000" (less than or equal)
+            queryString += ` AND ${lowerColumnName} <= ?`;
+            paramsArray.push(max);
+          }
+
+
+        } else if (value.startsWith('>')) {
+          // Handle "greater than" like ">50000"
+          const num = parseFloat(value.substring(1).trim());
+          if (!isNaN(num)) {
+            queryString += ` AND ${lowerColumnName} > ?`;
+            paramsArray.push(num);
+          }
+        } else if (value.startsWith('<')) {
+          // Handle "less than" like "<10000"
+          const num = parseFloat(value.substring(1).trim());
+          if (!isNaN(num)) {
+            queryString += ` AND ${lowerColumnName} < ?`;
+            paramsArray.push(num);
+          }
+        }
+        else {
+          // Handle exact numerical value
+          const num = parseFloat(value);
+          if (!isNaN(num)) {
+            queryString += ` AND ${lowerColumnName} = ?`;
+            paramsArray.push(num);
+          }
+        }
+      }
+      return queryString;
+    };
+
+
     // User_Id is assumed to be single-select
-    if (user_Id) {
+    if (user_Id && user_Id !== 'Select') { // Added check for 'Select'
       query += " AND user_Id = ?";
       params.push(user_Id);
     }
 
-    // Apply the helper to other filters
-    query = addFilterCondition(division, 'division_name', params, query);
-    query = addFilterCondition(district, 'district_name', params, query);
-    query = addFilterCondition(tehsil, 'tehsil_name', params, query);
+    // Apply the helper to existing string/categorical filters
+    query = addFilterCondition(division, 'division_name', params, query); // Verify column name 'division_name'
+    query = addFilterCondition(district, 'district_name', params, query); // Verify column name 'district_name'
+    query = addFilterCondition(tehsil, 'tehsil_name', params, query);     // Verify column name 'tehsil_name'
     query = addFilterCondition(gender, 'gender', params, query);
-    query = addFilterCondition(craft, 'craft_name', params, query);
-    query = addFilterCondition(category, 'category_name', params, query);
-    query = addFilterCondition(skill, 'skill_name', params, query);
+    query = addFilterCondition(craft, 'craft_name', params, query);       // Verify column name 'craft_name'
+    query = addFilterCondition(category, 'category_name', params, query); // Verify column name 'category_name'
+    query = addFilterCondition(skill, 'skill_name', params, query);       // Verify column name 'skill_name'
+
+    // Apply the helper to new string/categorical filters (VERIFY COLUMN NAMES IN DB)
+    query = addFilterCondition(education, 'education_name', params, query);
+    query = addFilterCondition(raw_material, 'raw_material', params, query);
+    query = addFilterCondition(employment_type, 'employment_type', params, query); // VERIFY COLUMN NAME
+    query = addFilterCondition(crafting_method, 'crafting_method', params, query);
+    query = addFilterCondition(inherited_skills, 'inherited_skills', params, query);
+
+    // Apply the helper to boolean-like filters (VERIFY COLUMN NAMES AND STORED VALUES)
+    // Assuming database stores 'Yes'/'No' or similar strings matching processed frontend values
+    query = addFilterCondition(has_machinery, 'has_machinery', params, query);
+    query = addFilterCondition(has_training, 'has_training', params, query);
+    query = addFilterCondition(loan_status, 'loan_status', params, query);
+    query = addFilterCondition(financial_assistance, 'financial_assistance', params, query);
+    query = addFilterCondition(technical_assistance, 'technical_assistance', params, query);
+
+
+    // Apply specific numerical range filter logic
+    query = addNumericalRangeCondition(avg_monthly_income, 'avg_monthly_income', params, query); // VERIFY COLUMN NAME
+    query = addNumericalRangeCondition(dependents_count, 'dependents_count', params, query);   // VERIFY COLUMN NAME
+
+
+    // Add ORDER BY or other clauses if needed
+    // query += " ORDER BY artisan_name"; // Example ordering
+
+    console.log("Executing Query:", query); // Log the query for debugging
+    console.log("With Parameters:", params); // Log parameters for debugging
 
     return dbAsync.all(query, params);
   },
