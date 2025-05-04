@@ -1633,9 +1633,11 @@ module.exports = (dependencies) => {
   const handlers = {
     // Get gender distribution
     getDashboardData: createHandler(async (req, res) => {
+      const field = req.query;
       const routeLogger = logger.child({
         route: "charts",
         handler: "getDashboardData",
+        field,
       });
       routeLogger.info("Fetching gender distribution data");
       try {
@@ -1648,7 +1650,7 @@ module.exports = (dependencies) => {
     }),
     // Get gender distribution
     getGenderDistribution: createHandler(async (req, res) => {
-      const field = req.params.field;
+      const field = req.query;
       const routeLogger = logger.child({
         route: "charts",
         handler: "getGenderDistribution",
@@ -1685,7 +1687,7 @@ module.exports = (dependencies) => {
 
     // Get skill distribution
     getSkillDistribution: createHandler(async (req, res) => {
-      const field = req.params.field;
+      const field = req.query;
       const routeLogger = logger.child({
         route: "charts",
         handler: "getSkillDistribution",
@@ -1722,7 +1724,7 @@ module.exports = (dependencies) => {
 
     // Get division distribution
     getDivisionDistribution: createHandler(async (req, res) => {
-      const field = req.params.field;
+      const field = req.query;
       const routeLogger = logger.child({
         route: "charts",
         handler: "getDivisionDistribution",
@@ -1775,7 +1777,7 @@ module.exports = (dependencies) => {
     }),
     // Get top skill
     getTopSkillDistribution: createHandler(async (req, res) => {
-      const field = req.params.field;
+      const field = req.query;
       const routeLogger = logger.child({
         route: "charts",
         handler: "getTopSkillDistribution",
@@ -1793,7 +1795,7 @@ module.exports = (dependencies) => {
 
     // Get Yes/No field distribution
     getYesNoDistribution: createHandler(async (req, res) => {
-      const field = req.params.field;
+      const field = req.query;
       const routeLogger = logger.child({
         route: "charts",
         handler: "getYesNoDistribution",
@@ -1833,7 +1835,7 @@ module.exports = (dependencies) => {
 
     // Get age distribution
     getAgeDistribution: createHandler(async (req, res) => {
-      const field = req.params.field;
+      const field = req.query;
       const routeLogger = logger.child({
         route: "charts",
         handler: "getAgeDistribution",
