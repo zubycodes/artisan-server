@@ -191,8 +191,10 @@ const chartOps = {
       SELECT
         (SELECT COUNT(*) FROM artisansView a WHERE a.isActive = 1 {WHERE_CLAUSE}) AS total_active_artisans,
         (SELECT COUNT(DISTINCT a.tehsil_id) FROM artisansView a WHERE a.isActive = 1 {WHERE_CLAUSE}) AS regions_covered,
-        (SELECT COUNT(*) FROM artisansView a WHERE a.isActive = 1 {WHERE_CLAUSE} AND a.created_at >= date('now', '-1 month')) AS new_registrations_this_month,
-        (SELECT COUNT(*) FROM artisansView a WHERE a.isActive = 1 {WHERE_CLAUSE} AND a.created_at >= date('now', '-2 month') AND a.created_at < date('now', '-1 month')) AS new_registrations_last_month
+        (SELECT COUNT(*) FROM artisansView a WHERE a.isActive = 1 {WHERE_CLAUSE} AND a.created_at >= date('now', 'start of month')) AS new_registrations_this_month,
+        (SELECT COUNT(*) FROM artisansView a WHERE a.isActive = 1 {WHERE_CLAUSE} 
+        AND a.created_at >= date('now', 'start of month', '-1 month') 
+        AND a.created_at < date('now', 'start of month')) AS new_registrations_last_month
     `;
     const params = [];
 
