@@ -33,10 +33,10 @@ const craftOps = {
   },
 
   update(id, craft) {
-    const { name, isActive } = craft;
+    const { name, color, isActive } = craft;
     return dbAsync.run(
-      "UPDATE crafts SET name = ?, isActive = ? WHERE id = ?",
-      [name, isActive, id]
+      "UPDATE crafts SET name = ?, color = ?, isActive = ? WHERE id = ?",
+      [name, color, isActive, id]
     );
   },
 

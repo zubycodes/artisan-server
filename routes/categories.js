@@ -30,10 +30,10 @@ const categoryOps = {
   },
 
   update(id, category) {
-    const { name, craft_Id, isActive } = category;
+    const { name, craft_Id, color, isActive } = category;
     return dbAsync.run(
-      "UPDATE categories SET name = ?, craft_Id = ?, isActive = ? WHERE id = ?",
-      [name, craft_Id, isActive, id]
+      "UPDATE categories SET name = ?, craft_Id = ?, color = ?, isActive = ? WHERE id = ?",
+      [name, craft_Id, color, isActive, id]
     );
   },
 
