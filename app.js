@@ -104,6 +104,13 @@ const createRouteRegistry = (dbInstance) => ({
       logger: logger.child({ module: "artisans" }),
     },
   },
+  artisanstatic: {
+    path: "./routes/artisanstatic",
+    dependencies: {
+      db: dbInstance,
+      logger: logger.child({ module: "artisanstatic" }),
+    },
+  },
   education: {
     path: "./routes/education",
     dependencies: {
