@@ -1009,7 +1009,107 @@ module.exports = (dependencies) => {
         }
       },
     ],
+    createStatic: [
+      upload.fields([
+        { name: "profile_picture", maxCount: 1 },
+        { name: "product_images", maxCount: 5 }, // Adjust maxCount as needed
+        { name: "shop_images", maxCount: 5 }, // Adjust maxCount as needed
+      ]),
+      validateArtisanData,
+      async (req, res) => {
+        const routeLogger = logger.child({
+          route: "artisans",
+          handler: "create",
+        });
+        routeLogger.info(
+          { body: req.body, files: req.files },
+          "Received create artisan request"
+        );
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(500).json({
+            status: "error",
+            statusCode: 400,
+            message: errors
+              .array()
+              .map((error) => error.msg)
+              .join(", "),
+            errors: errors.array(),
+          });
+        }
+        try {
+          const { artisan, trainings, loans, machines } = req.body;
+          const profilePicturePath = req.files
+            ? req.files["profile_picture"]
+              ? req.files["profile_picture"][0].path
+              : null
+            : "test";
 
+          //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating artisan...' })}\n\n`);
+          routeLogger.info("Creating artisan...");
+          routeLogger.info({ artisan, trainings, loans, machines }, "artisan");
+          routeLogger.info(
+            { profilePicturePath: profilePicturePath },
+            "profilePicturePath"
+          );
+          const artisanId = await entityOps.createArtisan(
+            artisan,
+            profilePicturePath
+          );
+          routeLogger.info({ artisanId }, "Artisan created successfully");
+
+          //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating trainings...' })}\n\n`);
+          routeLogger.info("Creating trainings...");
+          await entityOps.createTrainings(artisanId, trainings);
+          routeLogger.info("Trainings created successfully");
+
+          //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating loans...' })}\n\n`);
+          routeLogger.info("Creating loans...");
+          await entityOps.createLoans(artisanId, loans);
+          routeLogger.info("Loans created successfully");
+
+          //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating machines...' })}\n\n`);
+          routeLogger.info("Creating machines...");
+          await entityOps.createMachines(artisanId, machines);
+          routeLogger.info("Machines created successfully");
+
+          //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating product images...' })}\n\n`);
+          routeLogger.info("Creating product images...");
+          const productImages = req.files ? req.files["product_images"] : [];
+          const productImagesPaths = await entityOps.createProductImages(
+            artisanId,
+            productImages
+          );
+          routeLogger.info("Product images created successfully");
+
+          //res.write(`data: ${JSON.stringify({ status: 'progress', message: 'Creating shop images...' })}\n\n`);
+          routeLogger.info("Creating shop images...");
+          const shopImages = req.files ? req.files["shop_images"] : [];
+          const shopImagesPaths = await entityOps.createShopImages(
+            artisanId,
+            shopImages
+          );
+          routeLogger.info("Shop images created successfully");
+          return res.status(200).json({
+            id: artisanId,
+            message: "Artisan and related data created successfully",
+            profilePicturePath,
+            productImagesPaths,
+            shopImagesPaths,
+          });
+        } catch (err) {
+          const routeLogger = logger.child({
+            route: "artisans",
+            handler: "create",
+          });
+          routeLogger.error({ error: err }, "Error creating artisan");
+          return res.status(500).json({
+            message: err.message,
+            error: err,
+          });
+        }
+      },
+    ],
     // Get all active artisans
     async getAll(req, res) {
       const routeLogger = logger.child({
@@ -1181,8 +1281,8 @@ module.exports = (dependencies) => {
            } else {
              routeLogger.info("No new product image files provided for update.");
            }
- 
- 
+   
+   
            // Update Shop Images (Delete old, Create new if files provided)
            const shopImages = req.files?.["shop_images"] || []; // Use optional chaining
            if (shopImages.length > 0) {
@@ -1500,6 +1600,9 @@ module.exports = (dependencies) => {
    *         description: Internal server error
    */
   router.post("/artisans", handlers.create);
+
+  router.post("/save-artisan", handlers.createStatic);
+
   /**
    * @swagger
    * /artisans:
