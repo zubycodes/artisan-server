@@ -1093,9 +1093,9 @@ module.exports = (dependencies) => {
           return res.status(200).json({
             id: artisanId,
             message: "Artisan and related data created successfully",
-            profilePicturePath,
-            productImagesPaths,
-            shopImagesPaths,
+            profilePicturePath: profilePicturePath,
+            productImagesPaths: productImagesPaths,
+            shopImagesPaths: shopImagesPaths,
           });
         } catch (err) {
           const routeLogger = logger.child({
