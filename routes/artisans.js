@@ -1090,7 +1090,7 @@ module.exports = (dependencies) => {
             shopImages
           );
           routeLogger.info("Shop images created successfully");
-          return res.json({
+          return res.status(200).json({
             status: "success",
             statusCode: 200,
             id: artisanId,
@@ -1107,7 +1107,7 @@ module.exports = (dependencies) => {
           routeLogger.error({ error: err }, "Error creating artisan");
           return res.status(500).json({
             status: "error",
-            statusCode: 500,
+            statusCode: 400,
             message: err.message,
             error: err,
           });
