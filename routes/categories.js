@@ -13,8 +13,8 @@ const categoryOps = {
             COUNT(DISTINCT t.id) AS numberOfTechniques,
             COUNT(DISTINCT a.id) AS numberOfArtisans
           FROM categoriesView c
-          LEFT JOIN techniquesView t ON t.category_Id = c.id
-          LEFT JOIN artisans a ON a.skill_id = t.id
+          LEFT JOIN techniquesView t ON t.category_Id = c.id and t.isActive = 1
+          LEFT JOIN artisans a ON a.skill_id = t.id and a.isActive = 1
           WHERE c.isActive = 1
           GROUP BY c.id, c.name
           order by c.craft_name ASC

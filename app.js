@@ -38,7 +38,7 @@ const CONFIG = Object.freeze({
     "http://3.106.165.252",
   ],
   WORKER_COUNT: process.env.WORKER_COUNT || os.cpus().length,
-  RATE_LIMIT: { windowMs: 15 * 60 * 10000, max: 10000 },
+  RATE_LIMIT: { windowMs: 15 * 60 * 100000, max: 100000 },
 });
 
 // Logger setup with context
