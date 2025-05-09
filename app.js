@@ -168,8 +168,8 @@ const createApp = async (dbInstance, routeRegistry) => {
   );
   app.use(compression());
   app.use(pinoHttp({ logger }));
-  app.use(express.json({ limit: "10mb", strict: true }));
-  app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+  app.use(express.json({ limit: "100mb", strict: true }));
+  app.use(express.urlencoded({ extended: true, limit: "100mb" }));
   app.use(
     cors({
       origin: CONFIG.CLIENT_URL,
