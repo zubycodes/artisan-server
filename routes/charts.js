@@ -107,12 +107,14 @@ const chartOps = {
       loan_status,
       financial_assistance,
       technical_assistance,
+      list_view
       // Add any other filters you might apply to this dataset
     } = filters;
 
     // Start with the base query including the initial WHERE clause
     // Use the view `artisansView` if that's where all these columns are consolidated
-    let query = "SELECT gender, COUNT(*) as value FROM artisansView a WHERE a.isActive = 1";
+    const columns = list_view ? '*' : 'gender, COUNT(*) as value';
+    let query = `SELECT ${columns} FROM artisansView a WHERE a.isActive = 1`;
     const params = []; // Initialize parameters array
 
     // Apply filters using the helper functions
@@ -141,7 +143,7 @@ const chartOps = {
 
 
     // Add the GROUP BY clause after all WHERE conditions
-    query += " GROUP BY gender";
+    query += list_view ? "" : " GROUP BY gender";
 
     // Optional: Add ORDER BY if you want consistent sorting
     // query += " ORDER BY gender ASC";
@@ -2060,6 +2062,7 @@ module.exports = (dependencies) => {
           'loan_status',
           'financial_assistance',
           'technical_assistance',
+          'list_view'
         ];
 
         // Extract filters from query parameters, only including valid keys
