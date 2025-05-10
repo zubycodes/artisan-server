@@ -113,7 +113,7 @@ const chartOps = {
 
     // Start with the base query including the initial WHERE clause
     // Use the view `artisansView` if that's where all these columns are consolidated
-    const columns = list_view == 'true' ? '*' : 'gender, COUNT(*) as value';
+    const columns = list_view ? '*' : 'gender, COUNT(*) as value';
     let query = `SELECT ${columns} FROM artisansView a WHERE a.isActive = 1`;
     const params = []; // Initialize parameters array
 
@@ -156,7 +156,7 @@ const chartOps = {
       .all(query, params) // Pass parameters to dbAsync.all
       .then((results) => {
         // Map results to the format expected by the frontend, handling potential nulls
-        return results.map((item) => ({
+        return list_view ? results : results.map((item) => ({
           name: item.gender ? String(item.gender).charAt(0).toUpperCase() + String(item.gender).slice(1).toLowerCase() : 'Unknown', // Ensure gender is string, handle null, format name
           value: item.value || 0, // Ensure value is a number, handle null
         }));
