@@ -113,7 +113,7 @@ const chartOps = {
 
     // Start with the base query including the initial WHERE clause
     // Use the view `artisansView` if that's where all these columns are consolidated
-    const columns = list_view ? '*' : 'gender, COUNT(*) as value';
+    const columns = list_view == 'true' ? '*' : 'gender, COUNT(*) as value';
     let query = `SELECT ${columns} FROM artisansView a WHERE a.isActive = 1`;
     const params = []; // Initialize parameters array
 
