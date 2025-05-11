@@ -391,6 +391,7 @@ const entityOps = {
       loan_status,
       financial_assistance,
       technical_assistance,
+      name
       // Add other new filters as needed
     } = filters;
 
@@ -472,6 +473,41 @@ const entityOps = {
       return queryString;
     };
 
+    const addSearchCondition = (searchValue, columnNames, paramsArray, queryString) => {
+      // Check if a search value is provided and is a non-empty string after trimming
+      const trimmedSearchValue = typeof searchValue === 'string' ? searchValue.trim() : '';
+
+      if (trimmedSearchValue) {
+        // Ensure columnNames is an array and not empty
+        if (!Array.isArray(columnNames) || columnNames.length === 0) {
+          console.warn("addSearchCondition requires a non-empty array of column names.");
+          return queryString; // Return original query if no columns are specified
+        }
+
+        // Start the OR group for search conditions
+        queryString += ` AND (`;
+
+        const conditions = [];
+        columnNames.forEach((columnName, index) => {
+          // Use lowercase column names for safety unless case-sensitivity is required by DB
+          const lowerColumnName = columnName.toLowerCase();
+          // Add a LIKE condition for the current column
+          // Use COLLATE NOCASE for case-insensitive comparison in SQLite (adjust for other DBs if needed)
+          // The '%' wildcards allow matching the search term anywhere within the field
+          conditions.push(`${lowerColumnName} LIKE ? COLLATE NOCASE`);
+          // Push the search value with wildcards to the parameters array
+          paramsArray.push(`%${trimmedSearchValue}%`);
+        });
+
+        // Join the individual column conditions with OR
+        queryString += conditions.join(' OR ');
+
+        // Close the OR group
+        queryString += `)`;
+      }
+
+      return queryString; // Return the updated query string
+    };
 
     // User_Id is assumed to be single-select
     if (user_Id && user_Id !== 'Select') { // Added check for 'Select'
@@ -480,6 +516,7 @@ const entityOps = {
     }
 
     // Apply the helper to existing string/categorical filters
+    query = addSearchCondition(name, ['name', 'father_name'], params, query);
     query = addFilterCondition(division, 'division_name', params, query); // Verify column name 'division_name'
     query = addFilterCondition(district, 'district_name', params, query); // Verify column name 'district_name'
     query = addFilterCondition(tehsil, 'tehsil_name', params, query);     // Verify column name 'tehsil_name'
@@ -502,6 +539,7 @@ const entityOps = {
     query = addFilterCondition(loan_status, 'loan_status', params, query);
     query = addFilterCondition(financial_assistance, 'financial_assistance', params, query);
     query = addFilterCondition(technical_assistance, 'technical_assistance', params, query);
+
 
 
     // Apply specific numerical range filter logic
