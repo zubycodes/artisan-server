@@ -107,14 +107,12 @@ const chartOps = {
       loan_status,
       financial_assistance,
       technical_assistance,
-      list_view
       // Add any other filters you might apply to this dataset
     } = filters;
 
     // Start with the base query including the initial WHERE clause
     // Use the view `artisansView` if that's where all these columns are consolidated
-    const columns = list_view ? '*' : 'gender, COUNT(*) as value';
-    let query = `SELECT ${columns} FROM artisansView a WHERE a.isActive = 1`;
+    let query = "SELECT gender, COUNT(*) as value FROM artisansView a WHERE a.isActive = 1";
     const params = []; // Initialize parameters array
 
     // Apply filters using the helper functions
@@ -143,7 +141,7 @@ const chartOps = {
 
 
     // Add the GROUP BY clause after all WHERE conditions
-    query += list_view ? "" : " GROUP BY gender";
+    query += " GROUP BY gender";
 
     // Optional: Add ORDER BY if you want consistent sorting
     // query += " ORDER BY gender ASC";
@@ -156,7 +154,7 @@ const chartOps = {
       .all(query, params) // Pass parameters to dbAsync.all
       .then((results) => {
         // Map results to the format expected by the frontend, handling potential nulls
-        return list_view ? results : results.map((item) => ({
+        return results.map((item) => ({
           name: item.gender ? String(item.gender).charAt(0).toUpperCase() + String(item.gender).slice(1).toLowerCase() : 'Unknown', // Ensure gender is string, handle null, format name
           value: item.value || 0, // Ensure value is a number, handle null
         }));
@@ -933,19 +931,19 @@ const chartOps = {
       SELECT 
         CASE 
           WHEN (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) < 13 THEN '0-12'
-          WHEN (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) >= 13 AND 
-               (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) < 19 THEN '13-18'
-          WHEN (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) >= 19 AND 
-               (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) < 25 THEN '19-24'
-          WHEN (strftime('%Y', 'now') - strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) >= 25 AND 
-               (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) < 31 THEN '25-30'
-          WHEN (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) >= 31 AND 
-               (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) < 41 THEN '31-40'
-          WHEN (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) >= 41 AND 
-               (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) < 51 THEN '41-50'
-          WHEN (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) >= 51 AND 
-               (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) < 61 THEN '51-60'
-          ELSE '60+'
+        WHEN (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) >= 13 AND
+             (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) < 19 THEN '13-18'
+        WHEN (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) >= 19 AND
+             (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) < 25 THEN '19-24'
+        WHEN (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) >= 25 AND
+             (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) < 31 THEN '25-30'
+        WHEN (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) >= 31 AND
+             (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) < 41 THEN '31-40'
+        WHEN (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) >= 41 AND
+             (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) < 51 THEN '41-50'
+        WHEN (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) >= 51 AND
+             (strftime('%Y', 'now') - strftime('%Y', a.date_of_birth)) < 61 THEN '51-60'
+        ELSE '60+'
         END as name, 
         COUNT(*) as value 
       FROM artisansView a 
@@ -2062,7 +2060,6 @@ module.exports = (dependencies) => {
           'loan_status',
           'financial_assistance',
           'technical_assistance',
-          'list_view'
         ];
 
         // Extract filters from query parameters, only including valid keys
