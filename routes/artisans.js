@@ -759,7 +759,7 @@ const entityOps = {
             artisans.updated_at,
             artisans.isActive,
             artisans.user_Id,
-            user.username,
+            user.username
         FROM artisans
         LEFT JOIN techniques ON artisans.skill_id = techniques.id
         LEFT JOIN categories ON techniques.category_Id = categories.id
