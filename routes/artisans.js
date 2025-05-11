@@ -391,7 +391,8 @@ const entityOps = {
       loan_status,
       financial_assistance,
       technical_assistance,
-      name
+      name,
+      uc
       // Add other new filters as needed
     } = filters;
 
@@ -516,7 +517,8 @@ const entityOps = {
     }
 
     // Apply the helper to existing string/categorical filters
-    query = addSearchCondition(name, ['name', 'father_name'], params, query);
+    query = addSearchCondition(name, ['name', 'father_name', 'cnic', 'address', 'contact_no', 'comments'], params, query);
+    query = addSearchCondition(uc, ['uc'], params, query);
     query = addFilterCondition(division, 'division_name', params, query); // Verify column name 'division_name'
     query = addFilterCondition(district, 'district_name', params, query); // Verify column name 'district_name'
     query = addFilterCondition(tehsil, 'tehsil_name', params, query);     // Verify column name 'tehsil_name'
