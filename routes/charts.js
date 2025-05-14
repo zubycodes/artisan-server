@@ -536,7 +536,7 @@ const chartOps = {
     query = addNumericalRangeCondition(dependents_count, 'dependents_count', params, query);
 
     query += " GROUP BY division_name";
-    /* query += " ORDER BY division_name"; */
+    query += " ORDER BY value DESC";
 
     console.log("Division Distribution Query:", query);
     console.log("Division Distribution Params:", params);
