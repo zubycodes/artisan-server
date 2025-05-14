@@ -537,7 +537,6 @@ const chartOps = {
 
     query += " GROUP BY division_name";
     query += " ORDER BY value DESC";
-    query += " LIMIT 5";
 
     console.log("Division Distribution Query:", query);
     console.log("Division Distribution Params:", params);
