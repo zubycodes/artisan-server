@@ -60,6 +60,7 @@ const logger = pino({
 
 // Database connection with advanced patterns - This section is essential for connecting to the database and performing database operations.
 const { db, setLogger, connect, disconnect } = require("./db");
+const subscriptions = require("./routes/subscriptions");
 setLogger(logger.child({ module: "database" }));
 
 // Route registry with dependency injection - This section is important for defining the application's routes and handling incoming requests.
@@ -122,13 +123,6 @@ const createRouteRegistry = (dbInstance) => ({
     dependencies: {
       db: dbInstance,
       logger: logger.child({ module: "charts" }),
-    },
-  },
-  dynamicCharts: {
-    path: "./routes/dynamic-charts",
-    dependencies: {
-      db: dbInstance,
-      logger: logger.child({ module: "dynamic-charts" }),
     },
   },
   inq: {
