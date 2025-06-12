@@ -125,13 +125,6 @@ const createRouteRegistry = (dbInstance) => ({
       logger: logger.child({ module: "charts" }),
     },
   },
-  dynamicCharts: {
-    path: "./routes/dynamic-charts",
-    dependencies: {
-      db: dbInstance,
-      logger: logger.child({ module: "dynamicCharts" }),
-    },
-  },
   inq: {
     path: "./routes/inq",
     dependencies: {
