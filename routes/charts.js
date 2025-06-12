@@ -2519,7 +2519,7 @@ module.exports = (dependencies) => {
  * description: Invalid groupBy parameter provided
  */
 
-  router.get("/charts/:groupBy", handlers.getDistribution);
+  router.get("/charts/group/:groupBy", handlers.getDistribution);
 
 
   /**
