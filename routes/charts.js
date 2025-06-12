@@ -81,86 +81,9 @@ const addNumericalRangeCondition = (filterValue, columnName, paramsArray, queryS
   return queryString;
 };
 
-
 const chartOps = {
-  // Gender distribution
-  // Now accepts a filters object
-  getGenderDistribution(filters = {}) {
-    // Extract all potential filters that could apply
-    const {
-      division,
-      district,
-      tehsil,
-      gender, // Note: Filtering *by* gender here is correct as it restricts the population before grouping
-      craft,
-      category,
-      skill,
-      education,
-      raw_material,
-      employment_type,
-      crafting_method,
-      avg_monthly_income,
-      dependents_count,
-      inherited_skills,
-      has_machinery,
-      has_training,
-      loan_status,
-      financial_assistance,
-      technical_assistance,
-      // Add any other filters you might apply to this dataset
-    } = filters;
 
-    // Start with the base query including the initial WHERE clause
-    // Use the view `artisansView` if that's where all these columns are consolidated
-    let query = "SELECT gender, COUNT(*) as value FROM artisansView a WHERE a.isActive = 1";
-    const params = []; // Initialize parameters array
-
-    // Apply filters using the helper functions
-    // Use the exact column names from your artisansView
-    query = addFilterCondition(division, 'division_name', params, query); // Verify column name
-    query = addFilterCondition(district, 'district_name', params, query); // Verify column name
-    query = addFilterCondition(tehsil, 'tehsil_name', params, query);     // Verify column name
-    query = addFilterCondition(gender, 'gender', params, query);           // Applies the gender filter to the dataset
-    query = addFilterCondition(craft, 'craft_name', params, query);       // Verify column name
-    query = addFilterCondition(category, 'category_name', params, query); // Verify column name
-    query = addFilterCondition(skill, 'skill_name', params, query);       // Verify column name
-    query = addFilterCondition(education, 'education_name', params, query);
-    query = addFilterCondition(raw_material, 'raw_material', params, query);
-    query = addFilterCondition(employment_type, 'employment_type', params, query); // Verify column name
-    query = addFilterCondition(crafting_method, 'crafting_method', params, query);
-    query = addFilterCondition(inherited_skills, 'inherited_skills', params, query);
-    query = addFilterCondition(has_machinery, 'has_machinery', params, query); // Assuming DB stores strings like 'Yes'/'No' or similar
-    query = addFilterCondition(has_training, 'has_training', params, query);   // Assuming DB stores strings
-    query = addFilterCondition(loan_status, 'loan_status', params, query);       // Assuming DB stores strings
-    query = addFilterCondition(financial_assistance, 'financial_assistance', params, query); // Assuming DB stores strings
-    query = addFilterCondition(technical_assistance, 'technical_assistance', params, query); // Assuming DB stores strings
-
-    // Apply numerical filters
-    query = addNumericalRangeCondition(avg_monthly_income, 'avg_monthly_income', params, query); // Verify column name
-    query = addNumericalRangeCondition(dependents_count, 'dependents_count', params, query);   // Verify column name
-
-
-    // Add the GROUP BY clause after all WHERE conditions
-    query += " GROUP BY gender";
-
-    // Optional: Add ORDER BY if you want consistent sorting
-    // query += " ORDER BY gender ASC";
-
-
-    console.log("Gender Distribution Query:", query); // Log the constructed query for debugging
-    console.log("Gender Distribution Params:", params); // Log parameters
-
-    return dbAsync
-      .all(query, params) // Pass parameters to dbAsync.all
-      .then((results) => {
-        // Map results to the format expected by the frontend, handling potential nulls
-        return results.map((item) => ({
-          name: item.gender ? String(item.gender).charAt(0).toUpperCase() + String(item.gender).slice(1).toLowerCase() : 'Unknown', // Ensure gender is string, handle null, format name
-          value: item.value || 0, // Ensure value is a number, handle null
-        }));
-      });
-  },
-
+  //Dashboard Cards
   getDashboardData(filters = {}) {
     // Extract all potential filters
     const {
@@ -252,6 +175,84 @@ const chartOps = {
         };
       });
   },
+
+  // Gender distribution
+  getGenderDistribution(filters = {}) {
+    // Extract all potential filters that could apply
+    const {
+      division,
+      district,
+      tehsil,
+      gender, // Note: Filtering *by* gender here is correct as it restricts the population before grouping
+      craft,
+      category,
+      skill,
+      education,
+      raw_material,
+      employment_type,
+      crafting_method,
+      avg_monthly_income,
+      dependents_count,
+      inherited_skills,
+      has_machinery,
+      has_training,
+      loan_status,
+      financial_assistance,
+      technical_assistance,
+      // Add any other filters you might apply to this dataset
+    } = filters;
+
+    // Start with the base query including the initial WHERE clause
+    // Use the view `artisansView` if that's where all these columns are consolidated
+    let query = "SELECT gender, COUNT(*) as value FROM artisansView a WHERE a.isActive = 1";
+    const params = []; // Initialize parameters array
+
+    // Apply filters using the helper functions
+    // Use the exact column names from your artisansView
+    query = addFilterCondition(division, 'division_name', params, query); // Verify column name
+    query = addFilterCondition(district, 'district_name', params, query); // Verify column name
+    query = addFilterCondition(tehsil, 'tehsil_name', params, query);     // Verify column name
+    query = addFilterCondition(gender, 'gender', params, query);           // Applies the gender filter to the dataset
+    query = addFilterCondition(craft, 'craft_name', params, query);       // Verify column name
+    query = addFilterCondition(category, 'category_name', params, query); // Verify column name
+    query = addFilterCondition(skill, 'skill_name', params, query);       // Verify column name
+    query = addFilterCondition(education, 'education_name', params, query);
+    query = addFilterCondition(raw_material, 'raw_material', params, query);
+    query = addFilterCondition(employment_type, 'employment_type', params, query); // Verify column name
+    query = addFilterCondition(crafting_method, 'crafting_method', params, query);
+    query = addFilterCondition(inherited_skills, 'inherited_skills', params, query);
+    query = addFilterCondition(has_machinery, 'has_machinery', params, query); // Assuming DB stores strings like 'Yes'/'No' or similar
+    query = addFilterCondition(has_training, 'has_training', params, query);   // Assuming DB stores strings
+    query = addFilterCondition(loan_status, 'loan_status', params, query);       // Assuming DB stores strings
+    query = addFilterCondition(financial_assistance, 'financial_assistance', params, query); // Assuming DB stores strings
+    query = addFilterCondition(technical_assistance, 'technical_assistance', params, query); // Assuming DB stores strings
+
+    // Apply numerical filters
+    query = addNumericalRangeCondition(avg_monthly_income, 'avg_monthly_income', params, query); // Verify column name
+    query = addNumericalRangeCondition(dependents_count, 'dependents_count', params, query);   // Verify column name
+
+
+    // Add the GROUP BY clause after all WHERE conditions
+    query += " GROUP BY gender";
+
+    // Optional: Add ORDER BY if you want consistent sorting
+    // query += " ORDER BY gender ASC";
+
+
+    console.log("Gender Distribution Query:", query); // Log the constructed query for debugging
+    console.log("Gender Distribution Params:", params); // Log parameters
+
+    return dbAsync
+      .all(query, params) // Pass parameters to dbAsync.all
+      .then((results) => {
+        // Map results to the format expected by the frontend, handling potential nulls
+        return results.map((item) => ({
+          name: item.gender ? String(item.gender).charAt(0).toUpperCase() + String(item.gender).slice(1).toLowerCase() : 'Unknown', // Ensure gender is string, handle null, format name
+          value: item.value || 0, // Ensure value is a number, handle null
+        }));
+      });
+  },
+
   // Education level distribution
   getEducationDistribution(filters = {}) {
     // Extract all potential filters
@@ -329,6 +330,261 @@ const chartOps = {
       });
   },
 
+  getDistribution(groupBy, filters = {}) {
+    const columnMapping = {
+      skill: 'skill_name',
+      craft: 'craft_name',
+      category: 'category_name'
+    };
+    const groupByColumn = columnMapping[groupBy];
+    if (!groupByColumn) {
+      throw new Error(`Grouping by '${groupBy}' is not supported.`);
+    }
+
+    // This section includes all your potential filters.
+    const {
+      division, district, tehsil, gender, craft, category, skill,
+      education, raw_material, employment_type, crafting_method,
+      avg_monthly_income, dependents_count, inherited_skills,
+      has_machinery, has_training, loan_status, financial_assistance,
+      technical_assistance,
+    } = filters;
+
+    let query = `
+      SELECT a."${groupByColumn}" AS name, COUNT(*) AS value 
+      FROM artisansView a 
+      WHERE a.isActive = 1
+    `;
+    const params = [];
+
+    // The filter application logic is identical to your original function.
+    query = addFilterCondition(division, 'division_name', params, query);
+    query = addFilterCondition(district, 'district_name', params, query);
+    query = addFilterCondition(tehsil, 'tehsil_name', params, query);
+    query = addFilterCondition(gender, 'gender', params, query);
+    query = addFilterCondition(craft, 'craft_name', params, query);
+    query = addFilterCondition(category, 'category_name', params, query);
+    query = addFilterCondition(skill, 'skill_name', params, query);
+    query = addFilterCondition(education, 'education_name', params, query);
+    query = addFilterCondition(raw_material, 'raw_material', params, query);
+    query = addFilterCondition(employment_type, 'employment_type', params, query);
+    query = addFilterCondition(crafting_method, 'crafting_method', params, query);
+    query = addFilterCondition(inherited_skills, 'inherited_skills', params, query);
+    query = addFilterCondition(has_machinery, 'has_machinery', params, query);
+    query = addFilterCondition(has_training, 'has_training', params, query);
+    query = addFilterCondition(loan_status, 'loan_status', params, query);
+    query = addFilterCondition(financial_assistance, 'financial_assistance', params, query);
+    query = addFilterCondition(technical_assistance, 'technical_assistance', params, query);
+
+    query = addNumericalRangeCondition(avg_monthly_income, 'avg_monthly_income', params, query);
+    query = addNumericalRangeCondition(dependents_count, 'dependents_count', params, query);
+
+    // The GROUP BY clause is now dynamic.
+    query += ` GROUP BY a."${groupByColumn}"`;
+    query += " ORDER BY name ASC";
+
+    console.log(`Dynamic Distribution Query (groupBy=${groupBy}):`, query);
+    console.log("Params:", params);
+
+    return dbAsync
+      .all(query, params)
+      .then((results) => {
+        return results.map((item) => ({
+          name: item.name ? String(item.name).charAt(0).toUpperCase() + String(item.name).slice(1).toLowerCase() : 'Unknown',
+          value: item.value || 0,
+        }));
+      });
+  },
+
+  getAverageIncomeByGroup(groupBy, filters = {}) {
+    const columnMapping = { skill: 'skill_name', craft: 'craft_name', category: 'category_name' };
+    const groupByColumn = columnMapping[groupBy];
+    if (!groupByColumn) throw new Error(`Grouping by '${groupBy}' is not supported.`);
+
+    const {
+      division, district, tehsil, gender, craft, category, skill,
+      education, raw_material, employment_type, crafting_method,
+      avg_monthly_income, dependents_count, inherited_skills,
+      has_machinery, has_training, loan_status, financial_assistance,
+      technical_assistance,
+    } = filters;
+
+    let query = `
+            SELECT a."${groupByColumn}" as name, ROUND(AVG(a.avg_monthly_income), 2) as avgIncome 
+            FROM artisansView a 
+            WHERE a.isActive = 1
+        `;
+    const params = [];
+
+    // --- Full Filter Application Logic ---
+    query = addFilterCondition(division, 'division_name', params, query);
+    query = addFilterCondition(district, 'district_name', params, query);
+    query = addFilterCondition(tehsil, 'tehsil_name', params, query);
+    query = addFilterCondition(gender, 'gender', params, query);
+    query = addFilterCondition(craft, 'craft_name', params, query);
+    query = addFilterCondition(category, 'category_name', params, query);
+    query = addFilterCondition(skill, 'skill_name', params, query);
+    query = addFilterCondition(education, 'education_name', params, query);
+    query = addFilterCondition(raw_material, 'raw_material', params, query);
+    query = addFilterCondition(employment_type, 'employment_type', params, query);
+    query = addFilterCondition(crafting_method, 'crafting_method', params, query);
+    query = addFilterCondition(inherited_skills, 'inherited_skills', params, query);
+    query = addFilterCondition(has_machinery, 'has_machinery', params, query);
+    query = addFilterCondition(has_training, 'has_training', params, query);
+    query = addFilterCondition(loan_status, 'loan_status', params, query);
+    query = addFilterCondition(financial_assistance, 'financial_assistance', params, query);
+    query = addFilterCondition(technical_assistance, 'technical_assistance', params, query);
+    query = addNumericalRangeCondition(avg_monthly_income, 'avg_monthly_income', params, query);
+    query = addNumericalRangeCondition(dependents_count, 'dependents_count', params, query);
+
+    query += ` GROUP BY a."${groupByColumn}"`;
+    query += " ORDER BY avgIncome DESC";
+
+    console.log(`Average Income Query (groupBy=${groupBy}):`, query);
+    console.log("Params:", params);
+
+    return dbAsync.all(query, params).then((results) => {
+      return results.map((item) => ({
+        name: item.name ? String(item.name).charAt(0).toUpperCase() + String(item.name).slice(1).toLowerCase() : 'Unknown',
+        avgIncome: item.avgIncome || 0,
+      }));
+    });
+  },
+
+  /**
+   * NEW DYNAMIC FUNCTION
+   * Gets the top 5 items by count, grouped by skill, craft, or category.
+   */
+  getTopDistribution(groupBy, filters = {}) {
+    const columnMapping = { skill: 'skill_name', craft: 'craft_name', category: 'category_name' };
+    const groupByColumn = columnMapping[groupBy];
+    if (!groupByColumn) throw new Error(`Grouping by '${groupBy}' is not supported.`);
+
+    const {
+      division, district, tehsil, gender, craft, category, skill,
+      education, raw_material, employment_type, crafting_method,
+      avg_monthly_income, dependents_count, inherited_skills,
+      has_machinery, has_training, loan_status, financial_assistance,
+      technical_assistance,
+    } = filters;
+
+    let query = `
+            SELECT a."${groupByColumn}" AS name, COUNT(*) AS value 
+            FROM artisansView a 
+            WHERE a.isActive = 1
+        `;
+    const params = [];
+
+    // --- Full Filter Application Logic ---
+    query = addFilterCondition(division, 'division_name', params, query);
+    query = addFilterCondition(district, 'district_name', params, query);
+    query = addFilterCondition(tehsil, 'tehsil_name', params, query);
+    query = addFilterCondition(gender, 'gender', params, query);
+    query = addFilterCondition(craft, 'craft_name', params, query);
+    query = addFilterCondition(category, 'category_name', params, query);
+    query = addFilterCondition(skill, 'skill_name', params, query);
+    query = addFilterCondition(education, 'education_name', params, query);
+    query = addFilterCondition(raw_material, 'raw_material', params, query);
+    query = addFilterCondition(employment_type, 'employment_type', params, query);
+    query = addFilterCondition(crafting_method, 'crafting_method', params, query);
+    query = addFilterCondition(inherited_skills, 'inherited_skills', params, query);
+    query = addFilterCondition(has_machinery, 'has_machinery', params, query);
+    query = addFilterCondition(has_training, 'has_training', params, query);
+    query = addFilterCondition(loan_status, 'loan_status', params, query);
+    query = addFilterCondition(financial_assistance, 'financial_assistance', params, query);
+    query = addFilterCondition(technical_assistance, 'technical_assistance', params, query);
+    query = addNumericalRangeCondition(avg_monthly_income, 'avg_monthly_income', params, query);
+    query = addNumericalRangeCondition(dependents_count, 'dependents_count', params, query);
+
+    query += ` GROUP BY a."${groupByColumn}"`;
+    query += " ORDER BY value DESC LIMIT 5";
+
+    console.log(`Top Distribution Query (groupBy=${groupBy}):`, query);
+    console.log("Params:", params);
+
+    return dbAsync.all(query, params).then((results) => {
+      return results.map((item) => ({
+        name: item.name ? String(item.name).charAt(0).toUpperCase() + String(item.name).slice(1).toLowerCase() : 'Unknown',
+        value: item.value || 0,
+      }));
+    });
+  },
+
+  /**
+   * NEW DYNAMIC FUNCTION
+   * Gets distribution by employment type, grouped by skill, craft, or category.
+   */
+  getDistributionByEmploymentType(groupBy, filters = {}) {
+    const columnMapping = { skill: 'skill_name', craft: 'craft_name', category: 'category_name' };
+    const groupByColumn = columnMapping[groupBy];
+    if (!groupByColumn) throw new Error(`Grouping by '${groupBy}' is not supported.`);
+
+    const {
+      division, district, tehsil, gender, craft, category, skill,
+      education, raw_material, employment_type, crafting_method,
+      avg_monthly_income, dependents_count, inherited_skills,
+      has_machinery, has_training, loan_status, financial_assistance,
+      technical_assistance,
+    } = filters;
+
+    // NOTE: We select 'a.employment_type' directly from the view, which is more efficient
+    // than the extra JOIN found in the original 'getSkillByEmploymentType' function.
+    let query = `
+            SELECT a."${groupByColumn}" as name, a.employment_type, COUNT(*) as value
+            FROM artisansView a
+            WHERE a.isActive = 1
+        `;
+    const params = [];
+
+    // --- Full Filter Application Logic ---
+    query = addFilterCondition(division, 'division_name', params, query);
+    query = addFilterCondition(district, 'district_name', params, query);
+    query = addFilterCondition(tehsil, 'tehsil_name', params, query);
+    query = addFilterCondition(gender, 'gender', params, query);
+    query = addFilterCondition(craft, 'craft_name', params, query);
+    query = addFilterCondition(category, 'category_name', params, query);
+    query = addFilterCondition(skill, 'skill_name', params, query);
+    query = addFilterCondition(education, 'education_name', params, query);
+    query = addFilterCondition(raw_material, 'raw_material', params, query);
+    query = addFilterCondition(employment_type, 'employment_type', params, query);
+    query = addFilterCondition(crafting_method, 'crafting_method', params, query);
+    query = addFilterCondition(inherited_skills, 'inherited_skills', params, query);
+    query = addFilterCondition(has_machinery, 'has_machinery', params, query);
+    query = addFilterCondition(has_training, 'has_training', params, query);
+    query = addFilterCondition(loan_status, 'loan_status', params, query);
+    query = addFilterCondition(financial_assistance, 'financial_assistance', params, query);
+    query = addFilterCondition(technical_assistance, 'technical_assistance', params, query);
+    query = addNumericalRangeCondition(avg_monthly_income, 'avg_monthly_income', params, query);
+    query = addNumericalRangeCondition(dependents_count, 'dependents_count', params, query);
+
+    query += ` GROUP BY a."${groupByColumn}", a.employment_type`;
+    query += ` ORDER BY a."${groupByColumn}" ASC`;
+
+    console.log(`Distribution by Employment Query (groupBy=${groupBy}):`, query);
+    console.log("Params:", params);
+
+    return dbAsync.all(query, params).then((rows) => {
+      const dataMap = new Map();
+      const employmentTypes = [...new Set(rows.map(r => r.employment_type))];
+
+      rows.forEach(row => {
+        if (!row.name) return; // Skip rows where the group name is null
+        if (!dataMap.has(row.name)) {
+          const newEntry = { name: row.name };
+          employmentTypes.forEach(type => {
+            if (type) newEntry[type] = 0;
+          });
+          dataMap.set(row.name, newEntry);
+        }
+        if (row.employment_type) {
+          dataMap.get(row.name)[row.employment_type] = row.value;
+        }
+      });
+
+      return Array.from(dataMap.values());
+    });
+  },
+
   // Skill distribution
   getSkillDistribution(filters = {}) {
     // Extract all potential filters
@@ -403,6 +659,219 @@ const chartOps = {
           name: item.name ? String(item.name).charAt(0).toUpperCase() + String(item.name).slice(1).toLowerCase() : 'Unknown',
           value: item.value || 0,
         }));
+      });
+  },
+
+  // Average income by skill
+  getAverageIncomeBySkill(filters = {}) {
+    const {
+      division,
+      district,
+      tehsil,
+      gender,
+      craft,
+      category,
+      skill,
+      education,
+      raw_material,
+      employment_type,
+      crafting_method,
+      avg_monthly_income,
+      dependents_count,
+      inherited_skills,
+      has_machinery,
+      has_training,
+      loan_status,
+      financial_assistance,
+      technical_assistance,
+    } = filters;
+
+    let query = `
+      SELECT a.skill_name as skill, ROUND(AVG(a.avg_monthly_income), 2) as avgIncome 
+      FROM artisansView a 
+      WHERE a.isActive = 1
+    `;
+    const params = [];
+
+    query = addFilterCondition(division, 'division_name', params, query);
+    query = addFilterCondition(district, 'district_name', params, query);
+    query = addFilterCondition(tehsil, 'tehsil_name', params, query);
+    query = addFilterCondition(gender, 'gender', params, query);
+    query = addFilterCondition(craft, 'craft_name', params, query);
+    query = addFilterCondition(category, 'category_name', params, query);
+    query = addFilterCondition(skill, 'skill_name', params, query);
+    query = addFilterCondition(education, 'education_name', params, query);
+    query = addFilterCondition(raw_material, 'raw_material', params, query);
+    query = addFilterCondition(employment_type, 'employment_type', params, query);
+    query = addFilterCondition(crafting_method, 'crafting_method', params, query);
+    query = addFilterCondition(inherited_skills, 'inherited_skills', params, query);
+    query = addFilterCondition(has_machinery, 'has_machinery', params, query);
+    query = addFilterCondition(has_training, 'has_training', params, query);
+    query = addFilterCondition(loan_status, 'loan_status', params, query);
+    query = addFilterCondition(financial_assistance, 'financial_assistance', params, query);
+    query = addFilterCondition(technical_assistance, 'technical_assistance', params, query);
+
+    query = addNumericalRangeCondition(avg_monthly_income, 'avg_monthly_income', params, query);
+    query = addNumericalRangeCondition(dependents_count, 'dependents_count', params, query);
+
+    query += " GROUP BY a.skill_name";
+    query += " ORDER BY avgIncome DESC";
+
+    console.log("Average Income by Skill Query:", query);
+    console.log("Average Income by Skill Params:", params);
+
+    return dbAsync
+      .all(query, params)
+      .then((results) => {
+        return results.map((item) => ({
+          skill: item.skill ? String(item.skill).charAt(0).toUpperCase() + String(item.skill).slice(1).toLowerCase() : 'Unknown',
+          avgIncome: item.avgIncome || 0,
+        }));
+      });
+  },
+
+  // Skill Distribution
+  getTopSkillDistribution(filters = {}) {
+    const {
+      division,
+      district,
+      tehsil,
+      gender,
+      craft,
+      category,
+      skill,
+      education,
+      raw_material,
+      employment_type,
+      crafting_method,
+      avg_monthly_income,
+      dependents_count,
+      inherited_skills,
+      has_machinery,
+      has_training,
+      loan_status,
+      financial_assistance,
+      technical_assistance,
+    } = filters;
+
+    let query = `
+      SELECT a.skill_name as name, COUNT(*) as value 
+      FROM artisansView a 
+      WHERE a.isActive = 1
+    `;
+    const params = [];
+
+    query = addFilterCondition(division, 'division_name', params, query);
+    query = addFilterCondition(district, 'district_name', params, query);
+    query = addFilterCondition(tehsil, 'tehsil_name', params, query);
+    query = addFilterCondition(gender, 'gender', params, query);
+    query = addFilterCondition(craft, 'craft_name', params, query);
+    query = addFilterCondition(category, 'category_name', params, query);
+    query = addFilterCondition(skill, 'skill_name', params, query);
+    query = addFilterCondition(education, 'education_name', params, query);
+    query = addFilterCondition(raw_material, 'raw_material', params, query);
+    query = addFilterCondition(employment_type, 'employment_type', params, query);
+    query = addFilterCondition(crafting_method, 'crafting_method', params, query);
+    query = addFilterCondition(inherited_skills, 'inherited_skills', params, query);
+    query = addFilterCondition(has_machinery, 'has_machinery', params, query);
+    query = addFilterCondition(has_training, 'has_training', params, query);
+    query = addFilterCondition(loan_status, 'loan_status', params, query);
+    query = addFilterCondition(financial_assistance, 'financial_assistance', params, query);
+    query = addFilterCondition(technical_assistance, 'technical_assistance', params, query);
+
+    query = addNumericalRangeCondition(avg_monthly_income, 'avg_monthly_income', params, query);
+    query = addNumericalRangeCondition(dependents_count, 'dependents_count', params, query);
+
+    query += " GROUP BY a.skill_name";
+    query += " ORDER BY value DESC";
+    query += " LIMIT 5";
+
+    console.log("Top Skill Distribution Query:", query);
+    console.log("Top Skill Distribution Params:", params);
+
+    return dbAsync
+      .all(query, params)
+      .then((results) => {
+        return results.map((item) => ({
+          name: item.name ? String(item.name).charAt(0).toUpperCase() + String(item.name).slice(1).toLowerCase() : 'Unknown',
+          value: item.value || 0,
+        }));
+      });
+  },
+
+  // Skill by employment type (stacked)
+  getSkillByEmploymentType(filters = {}) {
+    const {
+      division,
+      district,
+      tehsil,
+      gender,
+      craft,
+      category,
+      skill,
+      education,
+      raw_material,
+      employment_type,
+      crafting_method,
+      avg_monthly_income,
+      dependents_count,
+      inherited_skills,
+      has_machinery,
+      has_training,
+      loan_status,
+      financial_assistance,
+      technical_assistance,
+    } = filters;
+
+    let query = `
+      SELECT s.name as skill, et.name as employment_type, COUNT(*) as value 
+      FROM artisansView a 
+      JOIN techniques s ON a.skill_id = s.id 
+      JOIN employment_types et ON a.employment_type_id = et.id 
+      WHERE a.isActive = 1
+    `;
+    const params = [];
+
+    query = addFilterCondition(division, 'division_name', params, query);
+    query = addFilterCondition(district, 'district_name', params, query);
+    query = addFilterCondition(tehsil, 'tehsil_name', params, query);
+    query = addFilterCondition(gender, 'gender', params, query);
+    query = addFilterCondition(craft, 'craft_name', params, query);
+    query = addFilterCondition(category, 'category_name', params, query);
+    query = addFilterCondition(skill, 'skill_name', params, query);
+    query = addFilterCondition(education, 'education_name', params, query);
+    query = addFilterCondition(raw_material, 'raw_material', params, query);
+    query = addFilterCondition(employment_type, 'employment_type', params, query);
+    query = addFilterCondition(crafting_method, 'crafting_method', params, query);
+    query = addFilterCondition(inherited_skills, 'inherited_skills', params, query);
+    query = addFilterCondition(has_machinery, 'has_machinery', params, query);
+    query = addFilterCondition(has_training, 'has_training', params, query);
+    query = addFilterCondition(loan_status, 'loan_status', params, query);
+    query = addFilterCondition(financial_assistance, 'financial_assistance', params, query);
+    query = addFilterCondition(technical_assistance, 'technical_assistance', params, query);
+
+    query = addNumericalRangeCondition(avg_monthly_income, 'avg_monthly_income', params, query);
+    query = addNumericalRangeCondition(dependents_count, 'dependents_count', params, query);
+
+    query += " GROUP BY s.name, et.name";
+    query += " ORDER BY s.name ASC";
+
+    console.log("Skill by Employment Type Query:", query);
+    console.log("Skill by Employment Type Params:", params);
+
+    return dbAsync
+      .all(query, params)
+      .then((rows) => {
+        const skills = [...new Set(rows.map((r) => r.skill))];
+        return skills.map((skill) => {
+          const skillData = { skill };
+          rows
+            .filter((r) => r.skill === skill)
+            .forEach((r) => {
+              skillData[r.employment_type || 'Unknown'] = r.value || 0;
+            });
+          return skillData;
+        });
       });
   },
 
@@ -550,6 +1019,7 @@ const chartOps = {
         }));
       });
   },
+
   // District distribution
   getDistrictDistribution(filters = {}) {
     const {
@@ -617,6 +1087,7 @@ const chartOps = {
         }));
       });
   },
+
   // Tehsil distribution
   getTehsilDistribution(filters = {}) {
     const {
@@ -685,74 +1156,6 @@ const chartOps = {
       });
   },
 
-  // Skill Distribution
-  getTopSkillDistribution(filters = {}) {
-    const {
-      division,
-      district,
-      tehsil,
-      gender,
-      craft,
-      category,
-      skill,
-      education,
-      raw_material,
-      employment_type,
-      crafting_method,
-      avg_monthly_income,
-      dependents_count,
-      inherited_skills,
-      has_machinery,
-      has_training,
-      loan_status,
-      financial_assistance,
-      technical_assistance,
-    } = filters;
-
-    let query = `
-      SELECT a.skill_name as name, COUNT(*) as value 
-      FROM artisansView a 
-      WHERE a.isActive = 1
-    `;
-    const params = [];
-
-    query = addFilterCondition(division, 'division_name', params, query);
-    query = addFilterCondition(district, 'district_name', params, query);
-    query = addFilterCondition(tehsil, 'tehsil_name', params, query);
-    query = addFilterCondition(gender, 'gender', params, query);
-    query = addFilterCondition(craft, 'craft_name', params, query);
-    query = addFilterCondition(category, 'category_name', params, query);
-    query = addFilterCondition(skill, 'skill_name', params, query);
-    query = addFilterCondition(education, 'education_name', params, query);
-    query = addFilterCondition(raw_material, 'raw_material', params, query);
-    query = addFilterCondition(employment_type, 'employment_type', params, query);
-    query = addFilterCondition(crafting_method, 'crafting_method', params, query);
-    query = addFilterCondition(inherited_skills, 'inherited_skills', params, query);
-    query = addFilterCondition(has_machinery, 'has_machinery', params, query);
-    query = addFilterCondition(has_training, 'has_training', params, query);
-    query = addFilterCondition(loan_status, 'loan_status', params, query);
-    query = addFilterCondition(financial_assistance, 'financial_assistance', params, query);
-    query = addFilterCondition(technical_assistance, 'technical_assistance', params, query);
-
-    query = addNumericalRangeCondition(avg_monthly_income, 'avg_monthly_income', params, query);
-    query = addNumericalRangeCondition(dependents_count, 'dependents_count', params, query);
-
-    query += " GROUP BY a.skill_name";
-    query += " ORDER BY value DESC";
-    query += " LIMIT 5";
-
-    console.log("Top Skill Distribution Query:", query);
-    console.log("Top Skill Distribution Params:", params);
-
-    return dbAsync
-      .all(query, params)
-      .then((results) => {
-        return results.map((item) => ({
-          name: item.name ? String(item.name).charAt(0).toUpperCase() + String(item.name).slice(1).toLowerCase() : 'Unknown',
-          value: item.value || 0,
-        }));
-      });
-  },
   // Yes/No fields distribution (loan status, machinery, training, etc.)
   getYesNoDistribution(field, filters = {}) {
     const validFields = [
@@ -830,74 +1233,6 @@ const chartOps = {
         return results.map((item) => ({
           name: item.name ? String(item.name).charAt(0).toUpperCase() + String(item.name).slice(1).toLowerCase() : 'Unknown',
           value: item.value || 0,
-        }));
-      });
-  },
-
-  // Average income by skill
-  getAverageIncomeBySkill(filters = {}) {
-    const {
-      division,
-      district,
-      tehsil,
-      gender,
-      craft,
-      category,
-      skill,
-      education,
-      raw_material,
-      employment_type,
-      crafting_method,
-      avg_monthly_income,
-      dependents_count,
-      inherited_skills,
-      has_machinery,
-      has_training,
-      loan_status,
-      financial_assistance,
-      technical_assistance,
-    } = filters;
-
-    let query = `
-      SELECT a.skill_name as skill, ROUND(AVG(a.avg_monthly_income), 2) as avgIncome 
-      FROM artisansView a 
-      WHERE a.isActive = 1
-    `;
-    const params = [];
-
-    query = addFilterCondition(division, 'division_name', params, query);
-    query = addFilterCondition(district, 'district_name', params, query);
-    query = addFilterCondition(tehsil, 'tehsil_name', params, query);
-    query = addFilterCondition(gender, 'gender', params, query);
-    query = addFilterCondition(craft, 'craft_name', params, query);
-    query = addFilterCondition(category, 'category_name', params, query);
-    query = addFilterCondition(skill, 'skill_name', params, query);
-    query = addFilterCondition(education, 'education_name', params, query);
-    query = addFilterCondition(raw_material, 'raw_material', params, query);
-    query = addFilterCondition(employment_type, 'employment_type', params, query);
-    query = addFilterCondition(crafting_method, 'crafting_method', params, query);
-    query = addFilterCondition(inherited_skills, 'inherited_skills', params, query);
-    query = addFilterCondition(has_machinery, 'has_machinery', params, query);
-    query = addFilterCondition(has_training, 'has_training', params, query);
-    query = addFilterCondition(loan_status, 'loan_status', params, query);
-    query = addFilterCondition(financial_assistance, 'financial_assistance', params, query);
-    query = addFilterCondition(technical_assistance, 'technical_assistance', params, query);
-
-    query = addNumericalRangeCondition(avg_monthly_income, 'avg_monthly_income', params, query);
-    query = addNumericalRangeCondition(dependents_count, 'dependents_count', params, query);
-
-    query += " GROUP BY a.skill_name";
-    query += " ORDER BY avgIncome DESC";
-
-    console.log("Average Income by Skill Query:", query);
-    console.log("Average Income by Skill Params:", params);
-
-    return dbAsync
-      .all(query, params)
-      .then((results) => {
-        return results.map((item) => ({
-          skill: item.skill ? String(item.skill).charAt(0).toUpperCase() + String(item.skill).slice(1).toLowerCase() : 'Unknown',
-          avgIncome: item.avgIncome || 0,
         }));
       });
   },
@@ -1141,6 +1476,7 @@ const chartOps = {
       });
   },
 
+  // Dependants distribution
   getDependentsDistribution(filters = {}) {
     const {
       division,
@@ -1290,82 +1626,6 @@ const chartOps = {
       });
   },
 
-  // Skill by employment type (stacked)
-  getSkillByEmploymentType(filters = {}) {
-    const {
-      division,
-      district,
-      tehsil,
-      gender,
-      craft,
-      category,
-      skill,
-      education,
-      raw_material,
-      employment_type,
-      crafting_method,
-      avg_monthly_income,
-      dependents_count,
-      inherited_skills,
-      has_machinery,
-      has_training,
-      loan_status,
-      financial_assistance,
-      technical_assistance,
-    } = filters;
-
-    let query = `
-      SELECT s.name as skill, et.name as employment_type, COUNT(*) as value 
-      FROM artisansView a 
-      JOIN techniques s ON a.skill_id = s.id 
-      JOIN employment_types et ON a.employment_type_id = et.id 
-      WHERE a.isActive = 1
-    `;
-    const params = [];
-
-    query = addFilterCondition(division, 'division_name', params, query);
-    query = addFilterCondition(district, 'district_name', params, query);
-    query = addFilterCondition(tehsil, 'tehsil_name', params, query);
-    query = addFilterCondition(gender, 'gender', params, query);
-    query = addFilterCondition(craft, 'craft_name', params, query);
-    query = addFilterCondition(category, 'category_name', params, query);
-    query = addFilterCondition(skill, 'skill_name', params, query);
-    query = addFilterCondition(education, 'education_name', params, query);
-    query = addFilterCondition(raw_material, 'raw_material', params, query);
-    query = addFilterCondition(employment_type, 'employment_type', params, query);
-    query = addFilterCondition(crafting_method, 'crafting_method', params, query);
-    query = addFilterCondition(inherited_skills, 'inherited_skills', params, query);
-    query = addFilterCondition(has_machinery, 'has_machinery', params, query);
-    query = addFilterCondition(has_training, 'has_training', params, query);
-    query = addFilterCondition(loan_status, 'loan_status', params, query);
-    query = addFilterCondition(financial_assistance, 'financial_assistance', params, query);
-    query = addFilterCondition(technical_assistance, 'technical_assistance', params, query);
-
-    query = addNumericalRangeCondition(avg_monthly_income, 'avg_monthly_income', params, query);
-    query = addNumericalRangeCondition(dependents_count, 'dependents_count', params, query);
-
-    query += " GROUP BY s.name, et.name";
-    query += " ORDER BY s.name ASC";
-
-    console.log("Skill by Employment Type Query:", query);
-    console.log("Skill by Employment Type Params:", params);
-
-    return dbAsync
-      .all(query, params)
-      .then((rows) => {
-        const skills = [...new Set(rows.map((r) => r.skill))];
-        return skills.map((skill) => {
-          const skillData = { skill };
-          rows
-            .filter((r) => r.skill === skill)
-            .forEach((r) => {
-              skillData[r.employment_type || 'Unknown'] = r.value || 0;
-            });
-          return skillData;
-        });
-      });
-  },
-
   // Registrations over time
   getRegistrationsOverTime(filters = {}) {
     const {
@@ -1433,6 +1693,7 @@ const chartOps = {
         }));
       });
   },
+
   // Cumulative registrations over time
   getCumulativeRegistrations(filters = {}) {
     const {
@@ -1643,6 +1904,30 @@ const chartOps = {
  */
 module.exports = (dependencies) => {
   const { logger } = dependencies;
+
+  // Generic handler factory to avoid repetition
+  const createDynamicHandler = (handlerName, chartOpFunction) => {
+    return createHandler(async (req, res) => {
+      const { groupBy } = req.params;
+      const filters = req.query;
+      const routeLogger = logger.child({ route: "charts", handler: handlerName, groupBy, filters });
+
+      const allowedGroupByFields = ['skill', 'craft', 'category'];
+      if (!allowedGroupByFields.includes(groupBy)) {
+        routeLogger.warn("Invalid groupBy parameter received");
+        return res.status(400).json({ error: `Invalid groupBy. Allowed: ${allowedGroupByFields.join(', ')}` });
+      }
+
+      routeLogger.info(`Fetching data for ${handlerName}`);
+      try {
+        const data = await chartOpFunction(groupBy, filters);
+        res.json(data);
+      } catch (error) {
+        routeLogger.error({ error }, `Error fetching data for ${handlerName}`);
+        res.status(500).json({ error: error.message });
+      }
+    });
+  };
   const handlers = {
     // Get gender distribution
     getDashboardData: createHandler(async (req, res) => {
@@ -1698,6 +1983,40 @@ module.exports = (dependencies) => {
       }
     }),
 
+    // Distribution by 'skill', 'craft', 'category'
+    getDistribution: createHandler(async (req, res) => {
+      const { groupBy } = req.params;
+      const filters = req.query;
+
+      const routeLogger = logger.child({
+        route: "charts",
+        handler: "getDistribution",
+        groupBy,
+        filters
+      });
+
+      const allowedGroupByFields = ['skill', 'craft', 'category'];
+      if (!allowedGroupByFields.includes(groupBy)) {
+        routeLogger.warn("Invalid groupBy parameter received");
+        return res.status(400).json({
+          error: `Invalid groupBy parameter. Allowed values are: ${allowedGroupByFields.join(', ')}`
+        });
+      }
+
+      routeLogger.info("Fetching dynamic distribution data");
+      try {
+        const data = await chartOps.getDistribution(groupBy, filters);
+        res.json(data);
+      } catch (error) {
+        routeLogger.error({ error }, "Error fetching dynamic distribution data");
+        res.status(500).json({ error: error.message });
+      }
+    }),
+
+    getDistributionByEmploymentType: createDynamicHandler("getDistributionByEmploymentType", chartOps.getDistributionByEmploymentType),
+    getTopDistribution: createDynamicHandler("getTopDistribution", chartOps.getTopDistribution),
+    getAverageIncomeByGroup: createDynamicHandler("getAverageIncomeByGroup", chartOps.getAverageIncomeByGroup),
+
     // Get skill distribution
     getSkillDistribution: createHandler(async (req, res) => {
       const field = req.query;
@@ -1712,6 +2031,65 @@ module.exports = (dependencies) => {
         res.json(data);
       } catch (error) {
         routeLogger.error({ error }, "Error fetching skill distribution data");
+        res.status(500).json({ error: error.message });
+      }
+    }),
+
+
+    // Get average income by skill
+    getAverageIncomeBySkill: createHandler(async (req, res) => {
+      const routeLogger = logger.child({
+        route: "charts",
+        handler: "getAverageIncomeBySkill",
+      });
+      routeLogger.info("Fetching average income by skill data");
+      try {
+        const data = await chartOps.getAverageIncomeBySkill();
+        res.json(data);
+      } catch (error) {
+        routeLogger.error(
+          { error },
+          "Error fetching average income by skill data"
+        );
+        res.status(500).json({ error: error.message });
+      }
+    }),
+
+    // Get top skill
+    getTopSkillDistribution: createHandler(async (req, res) => {
+      const field = req.query;
+      const routeLogger = logger.child({
+        route: "charts",
+        handler: "getTopSkillDistribution",
+        field,
+      });
+      routeLogger.info("Fetching top skill data");
+      try {
+        const data = await chartOps.getTopSkillDistribution(field);
+        res.json(data);
+      } catch (error) {
+        routeLogger.error({ error }, "Error fetching top skill data");
+        res.status(500).json({ error: error.message });
+      }
+
+    }),
+
+
+    // Get skill by employment type (stacked)
+    getSkillByEmploymentType: createHandler(async (req, res) => {
+      const routeLogger = logger.child({
+        route: "charts",
+        handler: "getSkillByEmploymentType",
+      });
+      routeLogger.info("Fetching skill by employment type data");
+      try {
+        const data = await chartOps.getSkillByEmploymentType();
+        res.json(data);
+      } catch (error) {
+        routeLogger.error(
+          { error },
+          "Error fetching skill by employment type data"
+        );
         res.status(500).json({ error: error.message });
       }
     }),
@@ -1788,23 +2166,6 @@ module.exports = (dependencies) => {
         res.status(500).json({ error: error.message });
       }
     }),
-    // Get top skill
-    getTopSkillDistribution: createHandler(async (req, res) => {
-      const field = req.query;
-      const routeLogger = logger.child({
-        route: "charts",
-        handler: "getTopSkillDistribution",
-        field,
-      });
-      routeLogger.info("Fetching top skill data");
-      try {
-        const data = await chartOps.getTopSkillDistribution(field);
-        res.json(data);
-      } catch (error) {
-        routeLogger.error({ error }, "Error fetching top skill data");
-        res.status(500).json({ error: error.message });
-      }
-    }),
 
     // Get Yes/No field distribution
     getYesNoDistribution: createHandler(async (req, res) => {
@@ -1827,24 +2188,6 @@ module.exports = (dependencies) => {
       }
     }),
 
-    // Get average income by skill
-    getAverageIncomeBySkill: createHandler(async (req, res) => {
-      const routeLogger = logger.child({
-        route: "charts",
-        handler: "getAverageIncomeBySkill",
-      });
-      routeLogger.info("Fetching average income by skill data");
-      try {
-        const data = await chartOps.getAverageIncomeBySkill();
-        res.json(data);
-      } catch (error) {
-        routeLogger.error(
-          { error },
-          "Error fetching average income by skill data"
-        );
-        res.status(500).json({ error: error.message });
-      }
-    }),
 
     // Get age distribution
     getAgeDistribution: createHandler(async (req, res) => {
@@ -1934,24 +2277,6 @@ module.exports = (dependencies) => {
       }
     }),
 
-    // Get skill by employment type (stacked)
-    getSkillByEmploymentType: createHandler(async (req, res) => {
-      const routeLogger = logger.child({
-        route: "charts",
-        handler: "getSkillByEmploymentType",
-      });
-      routeLogger.info("Fetching skill by employment type data");
-      try {
-        const data = await chartOps.getSkillByEmploymentType();
-        res.json(data);
-      } catch (error) {
-        routeLogger.error(
-          { error },
-          "Error fetching skill by employment type data"
-        );
-        res.status(500).json({ error: error.message });
-      }
-    }),
 
     // Get registrations over time
     getRegistrationsOverTime: createHandler(async (req, res) => {
@@ -2175,6 +2500,86 @@ module.exports = (dependencies) => {
   router.get("/charts/education", handlers.getEducationDistribution);
 
   /**
+ * @swagger
+ * /charts/{groupBy}:
+ * get:
+ * summary: Get data distribution for a specified field (e.g., skill, craft, category)
+ * parameters:
+ * - in: path
+ * name: groupBy
+ * required: true
+ * schema:
+ * type: string
+ * enum: [skill, craft, category] // Whitelist of allowed values
+ * description: The field to group the data by.
+ * responses:
+ * 200:
+ * description: Distribution data for the specified group
+ * 400:
+ * description: Invalid groupBy parameter provided
+ */
+
+  router.get("/charts/:groupBy", handlers.getDistribution);
+
+
+  /**
+   * @swagger
+   * /charts/distribution-by-employment/{groupBy}:
+   * get:
+   * summary: Get distribution by employment type, grouped by a specified field
+   * parameters:
+   * - in: path
+   * name: groupBy
+   * required: true
+   * schema:
+   * type: string
+   * enum: [skill, craft, category]
+   * description: The field to group the data by.
+   * responses:
+   * 200:
+   * description: Data for a stacked bar chart
+   */
+  router.get("/charts/distribution-by-employment/:groupBy", handlers.getDistributionByEmploymentType);
+
+  /**
+   * @swagger
+   * /charts/top-distribution/{groupBy}:
+   * get:
+   * summary: Get the top 5 items for a given distribution
+   * parameters:
+   * - in: path
+   * name: groupBy
+   * required: true
+   * schema:
+   * type: string
+   * enum: [skill, craft, category]
+   * description: The field to group the data by.
+   * responses:
+   * 200:
+   * description: Top 5 distribution data
+   */
+  router.get("/charts/top-distribution/:groupBy", handlers.getTopDistribution);
+
+  /**
+   * @swagger
+   * /charts/average-income-by/{groupBy}:
+   * get:
+   * summary: Get average income grouped by a specified field
+   * parameters:
+   * - in: path
+   * name: groupBy
+   * required: true
+   * schema:
+   * type: string
+   * enum: [skill, craft, category]
+   * description: The field to group the data by.
+   * responses:
+   * 200:
+   * description: Average income data
+   */
+  router.get("/charts/average-income-by/:groupBy", handlers.getAverageIncomeByGroup);
+
+  /**
    * @swagger
    * /charts/skill:
    *   get:
@@ -2184,6 +2589,39 @@ module.exports = (dependencies) => {
    *         description: Skill distribution data
    */
   router.get("/charts/skill", handlers.getSkillDistribution);
+
+  /**
+   * @swagger
+   * /charts/skill-by-employment:
+   *   get:
+   *     summary: Get skill distribution by employment type
+   *     responses:
+   *       200:
+   *         description: Skill by employment type data (for stacked bar chart)
+   */
+  router.get("/charts/skill-by-employment", handlers.getSkillByEmploymentType);
+
+  /**
+   * @swagger
+   * /charts/topSkill:
+   *   get:
+   *     summary: Get topSkill distribution
+   *     responses:
+   *       200:
+   *         description: topSkill distribution data
+   */
+  router.get("/charts/topSkill", handlers.getTopSkillDistribution);
+
+  /**
+   * @swagger
+   * /charts/income-by-skill:
+   *   get:
+   *     summary: Get average income by skill
+   *     responses:
+   *       200:
+   *         description: Average income by skill data
+   */
+  router.get("/charts/income-by-skill", handlers.getAverageIncomeBySkill);
 
   /**
    * @swagger
@@ -2231,17 +2669,6 @@ module.exports = (dependencies) => {
 
   /**
    * @swagger
-   * /charts/topSkill:
-   *   get:
-   *     summary: Get topSkill distribution
-   *     responses:
-   *       200:
-   *         description: topSkill distribution data
-   */
-  router.get("/charts/topSkill", handlers.getTopSkillDistribution);
-
-  /**
-   * @swagger
    * /charts/yes-no/{field}:
    *   get:
    *     summary: Get distribution for Yes/No fields
@@ -2257,17 +2684,6 @@ module.exports = (dependencies) => {
    *         description: Field distribution data
    */
   router.get("/charts/yes-no/:field", handlers.getYesNoDistribution);
-
-  /**
-   * @swagger
-   * /charts/income-by-skill:
-   *   get:
-   *     summary: Get average income by skill
-   *     responses:
-   *       200:
-   *         description: Average income by skill data
-   */
-  router.get("/charts/income-by-skill", handlers.getAverageIncomeBySkill);
 
   /**
    * @swagger
@@ -2326,17 +2742,6 @@ module.exports = (dependencies) => {
 
   /**
    * @swagger
-   * /charts/skill-by-employment:
-   *   get:
-   *     summary: Get skill distribution by employment type
-   *     responses:
-   *       200:
-   *         description: Skill by employment type data (for stacked bar chart)
-   */
-  router.get("/charts/skill-by-employment", handlers.getSkillByEmploymentType);
-
-  /**
-   * @swagger
    * /charts/registrations-time:
    *   get:
    *     summary: Get registrations over time
@@ -2355,10 +2760,7 @@ module.exports = (dependencies) => {
    *       200:
    *         description: Cumulative registrations data (for area chart)
    */
-  router.get(
-    "/charts/cumulative-registrations",
-    handlers.getCumulativeRegistrations
-  );
+  router.get("/charts/cumulative-registrations", handlers.getCumulativeRegistrations);
 
   /**
    * @swagger
