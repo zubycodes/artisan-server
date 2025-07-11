@@ -132,3 +132,4 @@ artisan_db.db
 artisan_db.db
 artisan_db.db
 *.db
+MIGRATION_README.md

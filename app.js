@@ -153,6 +153,13 @@ const createRouteRegistry = (dbInstance) => ({
       logger: logger.child({ module: "sessions" }),
     },
   },
+  migration: {
+    path: "./migration",
+    dependencies: {
+      db: dbInstance,
+      logger: logger.child({ module: "migration" }),
+    },
+  },
 });
 
 // Main application factory
