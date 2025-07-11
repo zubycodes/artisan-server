@@ -921,6 +921,42 @@ const entityOps = {
       artisanId,
     ]);
   },
+
+  async updateProductImage(imagePath, newImagePath) {
+    const oldImagePath = await dbAsync.get(
+      "SELECT image_path FROM product_images WHERE image_path = ?",
+      [imagePath]
+    );
+    if (oldImagePath && oldImagePath.image_path) {
+      fs.unlink(oldImagePath.image_path, (err) => {
+        if (err) {
+          console.error("Error deleting old product image:", err);
+        }
+      });
+    }
+    return dbAsync.run("UPDATE product_images SET image_path = ? WHERE image_path = ?", [
+      newImagePath,
+      imagePath,
+    ]);
+  },
+
+  async updateShopImage(imagePath, newImagePath) {
+    const oldImagePath = await dbAsync.get(
+      "SELECT image_path FROM shop_images WHERE image_path = ?",
+      [imagePath]
+    );
+    if (oldImagePath && oldImagePath.image_path) {
+      fs.unlink(oldImagePath.image_path, (err) => {
+        if (err) {
+          console.error("Error deleting old shop image:", err);
+        }
+      });
+    }
+    return dbAsync.run("UPDATE shop_images SET image_path = ? WHERE image_path = ?", [
+      newImagePath,
+      imagePath,
+    ]);
+  },
 };
 
 module.exports = (dependencies) => {
@@ -1420,6 +1456,48 @@ module.exports = (dependencies) => {
         res.status(500).json({ error: err.message });
       }
     },
+
+    async updateProductImage(req, res) {
+      const { image_path } = req.body;
+      const newImagePath = req.file.path;
+      const routeLogger = logger.child({
+        route: "artisans",
+        handler: "updateProductImage",
+        imagePath: image_path,
+      });
+      routeLogger.info("Received update product image request");
+      try {
+        await entityOps.updateProductImage(image_path, newImagePath);
+        res.json({ message: "Product image updated successfully" });
+      } catch (err) {
+        routeLogger.error(
+          { error: err, imagePath: image_path },
+          "Error updating product image"
+        );
+        res.status(500).json({ error: err.message });
+      }
+    },
+
+    async updateShopImage(req, res) {
+      const { image_path } = req.body;
+      const newImagePath = req.file.path;
+      const routeLogger = logger.child({
+        route: "artisans",
+        handler: "updateShopImage",
+        imagePath: image_path,
+      });
+      routeLogger.info("Received update shop image request");
+      try {
+        await entityOps.updateShopImage(image_path, newImagePath);
+        res.json({ message: "Shop image updated successfully" });
+      } catch (err) {
+        routeLogger.error(
+          { error: err, imagePath: image_path },
+          "Error updating shop image"
+        );
+        res.status(500).json({ error: err.message });
+      }
+    },
   };
 
   // Routes
@@ -1798,6 +1876,18 @@ module.exports = (dependencies) => {
    *         description: Internal server error
    */
   router.delete("/artisans/:id", handlers.remove);
+
+  router.put(
+    "/artisans/product-image",
+    upload.single("product_image"),
+    handlers.updateProductImage
+  );
+
+  router.put(
+    "/artisans/shop-image",
+    upload.single("shop_image"),
+    handlers.updateShopImage
+  );
 
   return router;
 };
